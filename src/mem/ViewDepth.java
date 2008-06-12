@@ -13,6 +13,10 @@ public class ViewDepth {
   private Set<ViewDepthElem> els = new HashSet<ViewDepthElem>();
   final int maxDepth;
 
+  public int size(){
+    return els.size();
+  }
+
   List<Set<ViewDepthElem>> elsByDepth(){
     List<Set<ViewDepthElem>> l = new ArrayList<Set<ViewDepthElem>>();
     for( ViewDepthElem sde : els ){

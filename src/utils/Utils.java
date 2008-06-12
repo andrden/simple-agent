@@ -2,7 +2,7 @@ package utils;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.Collections;
+import java.util.List;
 import java.awt.*;
 
 /**
@@ -25,6 +25,10 @@ public class Utils {
       }
     }
     return true;
+  }
+
+  public static <T> T rnd(List<T> l){
+    return l.get( (int)(Math.random()*l.size()) );
   }
 
   public static String color2name(Color c){

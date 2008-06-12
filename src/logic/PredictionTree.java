@@ -7,6 +7,7 @@ import mem.Cause;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 
 import utils.Utils;
 
@@ -49,7 +50,7 @@ public class PredictionTree {
     }else{
       for( PredictionTree nextStep : onCommand.values() ){
         // run over first level branches
-        if( nextStep.hasPositiveResultOrSmacks() ){
+        if( nextStep.findPositiveResultOrSmacks()!=null ){
           // intersting branch...
           Map<String, Object> smack0 = new HashMap<String, Object>();
           for( Cause c : nextStep.predictionBy ){
@@ -62,20 +63,63 @@ public class PredictionTree {
     throw new IllegalStateException();
   }
 
-  public boolean hasPositiveResultOrSmacks(){
+  static class PositiveResultOrSmack{
+    String cmd;
+    String description;
+    int depth=0;
+
+    public PositiveResultOrSmack(String cmd, String description) {
+      this.cmd = cmd;
+      this.description = description;
+    }
+  }
+
+  /**
+   * returns smacks description
+   * @return
+   */
+  public PositiveResultOrSmack findPositiveResultOrSmacks(){
     Integer res = Hist.getResult(viewNext);
     if( res!=null && res>0 ){
-      return true;
+      return new PositiveResultOrSmack(null, "res="+res);
     }
     if( smacks!=null && smacks.cause.getResult()>0 ){
-      return true;
+      return new PositiveResultOrSmack(null, ""+smacks.cause);
     }
-    for( PredictionTree nextStep : onCommand.values() ){
-      if( nextStep.hasPositiveResultOrSmacks() ){
-        return true;
+
+    Map<String, PositiveResultOrSmack> onCmds = new HashMap<String, PositiveResultOrSmack>();
+    for( String nextStepCmd : onCommand.keySet() ){
+      PredictionTree nextStep = onCommand.get(nextStepCmd);
+      PositiveResultOrSmack nextSmack = nextStep.findPositiveResultOrSmacks();
+      if(nextSmack!=null){
+        nextSmack.description = nextStepCmd + " -> " + nextSmack.description;
+        nextSmack.cmd = nextStepCmd;
+        nextSmack.depth++;
+        onCmds.put(nextStepCmd, nextSmack);
       }
     }
-    return false;
+
+    if( onCmds.size()!=0 ){
+      return findShortest(onCmds);
+    }
+
+    return null;
+  }
+
+  PositiveResultOrSmack findShortest(Map<String, PositiveResultOrSmack> onCmds){
+    int minDepth = Integer.MAX_VALUE;
+    List<PositiveResultOrSmack> options = new ArrayList<PositiveResultOrSmack>();
+    for( PositiveResultOrSmack p : onCmds.values() ){
+      if( p.depth<minDepth ){
+        minDepth=p.depth;
+        options = new ArrayList<PositiveResultOrSmack>();
+      }
+      if( p.depth==minDepth ){
+        options.add(p);
+      }
+    }
+
+    return Utils.rnd(options);
   }
 
   public String toString() {
