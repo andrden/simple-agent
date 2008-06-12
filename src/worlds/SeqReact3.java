@@ -33,7 +33,6 @@ public class SeqReact3 implements WorldGridView {
   int x0 =2;
   int y0 =2;
   int dirIdx=0;
-  int result=0;
 
   Random rnd = new Random();
   void nextSeq(){
@@ -140,7 +139,9 @@ public class SeqReact3 implements WorldGridView {
   }
 
 
-  public void command(String cmd) {
+  public int command(String cmd) {
+    int result=0;
+
     if( seq.isEmpty() ){
       if( cmd.equals(correctCmd) ){
             result=1;
@@ -153,6 +154,7 @@ public class SeqReact3 implements WorldGridView {
     }else{
       cdata[1][0]=Color.WHITE;
     }
+    return result;
   }
 
 
@@ -165,11 +167,4 @@ public class SeqReact3 implements WorldGridView {
   }
 
 
-  public int result(boolean reset) {
-    int r=result;
-    if( reset ){
-      result=0;
-    }
-    return r;
-  }
 }

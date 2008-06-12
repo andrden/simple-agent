@@ -44,12 +44,7 @@ public class Alg implements AlgIntf, Serializable {
   }
 
   public synchronized String nextCmd(String forcedCmd){
-    int res = w.result(true);
     Map<String,Object> view = w.view();
-    history.setLastResult(res, view);
-
-    resultAnalyse(res, view);
-
     if( forcedCmd!=null ){
       curCmd = new CmdSet(forcedCmd);
     }else{
@@ -79,6 +74,13 @@ public class Alg implements AlgIntf, Serializable {
     //}
 
     return cmd;
+  }
+
+  public void cmdCompleted(int result) {
+    Map<String,Object> view = w.view();
+    history.setLastResult(result, view);
+
+    resultAnalyse(result, view);
   }
 
   void findNoop(Map<String, Object> view){

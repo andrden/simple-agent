@@ -47,10 +47,6 @@ public class CheckedWorld implements World, Serializable {
     return c;
   }
 
-  public void command(String cmd) {
-    w.command(cmd);
-  }
-
   public Map<String, Object> view() {
     Map<String, Object> v =  w.view();
     for( String s : v.keySet() ){
@@ -65,7 +61,8 @@ public class CheckedWorld implements World, Serializable {
     return v;
   }
 
-  public int result(boolean reset) {
-    return w.result(reset);
+  public int command(String cmd) {
+    return w.command(cmd);
   }
+
 }

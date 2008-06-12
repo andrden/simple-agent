@@ -20,7 +20,6 @@ public class State1 implements WorldGridView {
   int x0 =2;
   int y0 =2;
   int dirIdx=0;
-  int result=0;
 
   Random rnd = new Random();
 
@@ -85,7 +84,8 @@ public class State1 implements WorldGridView {
   }
 
 
-  public void command(String cmd) {
+  public int command(String cmd) {
+    int result=0;
     Color[] variants = {Color.BLACK, Color.YELLOW, Color.RED};
 
     Color cnow = cdata[0][0];
@@ -99,6 +99,7 @@ public class State1 implements WorldGridView {
 
     int sw = (int) (Math.random() * variants.length);
     cdata[0][0] = variants[sw];
+    return result;
   }
 
 
@@ -112,11 +113,4 @@ public class State1 implements WorldGridView {
   }
 
 
-  public int result(boolean reset) {
-    int r=result;
-    if( reset ){
-      result=0;
-    }
-    return r;
-  }
 }

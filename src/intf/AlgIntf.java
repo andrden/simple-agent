@@ -11,6 +11,12 @@ import java.util.Set;
 public interface AlgIntf {
   String nextCmd(String forcedCmd);
 
+  /**
+   * Container notification - triggers result analysis
+   * @param result
+   */
+  void cmdCompleted(int result);
+
 
   Set<String> cmdGroups();
   boolean hasPlans();

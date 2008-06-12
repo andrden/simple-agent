@@ -31,6 +31,7 @@ public class Main extends JFrame {
   WorldGridView world = new GridWorld1();
   int totalResult=0;
   AlgIntf alg = new Alg((World) world);
+  int step=0;
 
   Set<String> algCmdGroups = new HashSet<String>();
 
@@ -106,7 +107,7 @@ public class Main extends JFrame {
     logAreaScrollPane.setPreferredSize(new Dimension(300,300));
     add(logAreaScrollPane);
 
-    logView();
+    logView(0);
     setVisible(true);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.pack();
@@ -216,20 +217,27 @@ public class Main extends JFrame {
   private void execCmd(String cmd) {
     long t0 = System.currentTimeMillis();
     cmd = alg.nextCmd(cmd);
+    long dt0 = System.currentTimeMillis() - t0;
+    step++;
+
     if( world.commandWrong(cmd) ){
        System.out.println("Main: cmd wrong "+cmd);
     }
-    world.command(cmd);
-    long dt = System.currentTimeMillis() - t0;
-    logArea.append(cmd+" "+dt+"ms \n");
-    logView();
+    int result = world.command(cmd);
+    logView(result);
 
     refreshAllViews();
+
+    long t1 = System.currentTimeMillis();
+    alg.cmdCompleted(result);
+    long dt1 = System.currentTimeMillis() - t1;
+
+    logArea.append(cmd+" "+dt0+" / "+dt1+"ms \n");
   }
 
   private void refreshAllViews() {
     gridCanvas.repaint();
-    String res = "Step #xxxx   Result: "+totalResult+" of "+ world.availableResults()
+    String res = "Step #"+step+"   Result: "+totalResult+" of "+ world.availableResults()
             +" missed "+(world.availableResults()-totalResult);
     setTitle(res);
 
@@ -241,8 +249,7 @@ public class Main extends JFrame {
     }
   }
 
-  void logView(){
-    int r = world.result(false);
+  void logView(int r){
     totalResult+=r;
     logArea.append( r + "  "+world.view()+"\n");
     logAreaScrollPane.getViewport ().setViewPosition (new Point (0, logArea.getHeight()));

@@ -127,7 +127,7 @@ public class Feed0 implements WorldGridView {
     return false;
   }
 
-  public void command(String cmd) {
+  public int command(String cmd) {
     availableResults++;
     if( cmd.equals("j") ){
           result=-1;
@@ -137,6 +137,7 @@ public class Feed0 implements WorldGridView {
     }
 
     prevCommand = cmd;
+    return result;
   }
 
 
@@ -145,11 +146,4 @@ public class Feed0 implements WorldGridView {
   }
 
 
-  public int result(boolean reset) {
-    int r=result;
-    if( reset ){
-      result=0;
-    }
-    return r;
-  }
 }

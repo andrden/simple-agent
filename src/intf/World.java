@@ -13,8 +13,12 @@ import java.util.Map;
 public interface World {
   List<String> commands();
   Map<String,Object> view();
-  int result(boolean reset);
 
 
-  void command(String cmd);
+  /**
+   * Returns result
+   * @param cmd
+   * @return
+   */
+  int command(String cmd);
 }

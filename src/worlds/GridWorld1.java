@@ -71,7 +71,6 @@ public class GridWorld1 implements WorldGridView, Serializable {
   int x0 =2;
   int y0 =2;
   int dirIdx=0;
-  int result=0;
   String prevCommand=null;
 
   Dir getDir(){
@@ -176,7 +175,8 @@ public class GridWorld1 implements WorldGridView, Serializable {
     return i;
   }
 
-  public void command(String cmd) {
+  public int command(String cmd) {
+    int result=0;
     if( cmd.equals("L") ){
       dirIdx = dirIdxLeft();
     }
@@ -189,7 +189,7 @@ public class GridWorld1 implements WorldGridView, Serializable {
 
     // Fa + Fb composition:
     if( cmd.equals("Fb") /*&& "Fa".equals(prevCommand)*/ ){
-      moveFwd();
+      result=moveFwd();
     }
     if( cmd.equals("E") ){
       Point p = getFwd();
@@ -208,9 +208,11 @@ public class GridWorld1 implements WorldGridView, Serializable {
     }
 
     prevCommand = cmd;
+    return result;
   }
 
-  private void moveFwd() {
+  private int moveFwd() {
+    int result=0;
     Point p = getFwd();
     Color color = getColor(p);
     if( color.equals(Color.WHITE) /*|| color==Color.YELLOW*/ ){
@@ -225,6 +227,7 @@ public class GridWorld1 implements WorldGridView, Serializable {
     }
 
     addNewObject();
+    return result;
   }
 
   int count(Color c){
@@ -294,12 +297,5 @@ public class GridWorld1 implements WorldGridView, Serializable {
   }
 
 
-  public int result(boolean reset) {
-    int r=result;
-    if( reset ){
-      result=0;
-    }
-    return r;
-  }
 }
 

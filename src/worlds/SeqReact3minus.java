@@ -133,7 +133,7 @@ public class SeqReact3minus implements WorldGridView {
   }
 
 
-  public void command(String cmd) {
+  public int command(String cmd) {
     if( seq.isEmpty() ){
       if( !cmd.equals(correctCmd) ){
             result=-1;
@@ -141,6 +141,7 @@ public class SeqReact3minus implements WorldGridView {
       nextSeq();
     }
     cdata[0][0] = seq.remove(0);
+    return result;
   }
 
 
@@ -149,11 +150,4 @@ public class SeqReact3minus implements WorldGridView {
   }
 
 
-  public int result(boolean reset) {
-    int r=result;
-    if( reset ){
-      result=0;
-    }
-    return r;
-  }
 }

@@ -33,7 +33,6 @@ public class SeqReact0 implements WorldGridView {
   int x0 =2;
   int y0 =2;
   int dirIdx=0;
-  int result=0;
 
   Random rnd = new Random(); 
   void nextSeq(){
@@ -113,7 +112,9 @@ public class SeqReact0 implements WorldGridView {
   }
 
 
-  public void command(String cmd) {
+  public int command(String cmd) {
+    int result=0;
+
     if( seq.isEmpty() ){
       if( !cmd.equals(correctCmd) ){
             result=-1;
@@ -121,6 +122,7 @@ public class SeqReact0 implements WorldGridView {
       nextSeq();
     }
     cdata[0][0] = seq.remove(0);
+    return result;
   }
 
 
@@ -129,11 +131,4 @@ public class SeqReact0 implements WorldGridView {
   }
 
 
-  public int result(boolean reset) {
-    int r=result;
-    if( reset ){
-      result=0;
-    }
-    return r;
-  }
 }
