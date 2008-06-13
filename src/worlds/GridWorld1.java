@@ -269,8 +269,8 @@ public class GridWorld1 implements WorldGridView, Serializable {
     Map<String,Point> m = new HashMap<String,Point>();
     m.put("f", new Point(1,0));
     m.put("ff", new Point(2,0));
-    //m.put("fl", (Object)getColor(getFwd(1,1)));
-    //m.put("fr", (Object)getColor(getFwd(1,-1)));
+    m.put("fl", new Point(1,1));
+    m.put("fr", new Point(1,-1));
     m.put("l", new Point(0,1));
     m.put("r", new Point(0,-1));
     return m;

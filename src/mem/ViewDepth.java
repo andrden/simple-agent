@@ -17,6 +17,11 @@ public class ViewDepth {
     return els.size();
   }
 
+
+  public Set<ViewDepthElem> getEls() {
+    return els;
+  }
+
   List<Set<ViewDepthElem>> elsByDepth(){
     List<Set<ViewDepthElem>> l = new ArrayList<Set<ViewDepthElem>>();
     for( ViewDepthElem sde : els ){

@@ -193,66 +193,6 @@ public class Alg implements AlgIntf, Serializable {
     return null;
   }
 
-//  <T> T rnd(List<T> l){
-//    return l.get( (int)(Math.random()*l.size()) );
-//  }
-
-//  CmdSet findMaxCmd(Map<String,MaxStruct> predictedMinResults){
-//    String cmd = null;
-//    int max = Integer.MIN_VALUE;
-//    for( String s : predictedMinResults.keySet() ){
-//      MaxStruct str = predictedMinResults.get(s);
-//      if( str.allmax>max ){
-//        max = str.allmax;
-//        if( max>0 ){
-//          cmd = s;
-//        }
-//      }
-//    }
-//    if( cmd==null ){
-//      return null;
-//    }
-//    CmdSet cset = new CmdSet(cmd);
-//    cset.setTargetResult(max);
-//    cset.setFoundFrom("findMaxCmd - direct history scan");
-//    return cset;
-//  }
-
-//  CmdSet findMaxCmdPair(Map<String,MaxStruct> predictedMinResults2Cmd){
-//    String cmd = null;
-//    int baseSize=0;
-//    int max = Integer.MIN_VALUE;
-//    for( String s : predictedMinResults2Cmd.keySet() ){
-//      MaxStruct struct = predictedMinResults2Cmd.get(s);
-//      if( struct.allmax>max ){
-//        max = struct.allmax;
-//        if( max>0 ){
-//          cmd = s;
-//          baseSize = struct.baseSize;
-//        }
-//      }
-//    }
-//    if( cmd==null ){
-//      return null;
-//    }
-//
-//    CmdSet cset;
-//    StringTokenizer st = new StringTokenizer(cmd, ",");
-//    String nextCmd1 = st.nextToken();
-//    String nextCmd2 = st.nextToken();
-//    if( baseSize>1 ){
-//      String group = nextCmd1+"_"+nextCmd2;
-//      cmdGroups.put(group, Arrays.asList(nextCmd1, nextCmd2));
-//      log(">>>>>> created cmdGroup "+group);
-//      cset = new CmdSet(group);
-//      cset.setFoundFrom("findMaxCmdPair - grp");
-//    }else{
-//      cset = new CmdSet(nextCmd1, nextCmd2);
-//      cset.setFoundFrom("findMaxCmdPair - pair");
-//    }
-//    cset.setTargetResult(max);
-//    return cset;
-//  }
 
   List<String> allCommands(){
     List<String> ret = new ArrayList<String>();
@@ -411,44 +351,6 @@ public class Alg implements AlgIntf, Serializable {
     }
   }
 
-//  Map<String, MaxStruct> predictMinResults2Cmds(Map<String, Object> view) {
-//    Map<String, MaxStruct> ret = new HashMap<String, MaxStruct>();
-//    List<String> cs = allCommands();
-//    for (String c : cs) {
-//      for (String c2 : cs) {
-//        MaxStruct allmax = new MaxStruct();
-//        for (StateDepth sd : StateDepth.TRACKABLES) {
-//          if (!sd.canUse(history)) {
-//            continue;
-//          }
-//          if( sd.contains("V0") ){ // we don't know what V0 will be after command 'c'
-//            continue;
-//          }
-//          Hist project = new Hist( new Hist(history.last, view, c), null, c2 );
-//          DeepState ds = DeepState.lookBehind(sd, project).get(0);
-//
-//          List<Hist> found = history.find(ds);
-//          if (!found.isEmpty()) {
-//            int min = Integer.MAX_VALUE;
-//            for (Hist h : found) {
-//              min = Math.min(min, history.getResult(h));
-//            }
-//            allmax.recMax(min, ds, found.size());
-//          }
-//
-//          if (allmax.valid()) {
-//            if( !cmdGroups.containsKey(c+"_"+c2) ){ // don't count already grouped command separately
-//              if(allmax.allmax!=0){
-//                breakPoint();
-//              }
-//              ret.put(c + "," + c2, allmax);
-//            }
-//          }
-//        }
-//      }
-//    }
-//    return ret;
-//  }
 
   void breakPoint(){
     

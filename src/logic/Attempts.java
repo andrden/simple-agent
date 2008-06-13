@@ -29,6 +29,7 @@ public class Attempts implements Serializable {
   }
 
   CmdSet findNotEverTried(ViewDepthIterator vdi, List<String> cs, Map<String, Object> view){
+    HistoryFinder hf = new HistoryFinder();
     for(;;){
       ViewDepth vd = vdi.next();
       if( vd==null ){
@@ -40,7 +41,8 @@ public class Attempts implements Serializable {
       for( String c : cs ){
         DeepState ds = DeepState.lookBehind(vd, new Hist(history.last, view, c)).get(0);
         ds = ds.expandGroupCommands(alg.cmdGroups);
-        if( !history.exists(ds) ){
+        //if( !history.exists(ds) ){
+        if( hf.findNext(history, ds, vd).isEmpty() ){
           String s = "random - not ever tried " + c + " in " + ds;
           log(s);
           CmdSet cset = new CmdSet(c);

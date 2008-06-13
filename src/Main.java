@@ -177,8 +177,9 @@ public class Main extends JFrame {
     try {
       ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(stateStorage()));
       o.writeObject(world);
-      o.writeInt(totalResult);
       o.writeObject(alg);
+      o.writeInt(totalResult);
+      o.writeInt(step);
       o.close();
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -189,8 +190,9 @@ public class Main extends JFrame {
     try {
       ObjectInputStream i = new ObjectInputStream(new FileInputStream(stateStorage()));
       world = (WorldGridView)i.readObject();
-      totalResult = i.readInt();
       alg = (AlgIntf)i.readObject();
+      totalResult = i.readInt();
+      step = i.readInt();
       i.close();
     } catch (Exception e) {
       throw new RuntimeException(e);

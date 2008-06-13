@@ -142,14 +142,14 @@ public class CmdCompletionAnalyzer  implements Serializable {
    * @return
    */
   private void findRelations(ViewDepthIterator vdi, Hist histVariant, ResultsAnalyzer analyzer) {
-    SkippingViewDepthIterator svdi = new SkippingViewDepthIterator(vdi);
+    HistoryFinder hf = new HistoryFinder();
     int maxFound=0;
     Cause bestCause=null;
 
-    Map<ViewDepth,List<Hist>> basicSearches = new HashMap<ViewDepth,List<Hist>>();
+    //Map<ViewDepth,List<Hist>> basicSearches = new HashMap<ViewDepth,List<Hist>>();
 
     for(;;){
-      ViewDepth vd = svdi.next();
+      ViewDepth vd = vdi.next();
       if( vd==null ){
         break;
       }
@@ -161,10 +161,15 @@ public class CmdCompletionAnalyzer  implements Serializable {
         continue;
       }
       DeepState ds = list.get(0);
-      List<Hist> found = history.find(ds);
-      if( vd.size()==1 ){
-        basicSearches.put(vd, found);
-      }
+      //List<Hist> found = history.find(ds);
+//      if( vd.size()==1 ){
+//        basicSearches.put(vd, found);
+//      }
+      List<Hist> found = hf.findNext(history, ds, vd);
+      //log("vd="+vd);
+//      if( found.size()!=foundFast.size() ){
+//        throw new IllegalStateException();
+//      }
 
       if(!found.isEmpty()){
         Cause newc = analyzer.test(found, ds);
@@ -173,7 +178,7 @@ public class CmdCompletionAnalyzer  implements Serializable {
           bestCause = newc;
         }
       }else{
-        svdi.addSkipPattern(vd); // nothing found, no longer try any similar
+        //svdi.addSkipPattern(vd); // nothing found, no longer try any similar
       }
     }
 
