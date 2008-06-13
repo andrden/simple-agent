@@ -27,7 +27,7 @@ public class GridWorld1 implements WorldGridView, Serializable {
           "bbbbbbbb",
           "b yy  bb",
           "by by bb",
-          "b  b   b",
+          "b**b   b",
           "b     bb",
           "bbbbbbbb",
   };
@@ -99,6 +99,9 @@ public class GridWorld1 implements WorldGridView, Serializable {
 //        }
         char ch = FIELD_INIT[j].charAt(i);
         switch(ch){
+          case '*':
+            c = Color.GRAY;
+            break;
           case 'b':
             c = Color.BLACK;
             break;
@@ -187,6 +190,14 @@ public class GridWorld1 implements WorldGridView, Serializable {
       }
     }
 
+    if( cmd.equals("Fa") ){
+      Point p = getFwd();
+      Color color = getColor(p);
+      if( color.equals(Color.GRAY )){
+        cdata[p.x][p.y]=Color.WHITE;
+      }
+    }
+
     // Fa + Fb composition:
     if( cmd.equals("Fb") /*&& "Fa".equals(prevCommand)*/ ){
       result=moveFwd();
@@ -226,7 +237,8 @@ public class GridWorld1 implements WorldGridView, Serializable {
       result = -1;
     }
 
-    addNewObject();
+    addNewObject(Color.YELLOW);
+    addNewObject(Color.GRAY);
     return result;
   }
 
@@ -242,8 +254,8 @@ public class GridWorld1 implements WorldGridView, Serializable {
     return count;
   }
 
-  void addNewObject(){
-    if( count(Color.YELLOW)> width*height*0.1 ){
+  void addNewObject(Color color){
+    if( count(color)> width*height*0.1 ){
       return;
     }
     long t0=System.currentTimeMillis();
@@ -252,7 +264,7 @@ public class GridWorld1 implements WorldGridView, Serializable {
       int y = (int)(Math.random()*height);
       Point pNew = new Point(x, y);
       if( getColor(pNew).equals(Color.WHITE) && distToCr(pNew)>=3 ){
-        cdata[x][y]=Color.YELLOW;
+        cdata[x][y]=color;
         return;
       }
       if( System.currentTimeMillis()-t0>30 ){

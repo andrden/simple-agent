@@ -72,6 +72,9 @@ public class Main extends JFrame {
           String ch = world.getChar(i,j);
           if( ch!=null ){
             Color charC = new Color(255-paint.getRed(), 255-paint.getGreen(), 255-paint.getBlue());
+            if( charC.equals(paint) ){
+              charC = Color.WHITE;
+            }
             g.setColor(charC);
             g.setFont(new Font(Font.MONOSPACED, Font.BOLD, SIZE*2/3));
             g.drawString(ch, left  +SIZE/4, top +SIZE*3/4);
