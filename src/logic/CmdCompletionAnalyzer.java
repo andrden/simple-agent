@@ -52,9 +52,18 @@ public class CmdCompletionAnalyzer  implements Serializable {
   void resultAnalyse(int res, Map<String, Object> view) {
     findNoop(view);
 
-    Map<String,Object> nextViewAll = history.getNextViewAll(history.last);
-    Hist hnext = new Hist(history.last, nextViewAll, null);
+    Hist hnext = history.createNextHist();
     causes.verifyAll(hnext);
+
+    Map<String,Object> prediction = causes.predictAllViewByCauses(history.last);
+    if( prediction==null ){
+      prediction = new HashMap<String,Object>();
+    }
+    Map<String,Object> nextViewAll = history.getNextViewAll(history.last);
+    Map<String,Object> notPredicted = Utils.difference(nextViewAll, prediction);
+    if( notPredicted.size()>0 ){
+      System.getProperties();
+    }
 
     if( res>0 ){
       Hist h = history.last;
@@ -95,10 +104,6 @@ public class CmdCompletionAnalyzer  implements Serializable {
         predictionTreeOld = alg.buildPredictionTree(history.last.prev, history.last.getViewOnly());
         if( predictionTreeOld.findPositiveResultOrSmacks()==null ){
           System.out.println("tree now smacks, tree old not: "+currSmack.description);
-          Map<String,Object> prediction = causes.predictAllViewByCauses(history.last);
-          if( prediction==null ){
-            prediction = new HashMap<String,Object>();
-          }
           Map<String, Object> smack0 = predictionTree.getResultOrSmacksKeyView();
           if( !Utils.containsAll(prediction, smack0) ){
             // @todo State1 world: at every result +1 it looks from where f=RED appeared

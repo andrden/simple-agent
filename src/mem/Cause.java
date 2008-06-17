@@ -36,7 +36,14 @@ public class Cause implements Serializable {
     return false;
   }
 
-  Map<String,Object> getPrediction(){
+  Map<String,Object> getPrediction(Hist h){
+    Object noopVal = prediction.get(Hist.NOOP_KEY);
+    if( noopVal!=null ){
+      int level = ((Number)noopVal).intValue();
+      Hist cmp = h.getAtDepth(level-1);
+      return cmp.getViewAllWithoutCmd();
+    }
+    
     return prediction;
   }
 
@@ -48,7 +55,7 @@ public class Cause implements Serializable {
       if( key.equals(Hist.NOOP_KEY) ){
         int level = ((Number)e.getValue()).intValue();
         Hist cmp = hnext.getAtDepth(level);
-        if( !cmp.viewMatch(nextViewAll, false) ){
+        if( !cmp.viewMatch(nextViewAll, false) || !"0".equals(nextViewAll.get(Hist.RES_KEY)) ){
           i.remove();
         }
       }else{

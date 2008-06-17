@@ -70,6 +70,12 @@ public class Hist implements Serializable {
     return ret;
   }
 
+  public Map<String, Object> getViewAllWithoutCmd(){
+    Map<String, Object> ret = new HashMap<String, Object>(view);
+    ret.remove(Hist.CMD_KEY);
+    return ret;
+  }
+
   public static void retainEqualsIn(Map<String, Object> testAgainst, Map<String, Object> retainIn){
     for( Iterator<String> i = retainIn.keySet().iterator(); i.hasNext() ;){
       String k = i.next();

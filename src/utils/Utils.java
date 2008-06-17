@@ -3,6 +3,7 @@ package utils;
 import java.util.Map;
 import java.util.Set;
 import java.util.List;
+import java.util.HashMap;
 import java.awt.*;
 
 /**
@@ -58,4 +59,18 @@ public class Utils {
     }
     return sb.toString();
   }
+
+  /**
+   * Removes from 'from' all mappings already present in 'what'
+   */
+  public static Map<String,Object> difference(Map<String,Object> from, Map<String,Object> what){
+    Map<String,Object> ret = new HashMap<String,Object>();
+    for( String k : from.keySet() ){
+      if( !what.containsKey(k) || !from.get(k).equals(what.get(k)) ){
+        ret.put(k, from.get(k));
+      }
+    }
+    return ret;
+  }
+
 }

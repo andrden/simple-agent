@@ -357,29 +357,17 @@ public class Alg implements AlgIntf, Serializable {
   }
 
   private void filterNoopCmds(Map<String, Object> view, List<String> cset) {
-    //List<String> cs =  allCommands();
+    List<String> toRemove = new ArrayList<String>();
     for( String c : cset ){
       Hist hnow = new Hist(history.last, view, c);
-//      for( StateDepth sd : StateDepth.TRACKABLES ){
-//        if( !sd.canUse(history) ){
-//          continue;
-//        }
-//        DeepState ds = DeepState.lookBehind(sd, hnow).get(0);
-//        List<Hist> found = history.find(ds);
-//        boolean allNoop = true;
-//        for( Hist h : found ){
-//          if( !sd.noop(h) ){
-//            allNoop=false;
-//          }
-//        }
-        CauseMaxStruct cms = causePredict(hnow);
-        if( cms.noop() ){
-          cset.remove(c);
-          log("removing noop "+c+" - "+cms.toString());
-          break;
-        }
-//      }
+      CauseMaxStruct cms = causePredict(hnow);
+      if( cms.noop() ){
+        //cset.remove(c);
+        toRemove.add(c);
+        log("removing noop "+c+" - "+cms.toString());
+      }
     }
+    cset.removeAll(toRemove);
   }
 
 

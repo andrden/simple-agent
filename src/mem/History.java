@@ -26,6 +26,14 @@ public class History implements Serializable {
     return h.getResultFromNext();
   }
 
+  public Hist createNextHist(){
+    Map<String,Object> nextViewAll = getNextViewAll(last);
+    int res = (Integer)nextViewAll.get(Hist.RES_KEY);
+    Hist hnext = new Hist(last, nextViewAll, null);
+    hnext.setResult(res);
+    return hnext;
+  }
+
   public Map<String,Object> getNextViewAll(Hist h){
     if( last==h ){
       return new HashMap<String,Object>(lastResult);
@@ -122,4 +130,6 @@ public class History implements Serializable {
       h=h.prev;
     }
   }
+
+  private static final long serialVersionUID = -5995303277916958873L;
 }

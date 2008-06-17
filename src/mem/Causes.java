@@ -55,12 +55,22 @@ public class Causes implements Serializable {
     return predictionBy.view;
   }
 
+  public List<Cause> applicableCauses(Hist h){
+    List<Cause> ret = new ArrayList<Cause>();
+    for( Cause cause : validCauses() ){
+      if( cause.canPredict(h) ){
+        ret.add(cause);
+      }
+    }
+    return ret;
+  }
+
   public PredictionBy predictAllViewByCausesWithBy(Hist h){
     PredictionBy pb = new PredictionBy();
     Map<String,Object> els=new HashMap<String,Object>();
     for( Cause cause : validCauses() ){
       if( cause.canPredict(h) ){
-        mergeEquals(els, cause.getPrediction());
+        mergeEquals(els, cause.getPrediction(h));
         pb.by.add(cause);
       }
     }
