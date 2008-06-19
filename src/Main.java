@@ -167,6 +167,15 @@ public class Main extends JFrame {
       }
     });
     nextPanel.add(load);
+    nextPanel.add(new JLabel(""));
+
+    JButton prelevant = new JButton("PrnCurCause");
+    prelevant.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent e) {
+        alg.printRelavantCauses();
+      }
+    });
+    nextPanel.add(prelevant);
 
     nextPanel.setBorder(BorderFactory.createEtchedBorder());
     return nextPanel;

@@ -20,5 +20,6 @@ public interface AlgIntf {
 
   Set<String> cmdGroups();
   boolean hasPlans();
+  void printRelavantCauses();
   void setByCausesOnly(boolean byCausesOnly);
 }

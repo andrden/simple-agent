@@ -49,6 +49,12 @@ public class Alg implements AlgIntf, Serializable {
     return !curCmd.finished();
   }
 
+  public void printRelavantCauses() {
+    for( Cause c : causes.applicableCauses(history.createNextHist()) ){
+      log("c  "+c);
+    }
+  }
+
   public synchronized String nextCmd(String forcedCmd){
     Map<String,Object> view = w.view();
     if( forcedCmd!=null ){

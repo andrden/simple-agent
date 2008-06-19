@@ -14,7 +14,8 @@ import java.util.Collections;
 public class ViewDepthGenerator implements ViewDepthIterator{
   List<ViewDepthElem> toTrack = new ArrayList<ViewDepthElem>();
 
-  final int MAX_GROUP_SIZE=6;
+  //final int MAX_GROUP_SIZE=6;
+  final int MAX_GROUP_SIZE=4;
   int groupSize=0;
   List<Integer> group=null;
   int totalCreated=0;
