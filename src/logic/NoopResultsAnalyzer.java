@@ -31,7 +31,7 @@ public class NoopResultsAnalyzer extends ResultsAnalyzer{
 
     Set<Boolean> noopState = new HashSet<Boolean>();
     for( Hist h : found ){
-      Map<String,Object> nextViewAll = history.getNextViewAll(h);
+      Map<String,Object> nextViewAll = h.next.getViewAll();
       Hist cmp = h.getAtDepth(level-1);
       if( cmp==null ){
         continue;

@@ -14,7 +14,7 @@ public class Hist implements Serializable {
 
   private Map<String,Object> view = new HashMap<String,Object>();
 
-  Hist next;
+  public Hist next;
   public Hist prev;
   long order;
 

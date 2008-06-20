@@ -195,7 +195,7 @@ public class Causes implements Serializable {
   void verifyNew(History history, Cause c){
     for( Hist h : history.list ){
       if( c.canPredict(h) ){
-        Hist next = new Hist(h, history.getNextViewAll(h), null);
+        Hist next = new Hist(h, h.next.getViewAll(), null);
         c.event( next );
       }
     }

@@ -15,50 +15,34 @@ import java.io.Serializable;
 public class History implements Serializable {
   List<Hist> list = new ArrayList<Hist>();
   public Hist last;
-  long nextOrder=0;
+  public Hist next;
+  private long nextOrder=0;
 
-  Map<String,Object> lastResult = new HashMap<String,Object>();
-
-  public int getResult(Hist h){
-    if( last==h ){
-      return (Integer)lastResult.get(Hist.RES_KEY);
-    }
-    return h.getResultFromNext();
+  public Hist getNextHist(){
+    return next;
   }
 
-  public Hist createNextHist(){
-    Map<String,Object> nextViewAll = getNextViewAll(last);
-    int res = (Integer)nextViewAll.get(Hist.RES_KEY);
-    Hist hnext = new Hist(last, nextViewAll, null);
-    hnext.setResult(res);
-    return hnext;
+  public void nextCmd(String cmd){
+    last = next;
+    next=null;
+    last.setCommand(cmd);
   }
 
-  public Map<String,Object> getNextViewAll(Hist h){
-    if( last==h ){
-      return new HashMap<String,Object>(lastResult);
-    }
-    return h.next.getViewAll();
-  }
-
-  public void add(Hist h){
+  void add(Hist h){
     h.order = ++nextOrder;
-    list.add(h);
+    next = h;
     if( last!=null ){
       last.next=h;
       h.prev=last;
-      h.setResult((Integer)lastResult.get(Hist.RES_KEY));
-      //System.out.println("clear in add");
-      lastResult.clear();
     }
-    last=h;
+    //last=h;
   }
 
   public void setLastResult(int result, Map<String,Object> view){
-    //System.out.println("clear in setLast");
-    lastResult.clear();
-    lastResult.putAll(view);
-    lastResult.put(Hist.RES_KEY, new Integer(result));
+    Hist h = new Hist();
+    h.setView(view);
+    h.setResult(result);
+    add(h);
   }
 
   public List<Hist> find(DeepState d){

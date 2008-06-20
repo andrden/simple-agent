@@ -32,18 +32,18 @@ public class MainResultsAnalyzer extends ResultsAnalyzer{
     int max=Integer.MIN_VALUE;
     boolean allCurrentlyPredicted=true;
     for( Hist h : found ){
-      Map<String,Object> nextViewAll = history.getNextViewAll(h);
+      Map<String,Object> nextViewAll = h.next.getViewAll();
       if( equalElems==null ){
         equalElems = new HashMap<String,Object>(nextViewAll);
       }else{
         Hist.retainEqualsIn(nextViewAll, equalElems);
       }
-      int res = history.getResult(h);
+      int res = h.getResultFromNext();
       min = Math.min(min, res);
       max = Math.max(max, res);
 
       Integer currentPrediction = causes.predictResultByCauses(h);
-      if( currentPrediction==null || currentPrediction.intValue()!= history.getResult(h) ){
+      if( currentPrediction==null || currentPrediction.intValue()!= h.getResultFromNext() ){
         allCurrentlyPredicted=false;
       }
     }

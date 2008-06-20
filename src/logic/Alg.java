@@ -6,7 +6,6 @@ import java.io.Serializable;
 import mem.*;
 import intf.World;
 import intf.AlgIntf;
-import utils.Utils;
 import utils.CountingTree;
 
 /**
@@ -24,6 +23,7 @@ public class Alg implements AlgIntf, Serializable {
   Map<String,List<String>> cmdGroups = new HashMap<String,List<String>>();
 
   Causes causes = new Causes();
+  List<Hist> interestingEvents = new ArrayList<Hist>();
 
   // experimentLevel - emotional koef.
   // Low if we are before difficult controlled situation.
@@ -50,7 +50,7 @@ public class Alg implements AlgIntf, Serializable {
   }
 
   public void printRelavantCauses() {
-    for( Cause c : causes.applicableCauses(history.createNextHist()) ){
+    for( Cause c : causes.applicableCauses(history.getNextHist()) ){
       log("c  "+c);
     }
   }
@@ -78,11 +78,11 @@ public class Alg implements AlgIntf, Serializable {
 
     String cmd = curCmd.goNext(cmdGroups);
     //if( curCmd.nextCmdForHistory()!=null ){
-      Hist h = new Hist();
-      h.setView(view);
-      h.setCommand(cmd/*curCmd.nextCmdForHistory()*/);
-      history.add(h);
-      log("===="+cmd/*curCmd.nextCmdForHistory()*/);
+    if( history.last==null ){
+      history.setLastResult(0, view);
+    }
+    history.nextCmd(cmd);
+    log("===="+cmd/*curCmd.nextCmdForHistory()*/);
     //}
 
     return cmd;
@@ -91,7 +91,9 @@ public class Alg implements AlgIntf, Serializable {
   public void cmdCompleted(int result) {
     Map<String,Object> view = w.view();
     history.setLastResult(result, view);
-
+    if( result>0 ){
+      interestingEvents.add(history.getNextHist());
+    }
     new CmdCompletionAnalyzer(this).resultAnalyse(result, view);
   }
 

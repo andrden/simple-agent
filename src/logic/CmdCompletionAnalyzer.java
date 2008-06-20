@@ -52,14 +52,14 @@ public class CmdCompletionAnalyzer  implements Serializable {
   void resultAnalyse(int res, Map<String, Object> view) {
     findNoop(view);
 
-    Hist hnext = history.createNextHist();
+    Hist hnext = history.getNextHist();
     causes.verifyAll(hnext);
 
     Map<String,Object> prediction = causes.predictAllViewByCauses(history.last);
     if( prediction==null ){
       prediction = new HashMap<String,Object>();
     }
-    Map<String,Object> nextViewAll = history.getNextViewAll(history.last);
+    Map<String,Object> nextViewAll = history.last.next.getViewAll();
     Map<String,Object> notPredicted = Utils.difference(nextViewAll, prediction);
     if( notPredicted.size()>0 ){
       System.getProperties();
