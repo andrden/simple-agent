@@ -26,6 +26,7 @@ public class History implements Serializable {
     last = next;
     next=null;
     last.setCommand(cmd);
+    list.add(last);
   }
 
   void add(Hist h){
