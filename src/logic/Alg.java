@@ -221,10 +221,14 @@ public class Alg implements AlgIntf, Serializable {
       cc.setFoundFrom("using "+smackRes.description);
     }
 
-    if( cc==null ){
-      Map<String,CauseMaxStruct> predictedByCauses = predictByCauses(view);
-      cc = findMaxCmdByCauses(predictedByCauses, view);
-    }
+//    if( cc==null ){
+//      Map<String,CauseMaxStruct> predictedByCauses = predictByCauses(view);
+//      cc = findMaxCmdByCauses(predictedByCauses, view);
+//      if( cc!=null ){
+//          // @todo strange place
+//          breakPoint();
+//      }
+//    }
 
     double emotionCoef = cc==null ? experimentLevel : experimentLevelIfSmacks;
     CmdSet nextCmd;
