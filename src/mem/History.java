@@ -46,6 +46,20 @@ public class History implements Serializable {
     add(h);
   }
 
+  /**
+   * Call when debugging findNextCmd()
+   * to see current deep state elems to know which
+   * causes can be used
+   * @param keyAtDepth e.g. "!@1"
+   * @return
+   */
+  public DeepState peek(String keyAtDepth){
+    String[] ar = keyAtDepth.split("@");
+    String key = ar[0];
+    int depth = Integer.parseInt(ar[1]);
+    return DeepState.lookBehind(new ViewDepth(new ViewDepthElem(depth,key)), next).get(0);
+  }
+
   public List<Hist> find(DeepState d){
     List<Hist> l = new ArrayList<Hist>();
     for( Hist h : list ){
