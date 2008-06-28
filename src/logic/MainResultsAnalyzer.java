@@ -36,7 +36,7 @@ public class MainResultsAnalyzer extends ResultsAnalyzer{
       if( equalElems==null ){
         equalElems = new HashMap<String,Object>(nextViewAll);
       }else{
-        Hist.retainEqualsIn(nextViewAll, equalElems);
+        Utils.retainEqualsIn(nextViewAll, equalElems);
       }
       int res = h.getResultFromNext();
       min = Math.min(min, res);

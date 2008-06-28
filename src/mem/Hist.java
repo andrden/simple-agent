@@ -76,17 +76,6 @@ public class Hist implements Serializable {
     return ret;
   }
 
-  public static void retainEqualsIn(Map<String, Object> testAgainst, Map<String, Object> retainIn){
-    for( Iterator<String> i = retainIn.keySet().iterator(); i.hasNext() ;){
-      String k = i.next();
-      if( !testAgainst.containsKey(k) ){
-        i.remove();
-      }else if( !retainIn.get(k).equals(testAgainst.get(k)) ){
-        i.remove();
-      }
-    }
-  }
-
   public Map<String, Object> getViewOnly(){
     Map<String, Object> ret = new HashMap<String, Object>(view);
     ret.remove(CMD_KEY);
@@ -117,7 +106,7 @@ public class Hist implements Serializable {
     return viewMatch(v, withCmd);
   }
 
-  String getCommand(){
+  public String getCommand(){
     return (String)view.get(CMD_KEY);
   }
 

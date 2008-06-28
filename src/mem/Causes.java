@@ -1,5 +1,7 @@
 package mem;
 
+import utils.Utils;
+
 import java.util.*;
 import java.io.Serializable;
 
@@ -178,7 +180,7 @@ public class Causes implements Serializable {
           DeepState inters = c1.ds.intersect(c2.ds);
           if( inters!=null ){
             Map<String,Object> eq = new HashMap<String,Object>(c1.prediction);
-            Hist.retainEqualsIn(c2.prediction, eq);
+            Utils.retainEqualsIn(c2.prediction, eq);
             Cause newc = new Cause(inters, eq);
 
             newc.generifiedFrom = Arrays.asList(c1, c2);

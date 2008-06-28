@@ -119,6 +119,20 @@ public class PredictionTree {
       }
     }
 
+    ERROR!!!
+    /*
+    for each command there must be some assessment taken
+    from causes, prediction tree, etc.
+    and if there is still ambiguity then
+    continue with other assessment methods to
+    find the really best command.
+    In case of non-discrete worlds there will be intervals -
+    don't move arm too far - you'll fell down.
+    Reach within x..y limit to get to the bottle.
+    And don't move your leg meantime because we can't predict results
+    then, while currently we can see a result smack.
+     */
+
     return Utils.rnd(options);
   }
 

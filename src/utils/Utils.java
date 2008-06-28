@@ -1,9 +1,7 @@
 package utils;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.List;
-import java.util.HashMap;
 import java.awt.*;
 
 /**
@@ -73,4 +71,24 @@ public class Utils {
     return ret;
   }
 
+  public static Map<String,Object> intersection(Map<String,Object> m1, Map<String,Object> m2){
+    Map<String,Object> ret = new HashMap<String,Object>();
+    for( String k : m1.keySet() ){
+      if( m2.containsKey(k) && m2.get(k).equals(m1.get(k)) ){
+        ret.put(k, m1.get(k));
+      }
+    }
+    return ret;
+  }
+
+  public static void retainEqualsIn(Map<String, Object> testAgainst, Map<String, Object> retainIn){
+    for( Iterator<String> i = retainIn.keySet().iterator(); i.hasNext() ;){
+      String k = i.next();
+      if( !testAgainst.containsKey(k) ){
+        i.remove();
+      }else if( !retainIn.get(k).equals(testAgainst.get(k)) ){
+        i.remove();
+      }
+    }
+  }
 }

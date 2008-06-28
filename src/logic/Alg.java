@@ -7,6 +7,7 @@ import mem.*;
 import intf.World;
 import intf.AlgIntf;
 import utils.CountingTree;
+import utils.Utils;
 
 /**
  * Created by IntelliJ IDEA.
@@ -77,13 +78,11 @@ public class Alg implements AlgIntf, Serializable {
     assert (!curCmd.finished());
 
     String cmd = curCmd.goNext(cmdGroups);
-    //if( curCmd.nextCmdForHistory()!=null ){
     if( history.last==null ){
       history.setLastResult(0, view);
     }
     history.nextCmd(cmd);
-    log("===="+cmd/*curCmd.nextCmdForHistory()*/);
-    //}
+    log("===="+cmd+" foundFrom="+curCmd.getFoundFrom());
 
     return cmd;
   }
@@ -218,7 +217,7 @@ public class Alg implements AlgIntf, Serializable {
     PredictionTree.PositiveResultOrSmack smackRes = pt.findPositiveResultOrSmacks();
     if( smackRes!=null && smackRes.cmd!=null ){
       cc = new CmdSet(smackRes.cmd);
-      cc.setFoundFrom("using "+smackRes.description);
+      cc.setFoundFrom("using pred tree smacks "+smackRes.description);
     }
 
 //    if( cc==null ){
@@ -266,6 +265,25 @@ public class Alg implements AlgIntf, Serializable {
 //      log("predicted positive result with 2 commands ("+nextCmd+"), get it!");
 //      return nextCmd;
 //    }
+
+    for( Hist hinter : interestingEvents ){
+      int res = hinter.prev.getResultFromNext();
+      if( res >0 ){
+        Map<String,Object> prediction = causes.predictAllViewByCauses(hinter.prev);
+        if( prediction==null ){
+          prediction = new HashMap<String,Object>();
+        }
+        if( !(""+res).equals(""+prediction.get(Hist.RES_KEY)) ){
+          // there is not predicted result
+          Map<String,Object> com = Utils.intersection( hinter.prev.getViewAll(), view );
+          if( !com.isEmpty() ){
+            nextCmd = new CmdSet(hinter.prev.getCommand());
+            nextCmd.setFoundFrom("interesting event prev "+hinter.prev + " com="+com);
+            return nextCmd;
+          }
+        }
+      }
+    }
 
     if( stepByStepFastCheck ){
       return null;

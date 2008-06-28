@@ -61,6 +61,7 @@ public class CmdCompletionAnalyzer  implements Serializable {
     }
     Map<String,Object> nextViewAll = history.last.next.getViewAll();
     Map<String,Object> notPredicted = Utils.difference(nextViewAll, prediction);
+
     if( notPredicted.size()>0 ){
       System.getProperties();
     }

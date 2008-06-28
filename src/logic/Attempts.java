@@ -44,7 +44,7 @@ public class Attempts implements Serializable {
         //if( !history.exists(ds) ){
         if( hf.findNext(history, ds, vd).isEmpty() ){
           String s = "random - not ever tried " + c + " in " + ds;
-          log(s);
+          //log(s);
           CmdSet cset = new CmdSet(c);
           cset.setFoundFrom(s);
           return cset;
@@ -95,7 +95,7 @@ public class Attempts implements Serializable {
       for( String sPrev : cs ){
         if( !histCmds2.containsKey(Arrays.asList(sPrev, s)) ){
           String msg = "not ever tried cmd pair: " + sPrev + " " + s;
-          log(msg);
+          //log(msg);
           CmdSet cset = new CmdSet(sPrev, s);
           cset.setFoundFrom(msg);
           return cset;
