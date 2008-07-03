@@ -55,7 +55,8 @@ public class Cause implements Serializable {
       if( key.equals(Hist.NOOP_KEY) ){
         int level = ((Number)e.getValue()).intValue();
         Hist cmp = hnext.getAtDepth(level);
-        if( !cmp.viewMatch(nextViewAll, false) || !"0".equals(nextViewAll.get(Hist.RES_KEY)) ){
+        if( !cmp.viewMatch(nextViewAll, false) || !"0".equals(""+nextViewAll.get(Hist.RES_KEY)) ){
+          wrongPrediction.put(key, e.getValue());
           i.remove();
         }
       }else{
@@ -68,6 +69,9 @@ public class Cause implements Serializable {
     if( prediction.size()>0 ){
       countVerified++;
     }else{
+      if(countWrong==0){
+        System.out.println("cause invalidated "+this);
+      }
       countWrong=1;
     }
 //    boolean verifiedOrWrong = equalElems nextViewAll.get(Hist.RES_KEY).equals(getResult());

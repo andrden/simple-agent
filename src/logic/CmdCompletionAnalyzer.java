@@ -81,17 +81,19 @@ public class CmdCompletionAnalyzer  implements Serializable {
       }
     }
 
-    if( res!=0 ){
-      // try to generate causes
-      // if not already explained by other causes
-      CauseMaxStruct cms = alg.causePredict(history.last);
-      if( cms.active.isEmpty() || cms.promisedMax()!=res ){
-        ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, null);
-        findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
-      }
-
-      // @todo if we have result - analyze not only last step, but also some steps before
-    }else{
+//    if( false && res!=0 ){
+//      //TODO unite res!=0 and res==0 steps
+//
+//      // try to generate causes
+//      // if not already explained by other causes
+//      CauseMaxStruct cms = alg.causePredict(history.last);
+//      if( cms.active.isEmpty() || cms.promisedMax()!=res ){
+//        ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, null);
+//        findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
+//      }
+//
+//      // @todo if we have result - analyze not only last step, but also some steps before
+//    }else{
       // The essence of this prediction tree is so that we could smell the smack
       // of expected result as long before it occurs as only possible.
       // If we can smack it now and weren't able one step before -
@@ -101,42 +103,27 @@ public class CmdCompletionAnalyzer  implements Serializable {
       PredictionTree predictionTree = alg.buildPredictionTree(history.last, view);
       PredictionTree predictionTreeOld=null;
       PredictionTree.PositiveResultOrSmack currSmack = predictionTree.findPositiveResultOrSmacks();
-      if(currSmack!=null){
+      if(res!=0 || currSmack!=null){
         predictionTreeOld = alg.buildPredictionTree(history.last.prev, history.last.getViewOnly());
         if( predictionTreeOld.findPositiveResultOrSmacks()==null ){
-          System.out.println("tree now smacks, tree old not: "+currSmack.description);
-          Map<String, Object> smack0 = predictionTree.getResultOrSmacksKeyView();
-          if( !Utils.containsAll(prediction, smack0) ){
-            // @todo State1 world: at every result +1 it looks from where f=RED appeared
-            // and obviously finds no cause - it's random - how to avoid repeated search?
-            // remember last steps to see they are the same? no! random 'r' and random 'f' colors
-            // make that impossible. Statistically only?
-            ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, smack0.keySet());
+          if( res!=0 ){
+            ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, null);
             findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
+          }else{
+            System.out.println("tree now smacks, tree old not: "+currSmack.description);
+            Map<String, Object> smack0 = predictionTree.getResultOrSmacksKeyView();
+            if( !Utils.containsAll(prediction, smack0) ){
+              // @todo State1 world: at every result +1 it looks from where f=RED appeared
+              // and obviously finds no cause - it's random - how to avoid repeated search?
+              // remember last steps to see they are the same? no! random 'r' and random 'f' colors
+              // make that impossible. Statistically only?
+              ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, smack0.keySet());
+              findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
+            }
           }
         }
-      }
-
-//      Causes.SmacksOfResult smacks = causes.smacksOfResult(new Hist(history.last, view, null));
-//      if( smacks !=null ){
-//        Causes.SmacksOfResult smacksPrev = causes.smacksOfResult(history.last);
-//        if( smacksPrev==null || !smacks.ds.equalsDS(smacksPrev.ds) ){
-//          // there has just appeared new smack of result:
-//          Map<String,Object> prediction = causes.predictAllViewByCauses(history.last);
-//          if( prediction==null ){
-//            prediction = new HashMap<String,Object>();
-//          }
-//          Map<String, Object> smack0 = smacks.ds.getElemsAtDepth(0);
-//          if( !Utils.containsAll(prediction, smack0) ){
-//            // @todo State1 world: at every result +1 it looks from where f=RED appeared
-//            // and obviously finds no cause - it's random - how to avoid repeated search?
-//            // remember last steps to see they are the same? no! random 'r' and random 'f' colors
-//            // make that impossible. Statistically only?
-//            ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, smack0.keySet());
-//            findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
-//          }
-//        }
 //      }
+
     }
   }
 

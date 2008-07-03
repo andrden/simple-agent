@@ -96,39 +96,55 @@ public class Alg implements AlgIntf, Serializable {
     new CmdCompletionAnalyzer(this).resultAnalyse(result, view);
   }
 
-
-
   PredictionTree buildPredictionTree(Hist last, Map<String, Object> view) {
     PredictionTree predictionTree = new PredictionTree(last, view);
     predictionTree.smacks = causes.smacksOfResult(predictionTree.histNew());
 
+    List<Hist> unexplainedInterestingEvents = unexplainedInterestingEvents();
     List<PredictionTree> readyNotes = Arrays.asList(predictionTree);
     for( int i=0; i<5 && readyNotes.size()>0; i++ ){
       List<PredictionTree> notesToExplore = new ArrayList<PredictionTree>();
       for( PredictionTree pti : readyNotes ){
         for( String c : allCommands() ){
-          Hist h = new Hist(pti.histOld, pti.viewNext, c);
-          Causes.PredictionBy prediction = causes.predictAllViewByCausesWithBy(h);
-          if( prediction!=null ){
-            Map<String,Object> test = new HashMap<String,Object>(prediction.view);
-            test.remove(Hist.NOOP_KEY);
-            if( "0".equals(""+test.get(Hist.RES_KEY)) ){
-              test.remove(Hist.RES_KEY);
-            }
-            if( test.size()>0 ){ // if has smth. meaningful
-              PredictionTree node = pti.addChild(h, c, prediction);
-              node.smacks = causes.smacksOfResult(node.histNew());
-              boolean val = prediction.view.get(Hist.RES_KEY)!=null && ((Integer)prediction.view.get(Hist.RES_KEY)).intValue()!=0;
-              if( !val ){ // if result of this branch not yet known
-                notesToExplore.add(node);
+          expandPrediction(pti, c, notesToExplore);
+        }
+
+        for( Hist hinter : unexplainedInterestingEvents ){
+              Map<String,Object> com = Utils.intersection( hinter.prev.getViewAll(), view );
+              if( !com.isEmpty() ){
+                String cmd = hinter.prev.getCommand();
+                PredictionTree child = pti.onCommand.get(cmd);
+                if( child==null ){
+                  Hist h = new Hist(pti.histOld, pti.viewNext, cmd);
+                  child = pti.addChild(h, cmd, null);
+                }
+                child.smacksEvent = hinter;
               }
-            }
-          }
         }
       }
       readyNotes = notesToExplore;
     }
     return predictionTree;
+  }
+
+  private void expandPrediction(PredictionTree pti, String c, List<PredictionTree> notesToExplore) {
+    Hist h = new Hist(pti.histOld, pti.viewNext, c);
+    Causes.PredictionBy prediction = causes.predictAllViewByCausesWithBy(h);
+    if( prediction!=null ){
+      Map<String,Object> test = new HashMap<String,Object>(prediction.view);
+      test.remove(Hist.NOOP_KEY);
+      if( "0".equals(""+test.get(Hist.RES_KEY)) ){
+        test.remove(Hist.RES_KEY);
+      }
+      if( test.size()>0 ){ // if has smth. meaningful
+        PredictionTree node = pti.addChild(h, c, prediction);
+        node.smacks = causes.smacksOfResult(node.histNew());
+        boolean val = prediction.view.get(Hist.RES_KEY)!=null && ((Integer)prediction.view.get(Hist.RES_KEY)).intValue()!=0;
+        if( !val ){ // if result of this branch not yet known
+          notesToExplore.add(node);
+        }
+      }
+    }
   }
 
   CmdSet findMaxCmdByCauses(Map<String,CauseMaxStruct> predictedMinResults, Map<String, Object> view){
@@ -266,23 +282,13 @@ public class Alg implements AlgIntf, Serializable {
 //      return nextCmd;
 //    }
 
-    for( Hist hinter : interestingEvents ){
-      int res = hinter.prev.getResultFromNext();
-      if( res >0 ){
-        Map<String,Object> prediction = causes.predictAllViewByCauses(hinter.prev);
-        if( prediction==null ){
-          prediction = new HashMap<String,Object>();
-        }
-        if( !(""+res).equals(""+prediction.get(Hist.RES_KEY)) ){
-          // there is not predicted result
+    for( Hist hinter : unexplainedInterestingEvents() ){
           Map<String,Object> com = Utils.intersection( hinter.prev.getViewAll(), view );
           if( !com.isEmpty() ){
             nextCmd = new CmdSet(hinter.prev.getCommand());
             nextCmd.setFoundFrom("interesting event prev "+hinter.prev + " com="+com);
             return nextCmd;
           }
-        }
-      }
     }
 
     if( stepByStepFastCheck ){
@@ -303,7 +309,26 @@ public class Alg implements AlgIntf, Serializable {
     return nextCmd;
   }
 
-
+  List<Hist> unexplainedInterestingEvents(){
+    List<Hist> ret = new ArrayList<Hist>();
+    for( Hist hinter : interestingEvents ){
+      if( hinter==history.next ){
+        continue; // skip current event
+      }
+      int res = hinter.prev.getResultFromNext();
+      if( res >0 ){
+        Map<String,Object> prediction = causes.predictAllViewByCauses(hinter.prev);
+        if( prediction==null ){
+          prediction = new HashMap<String,Object>();
+        }
+        if( !(""+res).equals(""+prediction.get(Hist.RES_KEY)) ){
+          // there is not predicted result
+          ret.add(hinter);
+        }
+      }
+    }
+    return ret;
+  }
 
   Map<String,CauseMaxStruct> predictByCauses(Map<String, Object> view) {
     Map<String,CauseMaxStruct> ret = new HashMap<String,CauseMaxStruct>();

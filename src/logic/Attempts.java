@@ -36,7 +36,8 @@ public class Attempts implements Serializable {
         break;
       }
       if( !vd.canUse(history) ){
-        continue;
+        return new CmdSet(cs.get(0));
+        //continue;
       }
       for( String c : cs ){
         DeepState ds = DeepState.lookBehind(vd, new Hist(history.last, view, c)).get(0);

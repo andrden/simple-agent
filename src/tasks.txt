@@ -1,0 +1,50 @@
+10101
+negative causes needed and useful -
+!@0=0 and in@0=0 -> $=0 is important
+to cut useless prediction branches
+originating from !=0 in case of in@0=0
+
+or that ORANGE + any command except for E is ZERO,
+no use trying
+----------------------------------
+predictionTree - definite result a bit further than smack
+is better than smack alone
+----------------------------------
+case like l@1=ORANGE instead of f@0=ORANGE is strange
+and unreasonable
+It's more resonable to look for cause in closest layer first.
+However, guessing a sequence means the opposite -
+scanning some element back in time far enough.
+And movement prediction means changing elements
+and back in time tracking at the same time.
+
+Probably it makes sense to seek for relations
+using already useful (contained in causes)
+elements. This way if we see smth. depends upon
+f@0 - we start trying to explain anything else
+using this f@0. Finally we know very much about f@0 -
+all it can and cannot explain. If this resource is exhausted,
+only then we try to use another elements.
+Same for random "never tried Cmd when ...cond" -
+base cond on elements contained in causes.
+This way we are either moving ahead very fast
+or discover that was a cul-de-sec very fast.
+Don't scatter effort to discover in all visible
+domains. Persue some way to know it, then change
+way if current happens to be imperfect.
+Some random events may shift this way,
+and if it's right, we will return here soon.
+----------------------------------------
+Hot spots among sensors - useful once -
+gonna be useful again and again
+----------------------------------------
+there must be feedback for wrong prediction:
+
+====E foundFrom=using pred tree smacks E -> event=#3 {f=WHITE, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=1, fr=WHITE, l=GRAY}
+@@@ compl: new cause {f@0=WHITE} -> {noop=1}
+====E foundFrom=using pred tree smacks E -> event=#3 {f=WHITE, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=1, fr=WHITE, l=GRAY}
+@@@ compl: new cause {f@0=WHITE} -> {noop=1}
+====E foundFrom=using pred tree smacks E -> event=#3 {f=WHITE, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=1, fr=WHITE, l=GRAY}
+@@@ compl: new cause {f@0=WHITE} -> {noop=1}
+--------------------------
+add noop as result to prediction tree

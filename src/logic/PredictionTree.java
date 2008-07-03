@@ -21,6 +21,7 @@ public class PredictionTree {
   Hist histOld;
   Causes.SmacksOfResult smacks;
   Map<String,Object> viewNext;
+  Hist smacksEvent;
   Map<String,PredictionTree> onCommand = new HashMap<String, PredictionTree>();
   List<Cause> predictionBy;
 
@@ -30,8 +31,14 @@ public class PredictionTree {
   }
 
   public PredictionTree addChild(Hist h, String command, Causes.PredictionBy viewNextBy){
-    PredictionTree predictionTree = new PredictionTree(h, viewNextBy.view);
-    predictionTree.predictionBy =viewNextBy.by;
+    Map<String, Object> viewNext = null;
+    if( viewNextBy!=null ){
+      viewNext = viewNextBy.view;
+    }
+    PredictionTree predictionTree = new PredictionTree(h, viewNext);
+    if( viewNextBy!=null ){
+      predictionTree.predictionBy =viewNextBy.by;
+    }
     onCommand.put(command, predictionTree);
     return predictionTree;
   }
@@ -64,11 +71,12 @@ public class PredictionTree {
   }
 
   static class PositiveResultOrSmack{
+    double probab;
     String cmd;
     String description;
     int depth=0;
 
-    public PositiveResultOrSmack(String cmd, String description) {
+    public PositiveResultOrSmack(double probab, String cmd, String description) {
       this.cmd = cmd;
       this.description = description;
     }
@@ -79,12 +87,9 @@ public class PredictionTree {
    * @return
    */
   public PositiveResultOrSmack findPositiveResultOrSmacks(){
-    Integer res = Hist.getResult(viewNext);
+    Integer res = viewNext==null ? null : Hist.getResult(viewNext);
     if( res!=null && res>0 ){
-      return new PositiveResultOrSmack(null, "res="+res);
-    }
-    if( smacks!=null && smacks.cause.getResult()>0 ){
-      return new PositiveResultOrSmack(null, ""+smacks.cause);
+      return new PositiveResultOrSmack(1, null, "res="+res);
     }
 
     Map<String, PositiveResultOrSmack> onCmds = new HashMap<String, PositiveResultOrSmack>();
@@ -99,11 +104,33 @@ public class PredictionTree {
       }
     }
 
-    if( onCmds.size()!=0 ){
-      return findShortest(onCmds);
+    PositiveResultOrSmack rnow=null;
+    if( smacks!=null && smacks.cause.getResult()>0 ){
+      rnow = new PositiveResultOrSmack(0.5, null, ""+smacks.cause);
+    }
+    if( rnow==null && smacksEvent!=null ){
+      rnow = new PositiveResultOrSmack(0.5, null, "event.prev="+smacksEvent.prev);
     }
 
-    return null;
+    if( onCmds.size()!=0 ){
+      PositiveResultOrSmack r = findShortest(onCmds);
+      return moreDefinite(rnow, r);
+    }
+
+    return rnow;
+  }
+
+  PositiveResultOrSmack moreDefinite(PositiveResultOrSmack a, PositiveResultOrSmack b){
+    if( a==null ){
+      return b;
+    }
+    if( b==null ){
+      return a;
+    }
+    if( a.probab>=b.probab ){
+      return a;
+    }
+    return b;
   }
 
   PositiveResultOrSmack findShortest(Map<String, PositiveResultOrSmack> onCmds){
@@ -119,7 +146,7 @@ public class PredictionTree {
       }
     }
 
-    ERROR!!!
+    //ERROR!!!
     /*
     for each command there must be some assessment taken
     from causes, prediction tree, etc.

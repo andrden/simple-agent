@@ -187,6 +187,7 @@ public class Main extends JFrame {
 
   void saveState(){
     try {
+      stateStorage().mkdirs();
       ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(stateStorage()));
       o.writeObject(world);
       o.writeObject(alg);
