@@ -67,6 +67,15 @@ public class Causes implements Serializable {
     return ret;
   }
 
+  public boolean predictsNoop(Hist h){
+    for( Cause cause : validCauses() ){
+      if( cause.canPredict(h) && cause.noop() ){
+        return true;
+      }
+    }
+    return false;
+  }
+
   public PredictionBy predictAllViewByCausesWithBy(Hist h){
     PredictionBy pb = new PredictionBy();
     Map<String,Object> els=new HashMap<String,Object>();

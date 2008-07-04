@@ -27,6 +27,12 @@ public class CmdSet implements Serializable {
     this.command = command;
   }
 
+  public static CmdSet createWithSrc(String cmd, String foundFrom){
+    CmdSet c = new CmdSet(cmd);
+    c.setFoundFrom(foundFrom);
+    return c;
+  }
+
   public CmdSet(String ... cs) {
     makeParts(cs);
   }
@@ -128,4 +134,6 @@ public class CmdSet implements Serializable {
   public String getFoundFrom() {
     return foundFrom;
   }
+
+  private static final long serialVersionUID = 7856075021098004771L;
 }

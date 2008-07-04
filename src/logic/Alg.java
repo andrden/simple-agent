@@ -105,8 +105,21 @@ public class Alg implements AlgIntf, Serializable {
     for( int i=0; i<5 && readyNotes.size()>0; i++ ){
       List<PredictionTree> notesToExplore = new ArrayList<PredictionTree>();
       for( PredictionTree pti : readyNotes ){
+        if( pti.noop ){
+          continue;
+        }
         for( String c : allCommands() ){
           expandPrediction(pti, c, notesToExplore);
+        }
+        for( String c : allCommands() ){
+          Hist h = new Hist(pti.histOld, pti.viewNext, c);
+          if( causes.predictsNoop(h) ){
+            PredictionTree child = pti.onCommand.get(c);
+            if( child==null ){
+              child = pti.addChild(h, c, null);
+            }
+            child.noop=true;
+          }
         }
 
         for( Hist hinter : unexplainedInterestingEvents ){
@@ -282,14 +295,14 @@ public class Alg implements AlgIntf, Serializable {
 //      return nextCmd;
 //    }
 
-    for( Hist hinter : unexplainedInterestingEvents() ){
-          Map<String,Object> com = Utils.intersection( hinter.prev.getViewAll(), view );
-          if( !com.isEmpty() ){
-            nextCmd = new CmdSet(hinter.prev.getCommand());
-            nextCmd.setFoundFrom("interesting event prev "+hinter.prev + " com="+com);
-            return nextCmd;
-          }
-    }
+//    for( Hist hinter : unexplainedInterestingEvents() ){
+//          Map<String,Object> com = Utils.intersection( hinter.prev.getViewAll(), view );
+//          if( !com.isEmpty() ){
+//            nextCmd = new CmdSet(hinter.prev.getCommand());
+//            nextCmd.setFoundFrom("interesting event prev "+hinter.prev + " com="+com);
+//            return nextCmd;
+//          }
+//    }
 
     if( stepByStepFastCheck ){
       return null;

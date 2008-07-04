@@ -24,6 +24,7 @@ public class PredictionTree {
   Hist smacksEvent;
   Map<String,PredictionTree> onCommand = new HashMap<String, PredictionTree>();
   List<Cause> predictionBy;
+  boolean noop=false;
 
   public PredictionTree(Hist h, Map<String, Object> viewNext) {
     this.viewNext = viewNext;
@@ -60,8 +61,10 @@ public class PredictionTree {
         if( nextStep.findPositiveResultOrSmacks()!=null ){
           // intersting branch...
           Map<String, Object> smack0 = new HashMap<String, Object>();
-          for( Cause c : nextStep.predictionBy ){
-            smack0.putAll(c.recentCoditionBase());
+          if( nextStep.predictionBy!=null ){
+            for( Cause c : nextStep.predictionBy ){
+              smack0.putAll(c.recentCoditionBase());
+            }
           }
           return smack0; 
         }
@@ -87,6 +90,9 @@ public class PredictionTree {
    * @return
    */
   public PositiveResultOrSmack findPositiveResultOrSmacks(){
+    if( noop ){
+      return null;
+    }
     Integer res = viewNext==null ? null : Hist.getResult(viewNext);
     if( res!=null && res>0 ){
       return new PositiveResultOrSmack(1, null, "res="+res);
