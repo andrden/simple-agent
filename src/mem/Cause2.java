@@ -2,6 +2,8 @@ package mem;
 
 import java.util.Map;
 import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,6 +16,17 @@ public class Cause2 {
   Object val;
 
   DeepState cond;
+
+  List<Hist> examples = new ArrayList<Hist>();
+
+  public Cause2(String key, Object val) {
+    this.key = key;
+    this.val = val;
+  }
+
+  public void addExample(Hist h){
+    examples.add(h);
+  }
 
   public boolean predicts(Hist h){
     return cond.match(h);

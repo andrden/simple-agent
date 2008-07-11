@@ -61,8 +61,14 @@ public class CmdCompletionAnalyzer  implements Serializable {
       predictionTreeOld = alg.buildPredictionTree(history.last.prev, history.last.getViewOnly());
       if( predictionTreeOld.findPositiveResultOrSmacks()==null ){
         if( res!=0 ){
-          ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, null);
-          findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
+          Cause2 cau = causes2.find(Hist.RES_KEY, new Integer(res));
+          if( cau==null ){
+            cau = new Cause2(Hist.RES_KEY, new Integer(res));
+            causes2.add(cau);
+          }
+          cau.addExample(history.getNextHist());
+//          ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, null);
+//          findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
         }else{
           System.out.println("tree now smacks, tree old not: "+currSmack.description);
           Map<String, Object> smack0 = predictionTree.getResultOrSmacksKeyView();

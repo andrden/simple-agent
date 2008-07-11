@@ -11,6 +11,15 @@ import java.util.*;
 public class Causes2 {
   public List<Cause2> list = new ArrayList<Cause2>();
 
+  public Cause2 find(String key, Object val){
+    for( Cause2 c : list ){
+      if( c.key.equals(key) && c.val.equals(val) ){
+        return c;
+      }
+    }
+    return null;
+  }
+
   public static class PredictionBy{
     public List<Cause2> by = new ArrayList<Cause2>();
     public Map<String,Object> view;
@@ -77,6 +86,10 @@ public class Causes2 {
       }
     }
     return null;
+  }
+
+  public void add(Cause2 c){
+    list.add(c);
   }
 
 }

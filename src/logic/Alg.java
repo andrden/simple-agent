@@ -25,7 +25,7 @@ public class Alg implements AlgIntf, Serializable {
 
   Causes causes = new Causes();
   Causes2 causes2 = new Causes2();
-  List<Hist> interestingEvents = new ArrayList<Hist>();
+  List<Hist> interestingEvents = new ArrayList<Hist>(); - copy to Cause2
 
   // experimentLevel - emotional koef.
   // Low if we are before difficult controlled situation.
