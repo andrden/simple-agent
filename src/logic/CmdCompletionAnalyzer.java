@@ -19,12 +19,14 @@ import utils.Utils;
 public class CmdCompletionAnalyzer  implements Serializable {
   Alg alg;
 
+  Causes2 causes2;
   Causes causes;
   History history;
 
   public CmdCompletionAnalyzer(Alg alg) {
     this.alg = alg;
     causes=alg.causes;
+    causes2=alg.causes2;
     history=alg.history;
   }
   void log(String s){
@@ -49,7 +51,40 @@ public class CmdCompletionAnalyzer  implements Serializable {
     }
   }
 
+  void resultAnalyse2(int res, Map<String, Object> view) {
+    Map<String,Object> prediction = causes.predictAllViewByCauses(history.last);
+
+    PredictionTree2 predictionTree = alg.buildPredictionTree(history.last, view);
+    PredictionTree2 predictionTreeOld=null;
+    PredictionTree2.PositiveResultOrSmack currSmack = predictionTree.findPositiveResultOrSmacks();
+    if(res!=0 || currSmack!=null){
+      predictionTreeOld = alg.buildPredictionTree(history.last.prev, history.last.getViewOnly());
+      if( predictionTreeOld.findPositiveResultOrSmacks()==null ){
+        if( res!=0 ){
+          ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, null);
+          findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
+        }else{
+          System.out.println("tree now smacks, tree old not: "+currSmack.description);
+          Map<String, Object> smack0 = predictionTree.getResultOrSmacksKeyView();
+          if( !Utils.containsAll(prediction, smack0) ){
+            // @todo State1 world: at every result +1 it looks from where f=RED appeared
+            // and obviously finds no cause - it's random - how to avoid repeated search?
+            // remember last steps to see they are the same? no! random 'r' and random 'f' colors
+            // make that impossible. Statistically only?
+            ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, smack0.keySet());
+            findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
+          }
+        }
+      }
+//      }
+
+  }
+
+  }
+
   void resultAnalyse(int res, Map<String, Object> view) {
+    resultAnalyse2(res, view);
+
     findNoop(view);
 
     Hist hnext = history.getNextHist();
@@ -59,12 +94,12 @@ public class CmdCompletionAnalyzer  implements Serializable {
     if( prediction==null ){
       prediction = new HashMap<String,Object>();
     }
-    Map<String,Object> nextViewAll = history.last.next.getViewAll();
-    Map<String,Object> notPredicted = Utils.difference(nextViewAll, prediction);
-
-    if( notPredicted.size()>0 ){
-      System.getProperties();
-    }
+    //Map<String,Object> nextViewAll = history.last.next.getViewAll();
+//    Map<String,Object> notPredicted = Utils.difference(nextViewAll, prediction);
+//
+//    if( notPredicted.size()>0 ){
+//      System.getProperties();
+//    }
 
     if( res>0 ){
       Hist h = history.last;
@@ -100,11 +135,11 @@ public class CmdCompletionAnalyzer  implements Serializable {
       // try to find new relations to be able to track result
       // earlier.
 
-      PredictionTree predictionTree = alg.buildPredictionTree(history.last, view);
+      PredictionTree predictionTree = alg.buildPredictionTreeOld(history.last, view);
       PredictionTree predictionTreeOld=null;
       PredictionTree.PositiveResultOrSmack currSmack = predictionTree.findPositiveResultOrSmacks();
       if(res!=0 || currSmack!=null){
-        predictionTreeOld = alg.buildPredictionTree(history.last.prev, history.last.getViewOnly());
+        predictionTreeOld = alg.buildPredictionTreeOld(history.last.prev, history.last.getViewOnly());
         if( predictionTreeOld.findPositiveResultOrSmacks()==null ){
           if( res!=0 ){
             ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, null);
