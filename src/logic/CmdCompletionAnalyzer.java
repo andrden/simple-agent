@@ -52,7 +52,10 @@ public class CmdCompletionAnalyzer  implements Serializable {
   }
 
   void resultAnalyse2(int res, Map<String, Object> view) {
-    Map<String,Object> prediction = causes.predictAllViewByCauses(history.last);
+    Hist hnext = history.getNextHist();
+    causes2.verifyAll(hnext);
+
+    Map<String,Object> prediction = causes2.predictAllViewByCauses(history.last);
 
     PredictionTree2 predictionTree = alg.buildPredictionTree(history.last, view);
     PredictionTree2 predictionTreeOld=null;
@@ -65,8 +68,9 @@ public class CmdCompletionAnalyzer  implements Serializable {
           if( cau==null ){
             cau = new Cause2(Hist.RES_KEY, new Integer(res));
             causes2.add(cau);
+            cau.addExample(history.getNextHist());
           }
-          cau.addExample(history.getNextHist());
+
 //          ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, null);
 //          findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
         }else{

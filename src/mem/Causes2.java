@@ -76,6 +76,12 @@ public class Causes2 {
     }
   }
 
+  public void verifyAll(Hist hnext){
+    for( Cause2 c : list ){
+      c.addExample(hnext);
+    }
+  }
+
   public SmacksOfResult smacksOfResult(Hist h){
     for( Cause2 cause : list ){
       if( cause.isPositiveResult() ){

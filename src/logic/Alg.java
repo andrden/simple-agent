@@ -25,7 +25,7 @@ public class Alg implements AlgIntf, Serializable {
 
   Causes causes = new Causes();
   Causes2 causes2 = new Causes2();
-  List<Hist> interestingEvents = new ArrayList<Hist>(); - copy to Cause2
+  List<Hist> interestingEvents = new ArrayList<Hist>(); //- copy to Cause2
 
   // experimentLevel - emotional koef.
   // Low if we are before difficult controlled situation.
@@ -166,7 +166,7 @@ public class Alg implements AlgIntf, Serializable {
     PredictionTree2 predictionTree = new PredictionTree2(last, view);
     predictionTree.smacks = causes2.smacksOfResult(predictionTree.histNew());
 
-    List<Hist> unexplainedInterestingEvents = unexplainedInterestingEvents();
+
     List<PredictionTree2> readyNotes = Arrays.asList(predictionTree);
     for( int i=0; i<5 && readyNotes.size()>0; i++ ){
       List<PredictionTree2> notesToExplore = new ArrayList<PredictionTree2>();
@@ -188,18 +188,24 @@ public class Alg implements AlgIntf, Serializable {
           }
         }
 
-        for( Hist hinter : unexplainedInterestingEvents ){
-              Map<String,Object> com = Utils.intersection( hinter.prev.getViewAll(), view );
-              if( !com.isEmpty() ){
-                String cmd = hinter.prev.getCommand();
-                PredictionTree2 child = pti.onCommand.get(cmd);
-                if( child==null ){
-                  Hist h = new Hist(pti.histOld, pti.viewNext, cmd);
-                  child = pti.addChild(h, cmd, null);
-                }
-                child.smacksEvent = hinter;
-              }
+        for( Cause2 cc : causes2.list ){
+          if( cc.isPositiveResult() ){
+            Hist h = cc.unexplainedExamplesIntersect(view);
+            String cmd = h.prev.getCommand();
+            PredictionTree2 child = pti.onCommand.get(cmd);
+            if( child==null ){
+              Hist hn = new Hist(pti.histOld, pti.viewNext, cmd);
+              child = pti.addChild(hn, cmd, null);
+            }
+            child.smacksEvent = h;
+            if( child.viewNext==null ){
+              child.viewNext=new HashMap<String,Object>();
+            }
+            child.viewNext.put(cc.key, cc.val);
+          }
         }
+
+        
       }
       readyNotes = notesToExplore;
     }
@@ -307,6 +313,8 @@ public class Alg implements AlgIntf, Serializable {
     List<String> cs =  allCommands();
 
     CmdSet cc=null;
+
+    PredictionTree2 pt2 = buildPredictionTree(history.last, view);
 
     PredictionTree pt = buildPredictionTreeOld(history.last, view);
     PredictionTree.PositiveResultOrSmack smackRes = pt.findPositiveResultOrSmacks();
