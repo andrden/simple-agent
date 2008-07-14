@@ -2,10 +2,9 @@ package mem;
 
 import utils.Utils;
 
-import java.util.Map;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
+
+import com.pmstation.common.utils.CountingMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,7 +18,7 @@ public class Cause2 {
 
   DeepState cond;
 
-  List<Hist> examples = new ArrayList<Hist>(); // list of resulting Hists
+  List<Hist> examples = new ArrayList<Hist>(); // list of before-Hists
   List<Hist> negExamples = new ArrayList<Hist>(); // negative examples
 
   public Cause2(String key, Object val) {
@@ -29,31 +28,71 @@ public class Cause2 {
 
   public void addExample(Hist h){
     if( h.get(key).equals(val) ){
-      examples.add(h);
+      examples.add(h.prev);
+
+      if( examples.size()>1 ){
+        Map<String, CountingMap> rpt = viewRepeats(examples);
+      }
     }else if( unexplainedExamplesIntersect(h.prev.getViewAll())!=null ){
-      negExamples.add(h);
+      negExamples.add(h.prev);
     }
   }
 
   List<Hist> unexplainedExamples(){
     List<Hist> ret = new ArrayList<Hist>();
     for( Hist he : examples ){
-      if( !predicts(he.prev) ){
+      if( !predicts(he) ){
         ret.add(he);
       }
     }
     return ret;
   }
 
-  public Hist unexplainedExamplesIntersect(Map<String, Object> view){
-    need finding max among positive and negative examples
-    for( Hist h : unexplainedExamples() ){
-      Map<String,Object> com = Utils.intersection( h.prev.getViewAll(), view );
-      if( !com.isEmpty() ){
-        return h;
+  Map<String, CountingMap> viewRepeats(List<Hist> lh){
+    Map<String, CountingMap> ret = new HashMap<String, CountingMap>();
+    for( Hist h : lh ){
+      Map<String, Object> va = h.getViewAll();
+      for( String s : va.keySet() ){
+        CountingMap cm = ret.get(s);
+        if( cm==null ){
+          cm = new CountingMap();
+          ret.put(s, cm);
+        }
+        cm.increment(va.get(s));
       }
     }
+    return ret;
+  }
+
+  public Hist unexplainedExamplesIntersect(Map<String, Object> view){
+    ClosestHist pos = closest(unexplainedExamples(), view);
+    ClosestHist neg = closest(negExamples, view);
+    if( pos.maxCom>neg.maxCom ){
+      return pos.h;
+    }
     return null;
+  }
+
+  static class ClosestHist{
+    Hist h=null;
+    int maxCom=0;
+    void update(Hist i, int comSize){
+      if( comSize>maxCom ){
+        maxCom=comSize;
+        h=i;
+      }
+    }
+  }
+
+  ClosestHist closest(List<Hist> examples, Map<String, Object> view){
+    ClosestHist ret = new ClosestHist();
+    for( Hist h : examples ){
+      Map<String,Object> com = Utils.intersection( h.getViewAll(), view );
+      if( !com.isEmpty() ){
+        ret.update(h, com.size());
+      }
+    }
+    return ret;
   }
 
   /**

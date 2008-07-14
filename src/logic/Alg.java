@@ -176,7 +176,29 @@ public class Alg implements AlgIntf, Serializable {
         }
         for( String c : allCommands() ){
           expandPrediction(pti, c, notesToExplore);
+
+          Map<String,Object> viewCmd = new HashMap<String,Object>(view);
+          viewCmd.put(Hist.CMD_KEY, c);
+          for( Cause2 cc : causes2.list ){
+            if( cc.isPositiveResult() ){
+              Hist h = cc.unexplainedExamplesIntersect(viewCmd);
+              if( h!=null ){
+                String cmd = h.getCommand();
+                PredictionTree2 child = pti.onCommand.get(cmd);
+                if( child==null ){
+                  Hist hn = new Hist(pti.histOld, pti.viewNext, cmd);
+                  child = pti.addChild(hn, cmd, null);
+                }
+                child.smacksEvent = h;
+                if( child.viewNext==null ){
+                  child.viewNext=new HashMap<String,Object>();
+                }
+                child.viewNext.put(cc.key, cc.val);
+              }
+            }
+          }
         }
+
         for( String c : allCommands() ){
           Hist h = new Hist(pti.histOld, pti.viewNext, c);
           if( causes.predictsNoop(h) ){
@@ -188,22 +210,6 @@ public class Alg implements AlgIntf, Serializable {
           }
         }
 
-        for( Cause2 cc : causes2.list ){
-          if( cc.isPositiveResult() ){
-            Hist h = cc.unexplainedExamplesIntersect(view);
-            String cmd = h.prev.getCommand();
-            PredictionTree2 child = pti.onCommand.get(cmd);
-            if( child==null ){
-              Hist hn = new Hist(pti.histOld, pti.viewNext, cmd);
-              child = pti.addChild(hn, cmd, null);
-            }
-            child.smacksEvent = h;
-            if( child.viewNext==null ){
-              child.viewNext=new HashMap<String,Object>();
-            }
-            child.viewNext.put(cc.key, cc.val);
-          }
-        }
 
         
       }
@@ -315,6 +321,12 @@ public class Alg implements AlgIntf, Serializable {
     CmdSet cc=null;
 
     PredictionTree2 pt2 = buildPredictionTree(history.last, view);
+    PredictionTree2.PositiveResultOrSmack smackRes2 = pt2.findPositiveResultOrSmacks();
+    if( smackRes2!=null && smackRes2.cmd!=null ){
+      CmdSet cc2 = new CmdSet(smackRes2.cmd);
+      cc2.setFoundFrom("using pred tree smacks "+smackRes2.description);
+      log("cause2 cmd ===>>> "+cc2);
+    }
 
     PredictionTree pt = buildPredictionTreeOld(history.last, view);
     PredictionTree.PositiveResultOrSmack smackRes = pt.findPositiveResultOrSmacks();
