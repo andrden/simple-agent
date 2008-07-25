@@ -1,5 +1,7 @@
 package intf;
 
+import mem.Hist;
+
 import java.util.Set;
 
 /**
@@ -16,7 +18,7 @@ public interface AlgIntf {
    * @param result
    */
   void cmdCompleted(int result);
-
+  //Hist prediction(String command)
 
   Set<String> cmdGroups();
   boolean hasPlans();

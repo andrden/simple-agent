@@ -2,17 +2,14 @@ package mem;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.io.Serializable;
 
 /**
  */
-public class Hist implements Serializable {
+public class Hist extends OneView {
   public static final String CMD_KEY = "!";
   public static final String RES_KEY = "$";
   public static final String NOOP_KEY = "noop";
 
-  private Map<String,Object> view = new HashMap<String,Object>();
 
   public Hist next;
   public Hist prev;
@@ -30,9 +27,6 @@ public class Hist implements Serializable {
     return i.intValue();
   }
 
-  Object get(String key){
-    return view.get(key);
-  }
 
   public String toString() {
     return "#"+order+" "+view;
@@ -65,10 +59,6 @@ public class Hist implements Serializable {
     view.put(RES_KEY, new Integer(result));
   }
 
-  public Map<String, Object> getViewAll(){
-    Map<String, Object> ret = new HashMap<String, Object>(view);
-    return ret;
-  }
 
   public Map<String, Object> getViewAllWithoutCmd(){
     Map<String, Object> ret = new HashMap<String, Object>(view);
