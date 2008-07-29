@@ -10,5 +10,5 @@ import mem.OneView;
  */
 public interface PredictorIntf {
   void add(OneView v);
-  OneView predict();
+  OneView predictNext(OneView v);
 }

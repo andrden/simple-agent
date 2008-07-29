@@ -1,6 +1,5 @@
 package predict;
 
-import org.junit.Test;
 import junit.framework.TestCase;
 import mem.OneView;
 
@@ -13,14 +12,14 @@ import mem.OneView;
 public class TestPredictor extends TestCase {
 
   public void test1() {
-    Predictor p = new Predictor();
+    LinearPredictor p = new LinearPredictor();
     p.add(new OneView().pt("a","1"));
     p.add(new OneView().pt("a","1"));
     assertEquals("1",p.predict().get("a"));
   }
 
   public void test2() {
-    Predictor p = new Predictor();
+    LinearPredictor p = new LinearPredictor();
     p.add(new OneView().pt("a","1"));
     p.add(new OneView().pt("a","0"));
     assertEquals(null,p.predict().get("a"));
@@ -47,8 +46,27 @@ public class TestPredictor extends TestCase {
     plainSeqProc(task);
   }
 
+  public void test6() {
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p,"A0");
+    addMulti(p,"B2");
+    addMulti(p,"A3");
+    addMulti(p,"B2");
+    addMulti(p,"C4");
+    addMulti(p,"A1");
+    assertEquals("2", p.predict().get("b"));
+  }
+
+  void addMulti(LinearPredictor p, String view){
+    OneView v = new OneView();
+    for( int i=0; i<view.length(); i++ ){
+      v.pt( ""+ (char)('a'+i), new Character(view.charAt(i)) );
+    }
+    p.add(v);
+  }
+
   private void plainSeqProc(String task) {
-    Predictor p = new Predictor();
+    LinearPredictor p = new LinearPredictor();
     for( int i=0; i<task.length(); i++ ){
       char c = task.charAt(i);
       if( c==' ' ){

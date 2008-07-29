@@ -5,14 +5,14 @@ import java.util.HashMap;
 
 /**
  */
-public class Hist extends OneView {
+public class Hist extends OneView<Hist> {
   public static final String CMD_KEY = "!";
   public static final String RES_KEY = "$";
   public static final String NOOP_KEY = "noop";
 
 
-  public Hist next;
-  public Hist prev;
+  //public Hist next;
+  //public Hist prev;
   long order;
 
   public Hist(){
