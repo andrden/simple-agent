@@ -5,8 +5,6 @@ import mem.OneView;
 import java.util.List;
 import java.util.Arrays;
 
-import predict.singletarget.Pred;
-
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -17,8 +15,9 @@ public class Predictor implements PredictorIntf {
   List<PredictorIntf> algs;
 
   public Predictor() {
-    algs = (List)Arrays.asList(
-      new Pred()
+    algs = Arrays.asList(
+      new predict.singletarget.Pred(),
+      new predict.bysinglesensor.Pred()
     );
   }
 

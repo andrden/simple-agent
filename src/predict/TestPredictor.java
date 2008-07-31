@@ -60,7 +60,7 @@ public class TestPredictor extends TestCase {
   void addMulti(LinearPredictor p, String view){
     OneView v = new OneView();
     for( int i=0; i<view.length(); i++ ){
-      v.pt( ""+ (char)('a'+i), new Character(view.charAt(i)) );
+      v.pt( ""+ (char)('a'+i), ""+new Character(view.charAt(i)) );
     }
     p.add(v);
   }
