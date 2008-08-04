@@ -32,13 +32,30 @@ public class TargetHist {
   }
 
   boolean ruleHolds(OneView v){
-    if( rule==null ){
-      return false;
+    if( rule!=null ){
+      Map<ViewDepthElem, Object> cmp = deepState(v);
+      Map<ViewDepthElem,Object> ruleCopy = new HashMap<ViewDepthElem,Object>(rule);
+      retainEquals(ruleCopy, cmp);
+      if( ruleCopy.size()==rule.size() ){
+        return true;
+      }
+    }else{
+      // try complete equality:
+      Map<String, Object> m = v.getViewAll();
+      for( OneView vi : examples ){
+        boolean same = true;
+        for( String k : m.keySet() ){
+          if( !m.get(k).equals(vi.get(k)) ){
+            same=false;
+          }
+        }
+        if( same ){
+          return true;
+        }
+      }
     }
-    Map<ViewDepthElem, Object> cmp = deepState(v);
-    Map<ViewDepthElem,Object> ruleCopy = new HashMap<ViewDepthElem,Object>(rule);
-    retainEquals(ruleCopy, cmp);
-    return ruleCopy.size()==rule.size();
+
+    return false;
   }
 
   void retainEquals(Map<ViewDepthElem,Object> where, Map<ViewDepthElem,Object> cmp){

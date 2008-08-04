@@ -15,29 +15,29 @@ import java.util.ArrayList;
  * Time: 11:54:45
  */
 public class Pred implements PredictorIntf {
-  Map<Target,TargetHist> singles = new HashMap<Target,TargetHist>();
+  Map<String,SensorHist> singles = new HashMap<String,SensorHist>();
 
   public void add(OneView v) {
     if( v.prev!=null ){
       Map<String, Object> m = v.getViewAll();
       for( String s : m.keySet() ){
-        Target t = new Target(s, m.get(s));
-        TargetHist th = singles.get(t);
+        SensorHist th = singles.get(s);
         if( th==null ){
-          th = new TargetHist();
-          singles.put(t, th);
+          th = new SensorHist();
+          singles.put(s, th);
         }
-        th.addExample(v.prev);
+        th.add(m.get(s), v.prev);
       }
     }
   }
 
   public OneView predictNext(OneView v) {
     OneView ret = new OneView();
-    for( Target t : singles.keySet() ){
-      TargetHist th = singles.get(t);
-      if( th.ruleHolds(v) ){
-        ret.pt(t.key, t.val);
+    for( String t : singles.keySet() ){
+      SensorHist th = singles.get(t);
+      Object val = th.predict(v);
+      if( val!=null ){
+        ret.pt(t, val);
       }
     }
     return ret;

@@ -1,4 +1,4 @@
-package predict.bysinglesensor;
+package predict.singlesensor;
 
 import predict.PredictorIntf;
 import predict.singletarget.Target;
