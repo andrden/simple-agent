@@ -26,7 +26,7 @@ public class Pred implements PredictorIntf {
           th = new SensorHist();
           singles.put(s, th);
         }
-        th.add(m.get(s), v.prev);
+        th.add(m.get(s), v);
       }
     }
   }

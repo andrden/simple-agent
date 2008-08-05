@@ -16,7 +16,7 @@ public class SensorHist {
     void add(Object val, OneView v){
         TargetHist th = vals.get(val);
         if( th==null ){
-            th = new TargetHist();
+            th = new TargetHist(this);
             vals.put(val, th);
         }
         th.addExample(v.prev);

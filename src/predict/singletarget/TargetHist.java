@@ -12,12 +12,21 @@ import java.util.*;
  * Time: 12:09:00
  */
 public class TargetHist {
-  final int DEEP_STATE_DEPTH=4;
+  static final int DEEP_STATE_DEPTH=4;
 
+  final SensorHist sensor;
   List<OneView> examples = new ArrayList<OneView>();
   Map<ViewDepthElem,Object> rule=null;
 
-  void addExample(OneView v){
+
+    public TargetHist(SensorHist sensor) {
+        this.sensor = sensor;
+    }
+
+    void addExample(OneView v){
+    if( v==null ){
+        return;
+    }
     if( examples.size()>0 ){
       Map<ViewDepthElem,Object> m = deepState(v);
       for( OneView vi : examples ){
@@ -41,6 +50,25 @@ public class TargetHist {
       }
     }else{
       // try complete equality:
+      if( fullExampleMatch(v) ){
+          // check same condition for other values of the same sensor
+          boolean noOther=true;
+          for( TargetHist hi : sensor.vals.values() ){
+              if( hi!=this && hi.fullExampleMatch(v) ){
+                  noOther=false;
+                  break;
+              }
+          }
+          if( noOther ){
+            return true;
+          }
+      }
+    }
+
+    return false;
+  }
+
+  boolean fullExampleMatch(OneView v){
       Map<String, Object> m = v.getViewAll();
       for( OneView vi : examples ){
         boolean same = true;
@@ -53,9 +81,7 @@ public class TargetHist {
           return true;
         }
       }
-    }
-
-    return false;
+      return false;
   }
 
   void retainEquals(Map<ViewDepthElem,Object> where, Map<ViewDepthElem,Object> cmp){
