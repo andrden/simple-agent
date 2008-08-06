@@ -9,6 +9,8 @@ import utils.Utils;
 import java.io.Serializable;
 import java.util.*;
 
+import predict.Predictor;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -19,6 +21,7 @@ import java.util.*;
 public class Alg implements AlgIntf, Serializable {
   World w;
   History history = new History();
+  Predictor predictor = new Predictor();
   CmdSet curCmd = CmdSet.EMPTY;
 
   Map<String, List<String>> cmdGroups = new HashMap<String, List<String>>();
@@ -81,9 +84,12 @@ public class Alg implements AlgIntf, Serializable {
     String cmd = curCmd.goNext(cmdGroups);
     if (history.last == null) {
       history.setLastResult(0, view);
+      predictor.add(history.next);
     }
     history.nextCmd(cmd);
+    predictor.appendValsToLastView(Collections.singletonMap(Hist.CMD_KEY, (Object)cmd));
     log("====" + cmd + " foundFrom=" + curCmd.getFoundFrom());
+    log("====PRED "+predictor.predictNext(history.last));
 
     return cmd;
   }
@@ -95,6 +101,7 @@ public class Alg implements AlgIntf, Serializable {
       interestingEvents.add(history.getNextHist());
     }
     new CmdCompletionAnalyzer(this).resultAnalyse(result, view);
+    predictor.add(history.next);
   }
 
   PredictionTree buildPredictionTreeOld(Hist last, Map<String, Object> view) {

@@ -23,9 +23,9 @@ public class Pred implements PredictorIntf {
   }
 
   public void add(OneView v) {
+    lastOneView=v;
     if (v.prev != null) {
       Map<String, Object> m = v.getViewAll();
-      lastOneView=v;
       add(m);
     }
   }
