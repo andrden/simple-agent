@@ -1,7 +1,10 @@
 package utils;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Used for counting most frequent command sequences
@@ -10,13 +13,13 @@ import java.io.Serializable;
  * commands before, more distant from result event.
  */
 public class CountingTree<T> implements Serializable {
-  static class Node<T> implements Serializable{
+  static class Node<T> implements Serializable {
     long count;
-    Map<T,Node> children = new HashMap<T,Node>();
+    Map<T, Node> children = new HashMap<T, Node>();
 
-    Node<T> add(T el){
+    Node<T> add(T el) {
       Node n = children.get(el);
-      if( n==null ){
+      if (n == null) {
         n = new Node();
         children.put(el, n);
       }
@@ -26,24 +29,24 @@ public class CountingTree<T> implements Serializable {
 
 
     public String toString() {
-      return "c="+count+" ch="+children.size();
+      return "c=" + count + " ch=" + children.size();
     }
   }
 
   Node<T> root = new Node<T>();
 
-  public void add(List<T> chain){
+  public void add(List<T> chain) {
     Node<T> addTo = root;
-    for( T el : chain ){
+    for (T el : chain) {
       addTo = addTo.add(el);
     }
   }
 
-  public static void main(String[] args){
+  public static void main(String[] args) {
     CountingTree<String> t = new CountingTree<String>();
-    t.add(Arrays.asList("a","b","c"));
-    t.add(Arrays.asList("a","m","n"));
-    t.add(Arrays.asList("a","b","d"));
+    t.add(Arrays.asList("a", "b", "c"));
+    t.add(Arrays.asList("a", "m", "n"));
+    t.add(Arrays.asList("a", "b", "d"));
     t.toString();
   }
 }

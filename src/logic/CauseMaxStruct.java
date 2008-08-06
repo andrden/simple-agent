@@ -2,8 +2,8 @@ package logic;
 
 import mem.Cause;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,10 +14,10 @@ import java.util.ArrayList;
 public class CauseMaxStruct {
   List<Cause> active = new ArrayList<Cause>();
 
-  int promisedMax(){
-    int max=Integer.MIN_VALUE;
-    for( Cause c : active ){
-      if( c.hasResult() ){
+  int promisedMax() {
+    int max = Integer.MIN_VALUE;
+    for (Cause c : active) {
+      if (c.hasResult()) {
         max = Math.max(max, c.getResult());
       }
     }
@@ -29,21 +29,21 @@ public class CauseMaxStruct {
     return active.toString();
   }
 
-  boolean noop(){
-    if( active.isEmpty() ){
+  boolean noop() {
+    if (active.isEmpty()) {
       return false;
     }
-    for( Cause c : active ){
-      if( !c.noop() ){
+    for (Cause c : active) {
+      if (!c.noop()) {
         return false;
       }
     }
     return true;
   }
 
-  boolean hasResult(){
-    for( Cause c : active ){
-      if( c.hasResult() ){
+  boolean hasResult() {
+    for (Cause c : active) {
+      if (c.hasResult()) {
         return true;
       }
     }

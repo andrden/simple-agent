@@ -1,7 +1,5 @@
 package mem;
 
-import java.util.*;
-
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko

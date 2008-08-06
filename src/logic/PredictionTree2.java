@@ -1,13 +1,14 @@
 package logic;
 
-import mem.*;
+import mem.Cause2;
+import mem.Causes2;
+import mem.Hist;
+import utils.Utils;
 
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-
-import utils.Utils;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,49 +19,49 @@ import utils.Utils;
 public class PredictionTree2 {
   Hist histOld;
   Causes2.SmacksOfResult smacks;
-  Map<String,Object> viewNext;
+  Map<String, Object> viewNext;
   Hist smacksEvent;
   Map<String, PredictionTree2> onCommand = new HashMap<String, PredictionTree2>();
   List<Cause2> predictionBy;
-  boolean noop=false;
+  boolean noop = false;
 
   public PredictionTree2(Hist h, Map<String, Object> viewNext) {
     this.viewNext = viewNext;
-    this.histOld =h;
+    this.histOld = h;
   }
 
-  public PredictionTree2 addChild(Hist h, String command, Causes2.PredictionBy viewNextBy){
+  public PredictionTree2 addChild(Hist h, String command, Causes2.PredictionBy viewNextBy) {
     Map<String, Object> viewNext = null;
-    if( viewNextBy!=null ){
+    if (viewNextBy != null) {
       viewNext = viewNextBy.view;
     }
     PredictionTree2 predictionTree = new PredictionTree2(h, viewNext);
-    if( viewNextBy!=null ){
-      predictionTree.predictionBy =viewNextBy.by;
+    if (viewNextBy != null) {
+      predictionTree.predictionBy = viewNextBy.by;
     }
     onCommand.put(command, predictionTree);
     return predictionTree;
   }
 
-  public Hist histNew(){
+  public Hist histNew() {
     return new Hist(histOld, viewNext, null);
   }
 
-  public Map<String, Object> getResultOrSmacksKeyView(){
+  public Map<String, Object> getResultOrSmacksKeyView() {
     Integer res = Hist.getResult(viewNext);
-    if( res!=null && res>0 ){
+    if (res != null && res > 0) {
       throw new UnsupportedOperationException(); // handled by a separate IF in Alg
     }
-    if( smacks!=null ){
+    if (smacks != null) {
       return smacks.ds.getElemsAtDepth(0);
-    }else{
-      for( PredictionTree2 nextStep : onCommand.values() ){
+    } else {
+      for (PredictionTree2 nextStep : onCommand.values()) {
         // run over first level branches
-        if( nextStep.findPositiveResultOrSmacks()!=null ){
+        if (nextStep.findPositiveResultOrSmacks() != null) {
           // intersting branch...
           Map<String, Object> smack0 = new HashMap<String, Object>();
-          if( nextStep.predictionBy!=null ){
-            for( Cause2 c : nextStep.predictionBy ){
+          if (nextStep.predictionBy != null) {
+            for (Cause2 c : nextStep.predictionBy) {
               smack0.putAll(c.recentCoditionBase());
             }
           }
@@ -71,11 +72,11 @@ public class PredictionTree2 {
     throw new IllegalStateException();
   }
 
-  static class PositiveResultOrSmack{
+  static class PositiveResultOrSmack {
     double probab;
     String cmd;
     String description;
-    int depth=0;
+    int depth = 0;
 
     public PositiveResultOrSmack(double probab, String cmd, String description) {
       this.cmd = cmd;
@@ -85,22 +86,23 @@ public class PredictionTree2 {
 
   /**
    * returns smacks description
+   *
    * @return
    */
-  public PredictionTree2.PositiveResultOrSmack findPositiveResultOrSmacks(){
-    if( noop ){
+  public PredictionTree2.PositiveResultOrSmack findPositiveResultOrSmacks() {
+    if (noop) {
       return null;
     }
-    Integer res = viewNext==null ? null : Hist.getResult(viewNext);
-    if( res!=null && res>0 ){
-      return new PredictionTree2.PositiveResultOrSmack(1, null, "res="+res);
+    Integer res = viewNext == null ? null : Hist.getResult(viewNext);
+    if (res != null && res > 0) {
+      return new PredictionTree2.PositiveResultOrSmack(1, null, "res=" + res);
     }
 
     Map<String, PredictionTree2.PositiveResultOrSmack> onCmds = new HashMap<String, PredictionTree2.PositiveResultOrSmack>();
-    for( String nextStepCmd : onCommand.keySet() ){
+    for (String nextStepCmd : onCommand.keySet()) {
       PredictionTree2 nextStep = onCommand.get(nextStepCmd);
       PredictionTree2.PositiveResultOrSmack nextSmack = nextStep.findPositiveResultOrSmacks();
-      if(nextSmack!=null){
+      if (nextSmack != null) {
         nextSmack.description = nextStepCmd + " -> " + nextSmack.description;
         nextSmack.cmd = nextStepCmd;
         nextSmack.depth++;
@@ -108,15 +110,15 @@ public class PredictionTree2 {
       }
     }
 
-    PredictionTree2.PositiveResultOrSmack rnow=null;
-    if( smacks!=null && smacks.cause.isPositiveResult() ){
-      rnow = new PredictionTree2.PositiveResultOrSmack(0.5, null, ""+smacks.cause);
+    PredictionTree2.PositiveResultOrSmack rnow = null;
+    if (smacks != null && smacks.cause.isPositiveResult()) {
+      rnow = new PredictionTree2.PositiveResultOrSmack(0.5, null, "" + smacks.cause);
     }
-    if( rnow==null && smacksEvent!=null ){
-      rnow = new PredictionTree2.PositiveResultOrSmack(0.5, null, "event.prev="+smacksEvent.prev);
+    if (rnow == null && smacksEvent != null) {
+      rnow = new PredictionTree2.PositiveResultOrSmack(0.5, null, "event.prev=" + smacksEvent.prev);
     }
 
-    if( onCmds.size()!=0 ){
+    if (onCmds.size() != 0) {
       PredictionTree2.PositiveResultOrSmack r = findShortest(onCmds);
       return moreDefinite(rnow, r);
     }
@@ -124,28 +126,28 @@ public class PredictionTree2 {
     return rnow;
   }
 
-  PredictionTree2.PositiveResultOrSmack moreDefinite(PredictionTree2.PositiveResultOrSmack a, PredictionTree2.PositiveResultOrSmack b){
-    if( a==null ){
+  PredictionTree2.PositiveResultOrSmack moreDefinite(PredictionTree2.PositiveResultOrSmack a, PredictionTree2.PositiveResultOrSmack b) {
+    if (a == null) {
       return b;
     }
-    if( b==null ){
+    if (b == null) {
       return a;
     }
-    if( a.probab>=b.probab ){
+    if (a.probab >= b.probab) {
       return a;
     }
     return b;
   }
 
-  PredictionTree2.PositiveResultOrSmack findShortest(Map<String, PredictionTree2.PositiveResultOrSmack> onCmds){
+  PredictionTree2.PositiveResultOrSmack findShortest(Map<String, PredictionTree2.PositiveResultOrSmack> onCmds) {
     int minDepth = Integer.MAX_VALUE;
     List<PredictionTree2.PositiveResultOrSmack> options = new ArrayList<PositiveResultOrSmack>();
-    for( PredictionTree2.PositiveResultOrSmack p : onCmds.values() ){
-      if( p.depth<minDepth ){
-        minDepth=p.depth;
+    for (PredictionTree2.PositiveResultOrSmack p : onCmds.values()) {
+      if (p.depth < minDepth) {
+        minDepth = p.depth;
         options = new ArrayList<PredictionTree2.PositiveResultOrSmack>();
       }
-      if( p.depth==minDepth ){
+      if (p.depth == minDepth) {
         options.add(p);
       }
     }
@@ -168,17 +170,18 @@ public class PredictionTree2 {
   }
 
   public String toString() {
-    return ""+viewNext;
+    return "" + viewNext;
   }
 
-  void print(){
+  void print() {
     print(0);
   }
-  void print(int level){
+
+  void print(int level) {
     System.out.println(toString());
-    for( String c : onCommand.keySet() ){
-      System.out.print(Utils.spaces(level+2)+c+" -> ");
-      onCommand.get(c).print(level+2);
+    for (String c : onCommand.keySet()) {
+      System.out.print(Utils.spaces(level + 2) + c + " -> ");
+      onCommand.get(c).print(level + 2);
     }
   }
 }

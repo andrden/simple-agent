@@ -3,22 +3,24 @@ package worlds;
 import worlds.intf.WorldGridView;
 
 import java.awt.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Rules to learn from this world:
- *
+ * <p/>
  * (b - black, w - white, y - yellow - food
  * Main rules:
  * 1) b F -> noop
  * 2) y F  -> +
  * 3) N -> noop
- *
+ * <p/>
  * Optional rules:
  * 4) L then R -> noop
  */
 public class Feed0 implements WorldGridView {
-  int availableResults=0;
+  int availableResults = 0;
 
   String[] FIELD_INIT = {
           "bbbbbbb bbb",
@@ -26,42 +28,43 @@ public class Feed0 implements WorldGridView {
           "by by bbb b",
   };
 
-  enum Dir{
-    left(-1,0,"<"),
-    up(0,-1,"^"),
-    right(1,0,">"),
-    down(0,1,"V");
+  enum Dir {
+    left(-1, 0, "<"),
+    up(0, -1, "^"),
+    right(1, 0, ">"),
+    down(0, 1, "V");
 
     int dx;
     int dy;
     String ch;
-    Dir(int dx, int dy, String ch){
-      this.dx=dx;
-      this.dy=dy;
-      this.ch=ch;
+
+    Dir(int dx, int dy, String ch) {
+      this.dx = dx;
+      this.dy = dy;
+      this.ch = ch;
     }
   }
 
-  int width=FIELD_INIT[0].length();
-  int height=FIELD_INIT.length;
+  int width = FIELD_INIT[0].length();
+  int height = FIELD_INIT.length;
   Color[][] cdata = new Color[width][height];
-  int x0 =2;
-  int y0 =2;
-  int dirIdx=0;
-  int result=0;
-  String prevCommand=null;
+  int x0 = 2;
+  int y0 = 2;
+  int dirIdx = 0;
+  int result = 0;
+  String prevCommand = null;
 
-  Feed0.Dir getDir(){
+  Feed0.Dir getDir() {
     return Feed0.Dir.values()[dirIdx];
   }
 
-  Point getFwd(){
-    return new Point(x0+getDir().dx, y0+getDir().dy);
+  Point getFwd() {
+    return new Point(x0 + getDir().dx, y0 + getDir().dy);
   }
 
-  public Feed0(){
-    for( int i=0; i<width; i++ ){
-      for( int j=0; j<height; j++ ){
+  public Feed0() {
+    for (int i = 0; i < width; i++) {
+      for (int j = 0; j < height; j++) {
         Color c;
 //        if( i==0 || i==width-1 || j==0 || j==height-1 ){
 //          c=Color.BLACK;
@@ -69,20 +72,20 @@ public class Feed0 implements WorldGridView {
 //          c=Color.WHITE;
 //        }
         char ch = FIELD_INIT[j].charAt(i);
-        switch(ch){
-          case 'b':
+        switch (ch) {
+          case'b':
             c = Color.BLACK;
             break;
-          case ' ':
+          case' ':
             c = Color.WHITE;
             break;
-          case 'y':
+          case'y':
             c = Color.YELLOW;
             break;
           default:
-            throw new RuntimeException("char="+ch);
+            throw new RuntimeException("char=" + ch);
         }
-        cdata[i][j]=c;
+        cdata[i][j] = c;
       }
     }
   }
@@ -95,19 +98,19 @@ public class Feed0 implements WorldGridView {
     return height;
   }
 
-  public Color getColorDisplay(int x, int y){
-    if( x==x0 && y==y0){
+  public Color getColorDisplay(int x, int y) {
+    if (x == x0 && y == y0) {
       return Color.BLUE;
     }
     return cdata[x][y];
   }
 
-  public Color getColor(Point p){
+  public Color getColor(Point p) {
     return getColorDisplay(p.x, p.y);
   }
 
   public String getChar(int x, int y) {
-    if( x==x0 && y==y0 ){
+    if (x == x0 && y == y0) {
       return getDir().ch;
     }
     return null;
@@ -115,7 +118,7 @@ public class Feed0 implements WorldGridView {
 
 
   public java.util.List<String> commands() {
-    return Arrays.asList("L","R","N","j");
+    return Arrays.asList("L", "R", "N", "j");
   }
 
 
@@ -129,11 +132,11 @@ public class Feed0 implements WorldGridView {
 
   public int command(String cmd) {
     availableResults++;
-    if( cmd.equals("j") ){
-          result=-1;
+    if (cmd.equals("j")) {
+      result = -1;
     }
-    if( cmd.equals("L") ){
-          result=-1;
+    if (cmd.equals("L")) {
+      result = -1;
     }
 
     prevCommand = cmd;
@@ -142,7 +145,7 @@ public class Feed0 implements WorldGridView {
 
 
   public Map<String, Object> view() {
-    return Collections.singletonMap("f", (Object)getColor(getFwd()));
+    return Collections.singletonMap("f", (Object) getColor(getFwd()));
   }
 
 

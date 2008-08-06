@@ -13,7 +13,7 @@ public class ViewDepth {
   private Set<ViewDepthElem> els = new HashSet<ViewDepthElem>();
   final int maxDepth;
 
-  public int size(){
+  public int size() {
     return els.size();
   }
 
@@ -22,10 +22,10 @@ public class ViewDepth {
     return els;
   }
 
-  List<Set<ViewDepthElem>> elsByDepth(){
+  List<Set<ViewDepthElem>> elsByDepth() {
     List<Set<ViewDepthElem>> l = new ArrayList<Set<ViewDepthElem>>();
-    for( ViewDepthElem sde : els ){
-      while( l.size()<=sde.depth ){
+    for (ViewDepthElem sde : els) {
+      while (l.size() <= sde.depth) {
         l.add(new HashSet<ViewDepthElem>());
       }
       l.get(sde.depth).add(sde);
@@ -33,37 +33,37 @@ public class ViewDepth {
     return l;
   }
 
-  int maxDepth(){
-    int max=0;
-    for( ViewDepthElem e : els ){
-      if( e.depth>max ){
-        max=e.depth;
+  int maxDepth() {
+    int max = 0;
+    for (ViewDepthElem e : els) {
+      if (e.depth > max) {
+        max = e.depth;
       }
     }
     return max;
   }
 
-  public boolean canUse(History h){
-    if( maxDepth>=h.list.size() ){
+  public boolean canUse(History h) {
+    if (maxDepth >= h.list.size()) {
       return false;
     }
     return true;
   }
 
-  boolean contains(ViewDepthElem e){
+  boolean contains(ViewDepthElem e) {
     return els.contains(e);
   }
 
-  boolean contains(ViewDepth e){
+  boolean contains(ViewDepth e) {
     return els.containsAll(e.els);
   }
 
-  ViewDepth(ViewDepthElem ... elems){
+  ViewDepth(ViewDepthElem... elems) {
     els.addAll(Arrays.asList(elems));
     maxDepth = maxDepth();
   }
 
-  Hist getDeepSide(Hist curr){
+  Hist getDeepSide(Hist curr) {
     return curr.getAtDepth(maxDepth);
   }
 

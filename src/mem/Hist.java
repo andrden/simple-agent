@@ -1,7 +1,7 @@
 package mem;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  */
@@ -15,13 +15,13 @@ public class Hist extends OneView<Hist> {
   //public Hist prev;
   long order;
 
-  public Hist(){
+  public Hist() {
 
   }
 
-  public int getResultFromNext(){
-    Integer i = (Integer)next.view.get(RES_KEY);
-    if( i==null ){
+  public int getResultFromNext() {
+    Integer i = (Integer) next.view.get(RES_KEY);
+    if (i == null) {
       return 0;
     }
     return i.intValue();
@@ -29,18 +29,18 @@ public class Hist extends OneView<Hist> {
 
 
   public String toString() {
-    return "#"+order+" "+view;
+    return "#" + order + " " + view;
   }
 
-  public static Integer getResult(Map<String,Object> fullView){
+  public static Integer getResult(Map<String, Object> fullView) {
     return (Integer) fullView.get(Hist.RES_KEY);
   }
 
-  public Hist(Hist prevHistForProxy, Map<String, Object> view, String command){
-    if( view!=null ){
+  public Hist(Hist prevHistForProxy, Map<String, Object> view, String command) {
+    if (view != null) {
       setView(view);
     }
-    if( command!=null ){
+    if (command != null) {
       setCommand(command);
     }
     prev = prevHistForProxy;
@@ -60,50 +60,50 @@ public class Hist extends OneView<Hist> {
   }
 
 
-  public Map<String, Object> getViewAllWithoutCmd(){
+  public Map<String, Object> getViewAllWithoutCmd() {
     Map<String, Object> ret = new HashMap<String, Object>(view);
     ret.remove(Hist.CMD_KEY);
     return ret;
   }
 
-  public Map<String, Object> getViewOnly(){
+  public Map<String, Object> getViewOnly() {
     Map<String, Object> ret = new HashMap<String, Object>(view);
     ret.remove(CMD_KEY);
     ret.remove(RES_KEY);
     return ret;
   }
 
-  public boolean viewMatch(Map<String,Object> v, boolean withCmd){
-    for( String k : v.keySet() ){
-      if( RES_KEY.equals(k) ){
+  public boolean viewMatch(Map<String, Object> v, boolean withCmd) {
+    for (String k : v.keySet()) {
+      if (RES_KEY.equals(k)) {
         continue;
       }
-      if( !withCmd && CMD_KEY.equals(k) ){
+      if (!withCmd && CMD_KEY.equals(k)) {
         continue;
       }
-      if(  !view.containsKey(k) ){
+      if (!view.containsKey(k)) {
         return false;
       }
-      if(  !view.get(k).equals(v.get(k)) ){
+      if (!view.get(k).equals(v.get(k))) {
         return false;
       }
     }
     return true;
   }
 
-  public boolean viewMatch(Hist h, boolean withCmd){
-    Map<String,Object> v = h.view;
+  public boolean viewMatch(Hist h, boolean withCmd) {
+    Map<String, Object> v = h.view;
     return viewMatch(v, withCmd);
   }
 
-  public String getCommand(){
-    return (String)view.get(CMD_KEY);
+  public String getCommand() {
+    return (String) view.get(CMD_KEY);
   }
 
-  Hist next(int level){
+  Hist next(int level) {
     Hist ret = this;
-    for( int i=0; i<level; i++ ){
-      if( ret.next==null ){
+    for (int i = 0; i < level; i++) {
+      if (ret.next == null) {
         return null;
       }
       ret = ret.next;
@@ -111,11 +111,11 @@ public class Hist extends OneView<Hist> {
     return ret;
   }
 
-  public Hist getAtDepth(int d){
+  public Hist getAtDepth(int d) {
     Hist h = this;
-    for( int i=0; i<d; i++ ){
+    for (int i = 0; i < d; i++) {
       h = h.prev;
-      if( h==null ){
+      if (h == null) {
         return h;
       }
     }

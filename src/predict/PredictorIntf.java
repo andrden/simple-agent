@@ -2,6 +2,8 @@ package predict;
 
 import mem.OneView;
 
+import java.util.Map;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -10,5 +12,8 @@ import mem.OneView;
  */
 public interface PredictorIntf {
   void add(OneView v);
+
+  void appendValsToLastView(Map<String, Object> sensors);
+
   OneView predictNext(OneView v);
 }

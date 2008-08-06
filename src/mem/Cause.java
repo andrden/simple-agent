@@ -1,7 +1,7 @@
 package mem;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,68 +11,68 @@ import java.io.Serializable;
  */
 public class Cause implements Serializable {
   DeepState ds;
-  Map<String,Object> prediction;
-  Map<String,Object> wrongPrediction = new HashMap<String,Object>();
+  Map<String, Object> prediction;
+  Map<String, Object> wrongPrediction = new HashMap<String, Object>();
 
   int countVerified;
   int countWrong;
   List<Cause> explainableBy = new ArrayList<Cause>();
-  List<Cause> generifiedFrom=null;
+  List<Cause> generifiedFrom = null;
 
-  public boolean valid(){
-    return countWrong==0;
+  public boolean valid() {
+    return countWrong == 0;
   }
 
-  public Map<String, Object> recentCoditionBase(){
+  public Map<String, Object> recentCoditionBase() {
     return ds.getElemsAtDepth(0);
   }
 
-  boolean explainableByOther(){
-    for( Cause c : explainableBy ){
-      if( c.valid() && c.explains(this) /* 'c' could have already lost some of its validity */ ){
+  boolean explainableByOther() {
+    for (Cause c : explainableBy) {
+      if (c.valid() && c.explains(this) /* 'c' could have already lost some of its validity */) {
         return true;
       }
     }
     return false;
   }
 
-  Map<String,Object> getPrediction(Hist h){
+  Map<String, Object> getPrediction(Hist h) {
     Object noopVal = prediction.get(Hist.NOOP_KEY);
-    if( noopVal!=null ){
-      int level = ((Number)noopVal).intValue();
-      Hist cmp = h.getAtDepth(level-1);
+    if (noopVal != null) {
+      int level = ((Number) noopVal).intValue();
+      Hist cmp = h.getAtDepth(level - 1);
       return cmp.getViewAllWithoutCmd();
     }
-    
+
     return prediction;
   }
 
-  public void event(Hist hnext){
-    Map<String,Object> nextViewAll = hnext.getViewAll();
-    for( Iterator<Map.Entry<String,Object>> i = prediction.entrySet().iterator(); i.hasNext(); ){
-      Map.Entry<String,Object> e = i.next();
+  public void event(Hist hnext) {
+    Map<String, Object> nextViewAll = hnext.getViewAll();
+    for (Iterator<Map.Entry<String, Object>> i = prediction.entrySet().iterator(); i.hasNext();) {
+      Map.Entry<String, Object> e = i.next();
       String key = e.getKey();
-      if( key.equals(Hist.NOOP_KEY) ){
-        int level = ((Number)e.getValue()).intValue();
+      if (key.equals(Hist.NOOP_KEY)) {
+        int level = ((Number) e.getValue()).intValue();
         Hist cmp = hnext.getAtDepth(level);
-        if( !cmp.viewMatch(nextViewAll, false) || !"0".equals(""+nextViewAll.get(Hist.RES_KEY)) ){
+        if (!cmp.viewMatch(nextViewAll, false) || !"0".equals("" + nextViewAll.get(Hist.RES_KEY))) {
           wrongPrediction.put(key, e.getValue());
           i.remove();
         }
-      }else{
-        if( !nextViewAll.get(key).equals(e.getValue()) ){
+      } else {
+        if (!nextViewAll.get(key).equals(e.getValue())) {
           wrongPrediction.put(key, e.getValue());
           i.remove();
         }
       }
     }
-    if( prediction.size()>0 ){
+    if (prediction.size() > 0) {
       countVerified++;
-    }else{
-      if(countWrong==0){
-        System.out.println("cause invalidated "+this);
+    } else {
+      if (countWrong == 0) {
+        System.out.println("cause invalidated " + this);
       }
-      countWrong=1;
+      countWrong = 1;
     }
 //    boolean verifiedOrWrong = equalElems nextViewAll.get(Hist.RES_KEY).equals(getResult());
 //    if( verifiedOrWrong ){
@@ -88,48 +88,48 @@ public class Cause implements Serializable {
 
   public String toString() {
     return ds.toString() + " -> " + prediction
-            + ( valid() ? "" : " ?" );
+            + (valid() ? "" : " ?");
   }
 
-  public Cause(DeepState ds, Map<String,Object> equalElems) {
+  public Cause(DeepState ds, Map<String, Object> equalElems) {
     this.ds = ds;
     this.prediction = equalElems;
   }
 
-  public Cause(DeepState ds, Map<String,Object> prediction, int countVerified) {
+  public Cause(DeepState ds, Map<String, Object> prediction, int countVerified) {
     this.ds = ds;
     this.countVerified = countVerified;
     this.prediction = prediction;
   }
 
-  public boolean explains(Cause other){
-    for( String k : other.prediction.keySet() ){
-      if( !prediction.containsKey(k) ){
+  public boolean explains(Cause other) {
+    for (String k : other.prediction.keySet()) {
+      if (!prediction.containsKey(k)) {
         return false;
       }
-      if( !prediction.get(k).equals(other.prediction.get(k)) ){
+      if (!prediction.get(k).equals(other.prediction.get(k))) {
         return false;
       }
     }
 
-    if( ds.isSubsetOf(other.ds) ){
+    if (ds.isSubsetOf(other.ds)) {
       return true;
     }
     return false;
   }
 
-  public boolean equals(Cause other){
-    if( !explains(other) ){
+  public boolean equals(Cause other) {
+    if (!explains(other)) {
       return false;
     }
     return ds.equalsDS(other.ds);
   }
 
-  public boolean canPredict(Hist h){
+  public boolean canPredict(Hist h) {
     return ds.match(h);
   }
 
-  public DeepState intersect(Hist h){
+  public DeepState intersect(Hist h) {
     return ds.intersect(h);
   }
 
@@ -137,11 +137,11 @@ public class Cause implements Serializable {
     return (Integer) prediction.get(Hist.RES_KEY);
   }
 
-  public boolean hasResult(){
+  public boolean hasResult() {
     return prediction.containsKey(Hist.RES_KEY);
   }
 
-  public boolean noop(){
+  public boolean noop() {
     return prediction.containsKey(Hist.NOOP_KEY);
   }
 

@@ -2,8 +2,11 @@ package mem;
 
 import com.pmstation.common.utils.CountingMap;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,30 +19,30 @@ public class History implements Serializable {
   List<Hist> list = new ArrayList<Hist>();
   public Hist last;
   public Hist next;
-  private long nextOrder=0;
+  private long nextOrder = 0;
 
-  public Hist getNextHist(){
+  public Hist getNextHist() {
     return next;
   }
 
-  public void nextCmd(String cmd){
+  public void nextCmd(String cmd) {
     last = next;
-    next=null;
+    next = null;
     last.setCommand(cmd);
     list.add(last);
   }
 
-  void add(Hist h){
+  void add(Hist h) {
     h.order = ++nextOrder;
     next = h;
-    if( last!=null ){
-      last.next=h;
-      h.prev=last;
+    if (last != null) {
+      last.next = h;
+      h.prev = last;
     }
     //last=h;
   }
 
-  public void setLastResult(int result, Map<String,Object> view){
+  public void setLastResult(int result, Map<String, Object> view) {
     Hist h = new Hist();
     h.setView(view);
     h.setResult(result);
@@ -50,29 +53,30 @@ public class History implements Serializable {
    * Call when debugging findNextCmd()
    * to see current deep state elems to know which
    * causes can be used
+   *
    * @param keyAtDepth e.g. "!@1"
    * @return
    */
-  public DeepState peek(String keyAtDepth){
+  public DeepState peek(String keyAtDepth) {
     String[] ar = keyAtDepth.split("@");
     String key = ar[0];
     int depth = Integer.parseInt(ar[1]);
-    return DeepState.lookBehind(new ViewDepth(new ViewDepthElem(depth,key)), next).get(0);
+    return DeepState.lookBehind(new ViewDepth(new ViewDepthElem(depth, key)), next).get(0);
   }
 
-  public List<Hist> find(DeepState d){
+  public List<Hist> find(DeepState d) {
     List<Hist> l = new ArrayList<Hist>();
-    for( Hist h : list ){
-      if( d.match(h) ){
+    for (Hist h : list) {
+      if (d.match(h)) {
         l.add(h);
       }
     }
     return l;
   }
 
-  public boolean exists(DeepState d){
-    for( Hist h : list ){
-      if( d.match(h) ){
+  public boolean exists(DeepState d) {
+    for (Hist h : list) {
+      if (d.match(h)) {
         return true;
       }
     }
@@ -96,18 +100,18 @@ public class History implements Serializable {
 //    return c;
 //  }
 
-  public CountingMap<List> groupCommands(int level){
+  public CountingMap<List> groupCommands(int level) {
     CountingMap<List> c = new CountingMap<List>();
-    for( Hist h : list ){
+    for (Hist h : list) {
       List l = new ArrayList();
-      for( int i=0; i<=level; i++){
+      for (int i = 0; i <= level; i++) {
         Hist hi = h.next(i);
-        if( hi==null ){
+        if (hi == null) {
           break;
         }
         l.add(hi.getCommand());
       }
-      if( l.size()!=level+1 ){
+      if (l.size() != level + 1) {
         continue;
       }
       c.increment(l);
@@ -115,18 +119,18 @@ public class History implements Serializable {
     return c;
   }
 
-  public List<Hist> findFaFb(){
+  public List<Hist> findFaFb() {
     Map<StateDepthElem, Object> data = new HashMap<StateDepthElem, Object>();
     data.put(new StateDepthElem("C0"), "Fb");
     data.put(new StateDepthElem("C1"), "Fa");
     return find(new DeepState(data));
   }
 
-  public void print(int depth){
+  public void print(int depth) {
     Hist h = last;
-    for( int i=0; i<depth && h!=null; i++ ){
+    for (int i = 0; i < depth && h != null; i++) {
       System.out.println(h);
-      h=h.prev;
+      h = h.prev;
     }
   }
 

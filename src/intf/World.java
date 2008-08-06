@@ -12,11 +12,13 @@ import java.util.Map;
  */
 public interface World {
   List<String> commands();
-  Map<String,Object> view();
+
+  Map<String, Object> view();
 
 
   /**
    * Returns result
+   *
    * @param cmd
    * @return
    */

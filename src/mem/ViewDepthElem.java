@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 /**
  * Created by IntelliJ IDEA.
-* User: adenysenko
-* Date: 31/1/2008
-* Time: 18:53:56
-* To change this template use File | Settings | File Templates.
-*/
+ * User: adenysenko
+ * Date: 31/1/2008
+ * Time: 18:53:56
+ * To change this template use File | Settings | File Templates.
+ */
 public class ViewDepthElem implements Serializable {
   String key;
   int depth;
@@ -19,15 +19,15 @@ public class ViewDepthElem implements Serializable {
     this.key = key;
   }
 
-  public String toString(){
-    return key+"@"+depth;
+  public String toString() {
+    return key + "@" + depth;
   }
 
-  public boolean isCommand(){
+  public boolean isCommand() {
     return Hist.CMD_KEY.equals(key);
   }
 
-  public boolean isView(){
+  public boolean isView() {
     return !isCommand();
   }
 

@@ -13,18 +13,18 @@ public class TestPredictor extends TestCase {
 
   public void test1() {
     LinearPredictor p = new LinearPredictor();
-    p.add(new OneView().pt("a","1"));
-    p.add(new OneView().pt("a","1"));
-    assertEquals("1",p.predict().get("a"));
+    p.add(new OneView().pt("a", "1"));
+    p.add(new OneView().pt("a", "1"));
+    assertEquals("1", p.predict().get("a"));
   }
 
   public void test2() {
     LinearPredictor p = new LinearPredictor();
-    p.add(new OneView().pt("a","1"));
-    p.add(new OneView().pt("a","0"));
-    assertEquals(null,p.predict().get("a"));
-    p.add(new OneView().pt("a","1"));
-    assertEquals("0",p.predict().get("a"));
+    p.add(new OneView().pt("a", "1"));
+    p.add(new OneView().pt("a", "0"));
+    assertEquals(null, p.predict().get("a"));
+    p.add(new OneView().pt("a", "1"));
+    assertEquals("0", p.predict().get("a"));
   }
 
   public void test3() {
@@ -48,34 +48,34 @@ public class TestPredictor extends TestCase {
 
   public void test6() {
     LinearPredictor p = new LinearPredictor();
-    addMulti(p,"A0");
-    addMulti(p,"B2");
-    addMulti(p,"A3");
-    addMulti(p,"B2");
-    addMulti(p,"C4");
-    addMulti(p,"A1");
+    addMulti(p, "A0");
+    addMulti(p, "B2");
+    addMulti(p, "A3");
+    addMulti(p, "B2");
+    addMulti(p, "C4");
+    addMulti(p, "A1");
     assertEquals("2", p.predict().get("b"));
   }
 
-  void addMulti(LinearPredictor p, String view){
+  void addMulti(LinearPredictor p, String view) {
     OneView v = new OneView();
-    for( int i=0; i<view.length(); i++ ){
-      v.pt( ""+ (char)('a'+i), ""+new Character(view.charAt(i)) );
+    for (int i = 0; i < view.length(); i++) {
+      v.pt("" + (char) ('a' + i), "" + new Character(view.charAt(i)));
     }
     p.add(v);
   }
 
   private void plainSeqProc(String task) {
     LinearPredictor p = new LinearPredictor();
-    for( int i=0; i<task.length(); i++ ){
+    for (int i = 0; i < task.length(); i++) {
       char c = task.charAt(i);
-      if( c==' ' ){
+      if (c == ' ') {
         continue;
       }
-      if( c=='>' ){
-        assertEquals(""+task.charAt(i+1), p.predict().get("a"));
-      }else{
-        p.add(new OneView().pt("a",""+c));
+      if (c == '>') {
+        assertEquals("" + task.charAt(i + 1), p.predict().get("a"));
+      } else {
+        p.add(new OneView().pt("a", "" + c));
       }
     }
   }

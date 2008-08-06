@@ -1,10 +1,9 @@
 package logic;
 
-import java.util.List;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.ArrayList;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,98 +12,98 @@ import java.io.Serializable;
  * Time: 17:51:49
  */
 public class CmdSet implements Serializable {
-  static final CmdSet EMPTY = new CmdSet((String)null);
+  static final CmdSet EMPTY = new CmdSet((String) null);
 
   CmdSet parent;
   boolean groupCmd;
   String command;
   List<CmdSet> parts;
-  int execPos=0;
-  int targetResult=0;
+  int execPos = 0;
+  int targetResult = 0;
   String foundFrom;
 
   public CmdSet(String command) {
     this.command = command;
   }
 
-  public static CmdSet createWithSrc(String cmd, String foundFrom){
+  public static CmdSet createWithSrc(String cmd, String foundFrom) {
     CmdSet c = new CmdSet(cmd);
     c.setFoundFrom(foundFrom);
     return c;
   }
 
-  public CmdSet(String ... cs) {
+  public CmdSet(String... cs) {
     makeParts(cs);
   }
 
   private void makeParts(String... cs) {
     parts = new ArrayList<CmdSet>();
-    for( String c : cs ){
+    for (String c : cs) {
       CmdSet cmdSet = new CmdSet(c);
-      cmdSet.parent=this;
+      cmdSet.parent = this;
       parts.add(cmdSet);
     }
   }
 
-  boolean inGroup(){
-    if( parent==null ){
+  boolean inGroup() {
+    if (parent == null) {
       return false;
     }
-    if( parent.groupCmd ){
+    if (parent.groupCmd) {
       return true;
     }
     return parent.inGroup();
   }
 
-  boolean finished(){
-    return findNext()==null;
+  boolean finished() {
+    return findNext() == null;
   }
 
-  String nextCmdForHistory(){
+  String nextCmdForHistory() {
     CmdSet n = findNext();
-    assert(n.parts==null);
-    if( n.inGroup() ){
+    assert (n.parts == null);
+    if (n.inGroup()) {
       return null;
     }
     return n.command;
   }
 
-  String goNext(Map<String,List<String>> cmdGroups){
+  String goNext(Map<String, List<String>> cmdGroups) {
     CmdSet n = findNext();
     n.expand(cmdGroups);
     n = n.findNext();
     n.shiftPos();
-    assert(n.parts==null);
+    assert (n.parts == null);
     return n.command;
   }
 
-  void shiftPos(){
+  void shiftPos() {
     execPos++;
-    if( execPos>=len() && parent!=null ){
+    if (execPos >= len() && parent != null) {
       parent.shiftPos();
     }
   }
 
-  void expand(Map<String,List<String>> cmdGroups){
-    if( command!=null && cmdGroups.containsKey(command) ){
-      groupCmd=true;
+  void expand(Map<String, List<String>> cmdGroups) {
+    if (command != null && cmdGroups.containsKey(command)) {
+      groupCmd = true;
       List<String> l = cmdGroups.get(command);
       makeParts(l.toArray(new String[l.size()]));
     }
   }
 
-  int len(){
-    return parts!=null ? parts.size() : (command==null ? 0 : 1);
+  int len() {
+    return parts != null ? parts.size() : (command == null ? 0 : 1);
   }
 
-  CmdSet findNext(){
-    if( parts==null ){
-      if( execPos==0 && command!=null ){
+  CmdSet findNext() {
+    if (parts == null) {
+      if (execPos == 0 && command != null) {
         return this;
       }
       return null;
     }
-    if( execPos>=parts.size() ){
+    if (execPos >= parts.size()) {
       return null;
     }
     return parts.get(execPos).findNext();
@@ -112,10 +111,10 @@ public class CmdSet implements Serializable {
 
 
   public String toString() {
-    if( command==null ){
-      return ""+parts;
+    if (command == null) {
+      return "" + parts;
     }
-    return ""+command;
+    return "" + command;
   }
 
 

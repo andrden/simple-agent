@@ -18,7 +18,7 @@ public class Target {
 
 
   public String toString() {
-    return key+"="+val;
+    return key + "=" + val;
   }
 
   public boolean equals(Object o) {

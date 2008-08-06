@@ -1,8 +1,8 @@
 package logic;
 
 import mem.Cause;
-import mem.Hist;
 import mem.DeepState;
+import mem.Hist;
 
 import java.util.List;
 

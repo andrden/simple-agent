@@ -2,8 +2,9 @@ package predict;
 
 import mem.OneView;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,20 +17,27 @@ public class Predictor implements PredictorIntf {
 
   public Predictor() {
     algs = Arrays.asList(
-      new predict.singletarget.Pred(),
-      new predict.singlesensor.Pred()
+            new predict.singletarget.Pred(),
+            new predict.singlesensor.Pred()
     );
   }
 
+
+  public void appendValsToLastView(Map<String, Object> sensors) {
+    for (PredictorIntf i : algs) {
+      i.appendValsToLastView(sensors);
+    }
+  }
+
   public void add(OneView v) {
-    for( PredictorIntf i : algs ){
+    for (PredictorIntf i : algs) {
       i.add(v);
     }
   }
 
   public OneView predictNext(OneView v) {
     OneView vnext = new OneView();
-    for( PredictorIntf i : algs ){
+    for (PredictorIntf i : algs) {
       OneView vi = i.predictNext(v);
       vnext.mergeByAddNew(vi);
     }

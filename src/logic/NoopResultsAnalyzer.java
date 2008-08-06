@@ -4,15 +4,13 @@ import mem.*;
 
 import java.util.*;
 
-import utils.Utils;
-
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
  * Date: 28/5/2008
  * Time: 19:43:44
  */
-public class NoopResultsAnalyzer extends ResultsAnalyzer{
+public class NoopResultsAnalyzer extends ResultsAnalyzer {
   int level;
   History history;
   Causes causes;
@@ -30,10 +28,10 @@ public class NoopResultsAnalyzer extends ResultsAnalyzer{
 //    boolean allCurrentlyPredicted=true;
 
     Set<Boolean> noopState = new HashSet<Boolean>();
-    for( Hist h : found ){
-      Map<String,Object> nextViewAll = h.next.getViewAll();
-      Hist cmp = h.getAtDepth(level-1);
-      if( cmp==null ){
+    for (Hist h : found) {
+      Map<String, Object> nextViewAll = h.next.getViewAll();
+      Hist cmp = h.getAtDepth(level - 1);
+      if (cmp == null) {
         continue;
       }
       boolean localNoop = cmp.viewMatch(nextViewAll, false);
@@ -53,12 +51,12 @@ public class NoopResultsAnalyzer extends ResultsAnalyzer{
 //      }
     }
 
-    boolean usefulCause = noopState.size()==1 && noopState.contains(Boolean.TRUE); // && !allCurrentlyPredicted;
+    boolean usefulCause = noopState.size() == 1 && noopState.contains(Boolean.TRUE); // && !allCurrentlyPredicted;
 //
 //
-    if( usefulCause ){
+    if (usefulCause) {
       // threre's some definite relation:
-      Map<String,Object> prediction = new HashMap<String,Object>();
+      Map<String, Object> prediction = new HashMap<String, Object>();
       prediction.put(Hist.NOOP_KEY, new Integer(level));
       Cause newc = new Cause(groupingCond, prediction, found.size());
       return newc;

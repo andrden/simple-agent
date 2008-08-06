@@ -1,11 +1,10 @@
 package logic;
 
+import com.pmstation.common.utils.CountingMap;
 import mem.*;
 
-import java.util.*;
 import java.io.Serializable;
-
-import com.pmstation.common.utils.CountingMap;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,29 +20,30 @@ public class Attempts implements Serializable {
 
   public Attempts(Alg alg) {
     this.alg = alg;
-    causes=alg.causes;
-    history=alg.history;
+    causes = alg.causes;
+    history = alg.history;
   }
-  void log(String s){
+
+  void log(String s) {
     alg.log(s);
   }
 
-  CmdSet findNotEverTried(ViewDepthIterator vdi, List<String> cs, Map<String, Object> view){
+  CmdSet findNotEverTried(ViewDepthIterator vdi, List<String> cs, Map<String, Object> view) {
     HistoryFinder hf = new HistoryFinder();
-    for(;;){
+    for (; ;) {
       ViewDepth vd = vdi.next();
-      if( vd==null ){
+      if (vd == null) {
         break;
       }
-      if( !vd.canUse(history) ){
+      if (!vd.canUse(history)) {
         return new CmdSet(cs.get(0));
         //continue;
       }
-      for( String c : cs ){
+      for (String c : cs) {
         DeepState ds = DeepState.lookBehind(vd, new Hist(history.last, view, c)).get(0);
         ds = ds.expandGroupCommands(alg.cmdGroups);
         //if( !history.exists(ds) ){
-        if( hf.findNext(history, ds, vd).isEmpty() ){
+        if (hf.findNext(history, ds, vd).isEmpty()) {
           String s = "random - not ever tried " + c + " in " + ds;
           //log(s);
           CmdSet cset = new CmdSet(c);
@@ -55,10 +55,10 @@ public class Attempts implements Serializable {
     return null;
   }
 
-  Set<ViewDepthElem> viewOnly(Set<ViewDepthElem> s){
+  Set<ViewDepthElem> viewOnly(Set<ViewDepthElem> s) {
     Set<ViewDepthElem> res = new HashSet<ViewDepthElem>();
-    for( ViewDepthElem e : s ){
-      if( e.isView() ){
+    for (ViewDepthElem e : s) {
+      if (e.isView()) {
         res.add(e);
       }
     }
@@ -66,7 +66,7 @@ public class Attempts implements Serializable {
   }
 
   CmdSet randomWithIntent(List<String> cs, Map<String, Object> view) {
-    if( cs.size()==1 ){
+    if (cs.size() == 1) {
       return CmdSet.createWithSrc(cs.get(0), "randomWithIntent");
     }
 
@@ -75,10 +75,10 @@ public class Attempts implements Serializable {
 
     Set<ViewDepthElem> usedCauseElemts = causes.usedCauseElems();
     usedCauseElemts = viewOnly(usedCauseElemts);
-    if( !usedCauseElemts.isEmpty() ){
+    if (!usedCauseElemts.isEmpty()) {
       // first try already usable elems - they are the first candidates to cover new situation
-      CmdSet cset1 = findNotEverTried( ViewDepthGenerator.createWithViewElelms(usedCauseElemts), cs, view);
-      if( cset1!=null ){
+      CmdSet cset1 = findNotEverTried(ViewDepthGenerator.createWithViewElelms(usedCauseElemts), cs, view);
+      if (cset1 != null) {
         return cset1;
       }
     }
@@ -87,14 +87,14 @@ public class Attempts implements Serializable {
     // includes trying all different commands
     ViewDepthIterator vdi = new ViewDepthGenerator(view.keySet());
     CmdSet cset1 = findNotEverTried(vdi, cs, view);
-    if( cset1!=null ){
+    if (cset1 != null) {
       return cset1;
     }
 
     CountingMap<List> histCmds2 = history.groupCommands(1);
-    for( String s : cs ){
-      for( String sPrev : cs ){
-        if( !histCmds2.containsKey(Arrays.asList(sPrev, s)) ){
+    for (String s : cs) {
+      for (String sPrev : cs) {
+        if (!histCmds2.containsKey(Arrays.asList(sPrev, s))) {
           String msg = "not ever tried cmd pair: " + sPrev + " " + s;
           //log(msg);
           CmdSet cset = new CmdSet(sPrev, s);
@@ -104,16 +104,15 @@ public class Attempts implements Serializable {
       }
     }
 
-
     // random to verify causes
-    if( Math.random()<0.7 ){ // always leave some attempts as truly random
-      for( Cause c : causes.validCauses() ){
+    if (Math.random() < 0.7) { // always leave some attempts as truly random
+      for (Cause c : causes.validCauses()) {
         //....
       }
     }
 
     String nextCmd;
-    nextCmd = cs.get((int)(Math.random()*cs.size()));
+    nextCmd = cs.get((int) (Math.random() * cs.size()));
     String msg = "plain random";
     log(msg);
     CmdSet cset = new CmdSet(nextCmd);

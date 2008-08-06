@@ -9,7 +9,8 @@ import intf.World;
  * Time: 13:04:16
  * To change this template use File | Settings | File Templates.
  */
-public interface WorldGridView extends World, GridView{
+public interface WorldGridView extends World, GridView {
   int availableResults();
+
   boolean commandWrong(String cmd);
 }

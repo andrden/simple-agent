@@ -1,13 +1,12 @@
 package logic;
 
 import mem.*;
-
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-
 import utils.Utils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,7 +14,7 @@ import utils.Utils;
  * Date: 28/5/2008
  * Time: 19:43:44
  */
-public class MainResultsAnalyzer extends ResultsAnalyzer{
+public class MainResultsAnalyzer extends ResultsAnalyzer {
   Set<String> importantEls;
   History history;
   Causes causes;
@@ -27,15 +26,15 @@ public class MainResultsAnalyzer extends ResultsAnalyzer{
   }
 
   public Cause test(List<Hist> found, DeepState groupingCond) {
-    Map<String,Object> equalElems=null;
-    int min=Integer.MAX_VALUE;
-    int max=Integer.MIN_VALUE;
-    boolean allCurrentlyPredicted=true;
-    for( Hist h : found ){
-      Map<String,Object> nextViewAll = h.next.getViewAll();
-      if( equalElems==null ){
-        equalElems = new HashMap<String,Object>(nextViewAll);
-      }else{
+    Map<String, Object> equalElems = null;
+    int min = Integer.MAX_VALUE;
+    int max = Integer.MIN_VALUE;
+    boolean allCurrentlyPredicted = true;
+    for (Hist h : found) {
+      Map<String, Object> nextViewAll = h.next.getViewAll();
+      if (equalElems == null) {
+        equalElems = new HashMap<String, Object>(nextViewAll);
+      } else {
         Utils.retainEqualsIn(nextViewAll, equalElems);
       }
       int res = h.getResultFromNext();
@@ -43,31 +42,31 @@ public class MainResultsAnalyzer extends ResultsAnalyzer{
       max = Math.max(max, res);
 
       Integer currentPrediction = causes.predictResultByCauses(h);
-      if( currentPrediction==null || currentPrediction.intValue()!= h.getResultFromNext() ){
-        allCurrentlyPredicted=false;
+      if (currentPrediction == null || currentPrediction.intValue() != h.getResultFromNext()) {
+        allCurrentlyPredicted = false;
       }
     }
 
     equalElems.remove(Hist.CMD_KEY);
-    boolean usefulCause = max==min && !allCurrentlyPredicted;
-    if( !usefulCause && equalElems.size()>0 ){
+    boolean usefulCause = max == min && !allCurrentlyPredicted;
+    if (!usefulCause && equalElems.size() > 0) {
       Hist hfuture = new Hist(found.get(0), equalElems, null);
       Integer ires = causes.predictResultByCauses(hfuture);
-      if( ires!=null && ires.intValue()!=0 ){
-        usefulCause=true;
+      if (ires != null && ires.intValue() != 0) {
+        usefulCause = true;
       }
-      if( !usefulCause ){
-        if( causes.smacksOfResult(hfuture)!=null ){
-          usefulCause=true;
+      if (!usefulCause) {
+        if (causes.smacksOfResult(hfuture) != null) {
+          usefulCause = true;
         }
       }
     }
-    if( importantEls!=null && !Utils.intersects(importantEls, equalElems.keySet()) ){
-      usefulCause=false;
+    if (importantEls != null && !Utils.intersects(importantEls, equalElems.keySet())) {
+      usefulCause = false;
     }
 
 
-    if( usefulCause ){
+    if (usefulCause) {
       // threre's some definite relation:
       Cause newc = new Cause(groupingCond, equalElems, found.size());
       return newc;

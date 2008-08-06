@@ -1,14 +1,13 @@
 package logic;
 
 import intf.World;
+import mem.Hist;
 
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
-import java.io.Serializable;
-
-import mem.Hist;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,11 +34,11 @@ public class CheckedWorld implements World, Serializable {
 
   public List<String> commands() {
     List<String> c = w.commands();
-    for( String s : c ){
-      if( sensors.contains(s) ){
-        throw new RuntimeException(s+" is a sensor");
+    for (String s : c) {
+      if (sensors.contains(s)) {
+        throw new RuntimeException(s + " is a sensor");
       }
-      if( c.contains("@") ){
+      if (c.contains("@")) {
         throw new RuntimeException();
       }
     }
@@ -48,12 +47,12 @@ public class CheckedWorld implements World, Serializable {
   }
 
   public Map<String, Object> view() {
-    Map<String, Object> v =  w.view();
-    for( String s : v.keySet() ){
-      if( commands.contains(s) ){
-        throw new RuntimeException(s+" is a command");
+    Map<String, Object> v = w.view();
+    for (String s : v.keySet()) {
+      if (commands.contains(s)) {
+        throw new RuntimeException(s + " is a command");
       }
-      if( s.contains("@") ){
+      if (s.contains("@")) {
         throw new RuntimeException();
       }
     }
