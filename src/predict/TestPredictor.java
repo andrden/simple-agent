@@ -75,6 +75,18 @@ public class TestPredictor extends TestCase {
     assertEquals("C", p.predict().get("a"));
   }
 
+  public void test8() {
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p, "An1");
+    addMulti(p, "Ak1");
+    addMulti(p, "Ap0");
+    addMulti(p, "Ap1");
+    addMulti(p, "Ak1");
+    addMulti(p, "Bk0");
+    addMulti(p, "Ak0");
+    assertEquals("0", p.predict().get("c")); // b=k => c=0
+  }
+
   void addMulti(LinearPredictor p, String view) {
     OneView v = new OneView();
     for (int i = 0; i < view.length(); i++) {
