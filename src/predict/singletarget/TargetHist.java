@@ -15,17 +15,20 @@ public class TargetHist {
   static final int DEEP_STATE_DEPTH = 4;
 
   final SensorHist sensor;
+  final Object sensorVal;
+
   List<OneView> examples = new ArrayList<OneView>();
   Map<ViewDepthElem, Object> rule = null;
 
 
-  public TargetHist(SensorHist sensor) {
+  public TargetHist(SensorHist sensor, Object sensorVal) {
     this.sensor = sensor;
+    this.sensorVal = sensorVal;
   }
 
-  int ruleMaxDepth(){
+  int ruleMaxDepth(Map<ViewDepthElem, Object> r){
     int m=0;
-    for( ViewDepthElem e : rule.keySet() ){
+    for( ViewDepthElem e : r.keySet() ){
       m = Math.max(m, e.getDepth());
     }
     return m;
@@ -36,29 +39,54 @@ public class TargetHist {
       return;
     }
     if (examples.size() > 0) {
-      for( int d = 0; d <= DEEP_STATE_DEPTH; d++ ){
-        Map<ViewDepthElem, Object> m = deepState(v, d);
-        for (OneView vi : examples) {
-          Map<ViewDepthElem, Object> cmp = deepState(vi, d);
-          retainEquals(m, cmp);
+      ruleFromExamples(v);
+    }
+    examples.add(v);
+
+    for( TargetHist other : sensor.vals.values() ){
+      if( other==this ){
+        continue;
+      }
+      if( other.rule!=null && other.ruleHolds(v) ){
+        other.rule=null; // rule was incorrect, alas
+        other.ruleFromExamples(other.examples.get(other.examples.size()-1));
+      }
+    }
+  }
+
+  boolean ruleVerify(Map<ViewDepthElem, Object> r){
+    for( TargetHist other : sensor.vals.values() ){
+      if( other==this ){
+        continue;
+      }
+      for( OneView ex : other.examples ){
+        if( ruleHolds(r, ex) ){
+          return false;
         }
-        if (!m.isEmpty()) {
+      }
+    }
+    return true;
+  }
+
+  private void ruleFromExamples(OneView v) {
+    for( int d = 0; d <= DEEP_STATE_DEPTH; d++ ){
+      Map<ViewDepthElem, Object> m = deepState(v, d);
+      for (OneView vi : examples) {
+        Map<ViewDepthElem, Object> cmp = deepState(vi, d);
+        retainEquals(m, cmp);
+      }
+      if (!m.isEmpty()) {
+        if( ruleVerify(m) ){  // only if not contradicts with other values
           rule = m;
           break;
         }
       }
     }
-    examples.add(v);
   }
 
   boolean ruleHolds(OneView v) {
     if (rule != null) {
-      Map<ViewDepthElem, Object> cmp = deepState(v, ruleMaxDepth());
-      Map<ViewDepthElem, Object> ruleCopy = new HashMap<ViewDepthElem, Object>(rule);
-      retainEquals(ruleCopy, cmp);
-      if (ruleCopy.size() == rule.size()) {
-        return true;
-      }
+      if (ruleHolds(rule, v)) return true;
     } else {
       // try complete equality:
       if (fullExampleMatch(v)) {
@@ -76,6 +104,16 @@ public class TargetHist {
       }
     }
 
+    return false;
+  }
+
+  private boolean ruleHolds(Map<ViewDepthElem, Object> r, OneView v) {
+    Map<ViewDepthElem, Object> cmp = deepState(v, ruleMaxDepth(r));
+    Map<ViewDepthElem, Object> ruleCopy = new HashMap<ViewDepthElem, Object>(r);
+    retainEquals(ruleCopy, cmp);
+    if (ruleCopy.size() == r.size()) {
+      return true;
+    }
     return false;
   }
 
