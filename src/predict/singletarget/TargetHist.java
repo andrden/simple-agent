@@ -23,18 +23,29 @@ public class TargetHist {
     this.sensor = sensor;
   }
 
+  int ruleMaxDepth(){
+    int m=0;
+    for( ViewDepthElem e : rule.keySet() ){
+      m = Math.max(m, e.getDepth());
+    }
+    return m;
+  }
+
   void addExample(OneView v) {
     if (v == null) {
       return;
     }
     if (examples.size() > 0) {
-      Map<ViewDepthElem, Object> m = deepState(v);
-      for (OneView vi : examples) {
-        Map<ViewDepthElem, Object> cmp = deepState(vi);
-        retainEquals(m, cmp);
-      }
-      if (!m.isEmpty()) {
-        rule = m;
+      for( int d = 0; d <= DEEP_STATE_DEPTH; d++ ){
+        Map<ViewDepthElem, Object> m = deepState(v, d);
+        for (OneView vi : examples) {
+          Map<ViewDepthElem, Object> cmp = deepState(vi, d);
+          retainEquals(m, cmp);
+        }
+        if (!m.isEmpty()) {
+          rule = m;
+          break;
+        }
       }
     }
     examples.add(v);
@@ -42,7 +53,7 @@ public class TargetHist {
 
   boolean ruleHolds(OneView v) {
     if (rule != null) {
-      Map<ViewDepthElem, Object> cmp = deepState(v);
+      Map<ViewDepthElem, Object> cmp = deepState(v, ruleMaxDepth());
       Map<ViewDepthElem, Object> ruleCopy = new HashMap<ViewDepthElem, Object>(rule);
       retainEquals(ruleCopy, cmp);
       if (ruleCopy.size() == rule.size()) {
@@ -93,9 +104,9 @@ public class TargetHist {
     }
   }
 
-  Map<ViewDepthElem, Object> deepState(OneView v) {
+  Map<ViewDepthElem, Object> deepState(OneView v, int depth) {
     Map<ViewDepthElem, Object> ret = new HashMap<ViewDepthElem, Object>();
-    for (int i = 0; v != null && i < DEEP_STATE_DEPTH; i++) {
+    for (int i = 0; v != null && i <= depth; i++) {
       Map<String, Object> all = v.getViewAll();
       for (String k : all.keySet()) {
         ret.put(new ViewDepthElem(i, k), all.get(k));

@@ -19,6 +19,11 @@ public class ViewDepthElem implements Serializable {
     this.key = key;
   }
 
+
+  public int getDepth() {
+    return depth;
+  }
+
   public String toString() {
     return key + "@" + depth;
   }
