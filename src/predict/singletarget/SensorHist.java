@@ -26,7 +26,7 @@ public class SensorHist {
   Object predict(OneView v) {
     for (Object val : vals.keySet()) {
       TargetHist th = vals.get(val);
-      if (th.ruleHolds(v)) {
+      if (th.acceptedByRules(v)) {
         return val;
       }
     }

@@ -18,7 +18,7 @@ public class TargetHist {
   final Object sensorVal;
 
   List<OneView> examples = new ArrayList<OneView>();
-  Map<ViewDepthElem, Object> rule = null;
+  List<Rule> rules = new ArrayList<Rule>();
 
 
   public TargetHist(SensorHist sensor, Object sensorVal) {
@@ -26,41 +26,55 @@ public class TargetHist {
     this.sensorVal = sensorVal;
   }
 
-  int ruleMaxDepth(Map<ViewDepthElem, Object> r){
-    int m=0;
-    for( ViewDepthElem e : r.keySet() ){
-      m = Math.max(m, e.getDepth());
+  List<OneView> unexpainedExamples(){
+    List<OneView> ret = new ArrayList<OneView>();
+    for( OneView v : examples ){
+      if( !acceptedByRules(v) ){
+        ret.add(v);
+      }
     }
-    return m;
+    return ret;
   }
+
 
   void addExample(OneView v) {
     if (v == null) {
       return;
     }
-    if (examples.size() > 0) {
-      ruleFromExamples(v);
-    }
     examples.add(v);
+    if (examples.size() >= 2) {
+      ruleFromExamples(examples.size()-1);
+    }
 
     for( TargetHist other : sensor.vals.values() ){
       if( other==this ){
         continue;
       }
-      if( other.rule!=null && other.ruleHolds(v) ){
-        other.rule=null; // rule was incorrect, alas
-        other.ruleFromExamples(other.examples.get(other.examples.size()-1));
-      }
+      other.ruleInvalidateByOther(v);
     }
   }
 
-  boolean ruleVerify(Map<ViewDepthElem, Object> r){
+  void ruleInvalidateByOther(OneView v){
+    boolean rulesOk=true;
+    for( Iterator<Rule> i = rules.iterator(); i.hasNext(); ){
+      Rule r = i.next();
+      if( r.ruleHolds(v) ){ // rule was incorrect, alas
+        i.remove();
+        rulesOk=false;
+      }
+    }
+    if( !rulesOk ){
+      ruleFromExamples();
+    }
+  }
+
+  boolean ruleVerify(Rule r){
     for( TargetHist other : sensor.vals.values() ){
       if( other==this ){
         continue;
       }
       for( OneView ex : other.examples ){
-        if( ruleHolds(r, ex) ){
+        if( r.ruleHolds(ex) ){
           return false;
         }
       }
@@ -68,25 +82,53 @@ public class TargetHist {
     return true;
   }
 
-  private void ruleFromExamples(OneView v) {
-    for( int d = 0; d <= DEEP_STATE_DEPTH; d++ ){
-      Map<ViewDepthElem, Object> m = deepState(v, d);
-      for (OneView vi : examples) {
-        Map<ViewDepthElem, Object> cmp = deepState(vi, d);
-        retainEquals(m, cmp);
+  private boolean ruleFromExamples(){
+    for( int i=1; i<examples.size(); i++ ){
+      if( ruleFromExamples(i) ){
+        return true;
       }
-      if (!m.isEmpty()) {
-        if( ruleVerify(m) ){  // only if not contradicts with other values
-          rule = m;
-          break;
+    }
+    return false;
+  }
+
+  /**
+   * Pairs comparison to derive a rule
+   * @param cmpExampleIndex
+   * @return
+   */
+  private boolean ruleFromExamples(int cmpExampleIndex) {
+    for( int d = 0; d <= DEEP_STATE_DEPTH; d++ ){
+      OneView cmpEx = examples.get(cmpExampleIndex);
+      for( int i=0; i<cmpExampleIndex; i++ ){
+        OneView vi = examples.get(i);
+        Map<ViewDepthElem, Object> cmp = deepState(cmpEx, d);
+        Map<ViewDepthElem, Object> m = deepState(vi, d);
+        retainEquals(m, cmp);
+        if (!m.isEmpty()) {
+          Rule rm = new Rule(m);
+          if( ruleVerify(rm) ){  // only if not contradicts with other values
+            log("guess val="+this.sensorVal+" rule="+rm);
+            rules.add(rm);
+            return true;
+          }
         }
       }
     }
+    return false;
   }
 
-  boolean ruleHolds(OneView v) {
-    if (rule != null) {
-      if (ruleHolds(rule, v)) return true;
+  void log(String s){
+    System.out.println(s);
+  }
+
+
+  boolean acceptedByRules(OneView v) {
+    if (rules.size()>0) {
+      for( Rule r : rules ){
+        if( r.ruleHolds(v) ){
+          return true;
+        }
+      }
     } else {
       // try complete equality:
       if (fullExampleMatch(v)) {
@@ -107,15 +149,6 @@ public class TargetHist {
     return false;
   }
 
-  private boolean ruleHolds(Map<ViewDepthElem, Object> r, OneView v) {
-    Map<ViewDepthElem, Object> cmp = deepState(v, ruleMaxDepth(r));
-    Map<ViewDepthElem, Object> ruleCopy = new HashMap<ViewDepthElem, Object>(r);
-    retainEquals(ruleCopy, cmp);
-    if (ruleCopy.size() == r.size()) {
-      return true;
-    }
-    return false;
-  }
 
   boolean fullExampleMatch(OneView v) {
     Map<String, Object> m = v.getViewAll();
@@ -133,7 +166,7 @@ public class TargetHist {
     return false;
   }
 
-  void retainEquals(Map<ViewDepthElem, Object> where, Map<ViewDepthElem, Object> cmp) {
+  static void retainEquals(Map<ViewDepthElem, Object> where, Map<ViewDepthElem, Object> cmp) {
     for (Iterator<ViewDepthElem> i = where.keySet().iterator(); i.hasNext();) {
       ViewDepthElem e = i.next();
       if (!cmp.containsKey(e) || !where.get(e).equals(cmp.get(e))) {
@@ -142,7 +175,7 @@ public class TargetHist {
     }
   }
 
-  Map<ViewDepthElem, Object> deepState(OneView v, int depth) {
+  static Map<ViewDepthElem, Object> deepState(OneView v, int depth) {
     Map<ViewDepthElem, Object> ret = new HashMap<ViewDepthElem, Object>();
     for (int i = 0; v != null && i <= depth; i++) {
       Map<String, Object> all = v.getViewAll();

@@ -97,15 +97,17 @@ public class TestPredictor extends TestCase {
 
   private void plainSeqProc(String task) {
     LinearPredictor p = new LinearPredictor();
+    StringBuilder hist = new StringBuilder();
     for (int i = 0; i < task.length(); i++) {
       char c = task.charAt(i);
       if (c == ' ') {
         continue;
       }
       if (c == '>') {
-        assertEquals("" + task.charAt(i + 1), p.predict().get("a"));
+        assertEquals("hist="+hist,  "" + task.charAt(i + 1), p.predict().get("a"));
       } else {
         p.add(new OneView().pt("a", "" + c));
+        hist.append(c);
       }
     }
   }
