@@ -5,6 +5,8 @@ import mem.ViewDepthElem;
 
 import java.util.*;
 
+import logic.Alg;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -82,13 +84,13 @@ public class TargetHist {
     return true;
   }
 
-  private boolean ruleFromExamples(){
+  private void ruleFromExamples(){
     for( int i=1; i<examples.size(); i++ ){
-      if( ruleFromExamples(i) ){
-        return true;
+      ruleFromExamples(i);
+      if( unexpainedExamples().isEmpty() ){
+        return;
       }
     }
-    return false;
   }
 
   /**
@@ -96,7 +98,7 @@ public class TargetHist {
    * @param cmpExampleIndex
    * @return
    */
-  private boolean ruleFromExamples(int cmpExampleIndex) {
+  private void ruleFromExamples(int cmpExampleIndex) {
     for( int d = 0; d <= DEEP_STATE_DEPTH; d++ ){
       OneView cmpEx = examples.get(cmpExampleIndex);
       for( int i=0; i<cmpExampleIndex; i++ ){
@@ -106,15 +108,20 @@ public class TargetHist {
         retainEquals(m, cmp);
         if (!m.isEmpty()) {
           Rule rm = new Rule(m);
-          if( ruleVerify(rm) ){  // only if not contradicts with other values
+          if( !alreadyInList(rm) && ruleVerify(rm) ){  // only if not contradicts with other values
             log("guess val="+this.sensorVal+" rule="+rm);
             rules.add(rm);
-            return true;
+            if( unexpainedExamples().isEmpty() ){
+              return;
+            }
           }
         }
       }
     }
-    return false;
+  }
+
+  boolean alreadyInList(Rule r){
+    return rules.contains(r);
   }
 
   void log(String s){

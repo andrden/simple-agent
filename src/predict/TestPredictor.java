@@ -39,10 +39,20 @@ public class TestPredictor extends TestCase {
     plainSeqProc(task);
   }
 
+//  public void test5a() {
+//    // this is a complex task - we must treat 'inside rpt group 101' as another sensor
+//    // to see difference in situation
+//    String task = "0 101 11 101 00 10>1";
+//
+//    10 -> 1 is not a rule here!!!
+//
+//    plainSeqProc(task);
+//  }
+
   public void test5() {
     // this is a complex task - we must treat 'inside rpt group 101' as another sensor
     // to see difference in situation
-    String task = "0 101 11 101 00 10>1 00 10>1 10>1 11111 10>1 11";
+    String task = "0 101 22 101 00 10>1 00 10>1 10>1 11111 10>1 11";
     plainSeqProc(task);
   }
 

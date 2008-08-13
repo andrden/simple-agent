@@ -19,6 +19,10 @@ public class Rule {
     this.rule = rule;
   }
 
+  public boolean equals(Object other){
+    return rule.equals( ((Rule)other).rule );
+  }
+
   boolean ruleHolds(OneView v) {
     Map<ViewDepthElem, Object> cmp = TargetHist.deepState(v, ruleMaxDepth());
     Map<ViewDepthElem, Object> ruleCopy = new HashMap<ViewDepthElem, Object>(rule);
