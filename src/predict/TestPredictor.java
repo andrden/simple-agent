@@ -97,7 +97,7 @@ public class TestPredictor extends TestCase {
     assertEquals("0", p.predict().get("c")); // b=k => c=0
   }
 
-  public void test9() { // test for rule auto-extention
+  public void test9() { // test for rule auto-extension
     LinearPredictor p = new LinearPredictor();
     addMulti(p, "Abz0");
     addMulti(p, "Njq1");

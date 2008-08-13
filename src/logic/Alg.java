@@ -89,7 +89,10 @@ public class Alg implements AlgIntf, Serializable {
     history.nextCmd(cmd);
     predictor.appendValsToLastView(Collections.singletonMap(Hist.CMD_KEY, (Object)cmd));
     log("====" + cmd + " foundFrom=" + curCmd.getFoundFrom());
+
     log("====PRED "+predictor.predictNext(history.last));
+    log("====PREDv1 "+causes.predictAllViewByCauses(history.last));
+    log("====PREDv2 "+causes2.predictAllViewByCauses(history.last));
 
     return cmd;
   }
