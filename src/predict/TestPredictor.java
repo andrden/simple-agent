@@ -97,6 +97,18 @@ public class TestPredictor extends TestCase {
     assertEquals("0", p.predict().get("c")); // b=k => c=0
   }
 
+  public void test9() { // test for rule auto-extention
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p, "Abz0");
+    addMulti(p, "Njq1");
+    addMulti(p, "Mjq0");
+    addMulti(p, "Abw0");
+    addMulti(p, "Nhq1");
+    addMulti(p, "Yhp0");
+    addMulti(p, "Avk0");
+    assertEquals("1", p.predict().get("d")); // A => d=1 (don't require Ab)
+  }
+
   void addMulti(LinearPredictor p, String view) {
     OneView v = new OneView();
     for (int i = 0; i < view.length(); i++) {
