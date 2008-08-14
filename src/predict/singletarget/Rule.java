@@ -33,6 +33,27 @@ public class Rule {
     return false;
   }
 
+  /**
+   * test if 'other' contains more conditions
+   * @param other
+   * @return
+   */
+  boolean widerOrEqTo(Rule other){
+    Map<ViewDepthElem, Object> ruleCopy = new HashMap<ViewDepthElem, Object>(other.rule);
+    TargetHist.retainEquals(ruleCopy, rule);
+    return ruleCopy.size()==rule.size(); // if contains all my conditions
+  }
+
+  Rule ruleIntersect(OneView v) {
+    Map<ViewDepthElem, Object> cmp = TargetHist.deepState(v, ruleMaxDepth());
+    Map<ViewDepthElem, Object> ruleCopy = new HashMap<ViewDepthElem, Object>(rule);
+    TargetHist.retainEquals(ruleCopy, cmp);
+    if (!ruleCopy.isEmpty()) {
+      return new Rule(ruleCopy);
+    }
+    return null;
+  }
+
   int ruleMaxDepth(){
     int m=0;
     for( ViewDepthElem e : rule.keySet() ){

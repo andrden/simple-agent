@@ -5,8 +5,6 @@ import mem.ViewDepthElem;
 
 import java.util.*;
 
-import logic.Alg;
-
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -121,7 +119,12 @@ public class TargetHist {
   }
 
   boolean alreadyInList(Rule r){
-    return rules.contains(r);
+    for( Rule ri : rules ){
+      if( ri.widerOrEqTo(r) ){
+        return true;
+      }
+    }
+    return false;
   }
 
   void log(String s){
@@ -136,23 +139,46 @@ public class TargetHist {
           return true;
         }
       }
-    } else {
-      // try complete equality:
-      if (fullExampleMatch(v)) {
-        // check same condition for other values of the same sensor
-        boolean noOther = true;
-        for (TargetHist hi : sensor.vals.values()) {
-          if (hi != this && hi.fullExampleMatch(v)) {
-            noOther = false;
-            break;
-          }
+    }
+    return false;
+  }
+
+  boolean reasonablyAccepted(OneView v){
+    if( acceptedByRules(v) ){
+      return true;
+    }
+
+    // try complete equality:
+    if (fullExampleMatch(v)) {
+      // check same condition for other values of the same sensor
+      boolean noOther = true;
+      for (TargetHist hi : sensor.vals.values()) {
+        if (hi != this && hi.fullExampleMatch(v)) {
+          noOther = false;
+          break;
         }
-        if (noOther) {
-          return true;
-        }
+      }
+      if (noOther) {
+        return true;
       }
     }
 
+    if( intersectingRulesAccept(v) ){
+      return true;
+    }
+
+    return false;
+  }
+
+  boolean intersectingRulesAccept(OneView v){
+    for( Rule r : rules ){
+      Rule rinters = r.ruleIntersect(v); // trying a wider rule
+      if( rinters!=null ){
+        if( ruleVerify(rinters) ){
+          return true; // the wider rule has no current objections, accepting
+        }
+      }
+    }
     return false;
   }
 

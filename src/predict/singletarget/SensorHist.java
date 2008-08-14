@@ -12,7 +12,12 @@ import java.util.Map;
  * Time: 17:37:58
  */
 public class SensorHist {
+  final String sensorName;
   Map<Object, TargetHist> vals = new HashMap<Object, TargetHist>();
+
+  public SensorHist(String sensorName) {
+    this.sensorName = sensorName;
+  }
 
   void add(Object val, OneView v) {
     TargetHist th = vals.get(val);
@@ -26,7 +31,7 @@ public class SensorHist {
   Object predict(OneView v) {
     for (Object val : vals.keySet()) {
       TargetHist th = vals.get(val);
-      if (th.acceptedByRules(v)) {
+      if (th.reasonablyAccepted(v)) {
         return val;
       }
     }

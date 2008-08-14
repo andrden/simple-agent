@@ -50,7 +50,7 @@ public class Pred implements PredictorIntf {
     for (String s : m.keySet()) {
       SensorHist th = singles.get(s);
       if (th == null) {
-        th = new SensorHist();
+        th = new SensorHist(s);
         singles.put(s, th);
       }
       th.add(m.get(s), lastOneView);
