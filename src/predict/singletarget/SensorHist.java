@@ -29,12 +29,18 @@ public class SensorHist {
   }
 
   Object predict(OneView v) {
+    Object retVal = null;
+    long hitCount=0;
     for (Object val : vals.keySet()) {
       TargetHist th = vals.get(val);
       if (th.reasonablyAccepted(v)) {
-        return val;
+        retVal = val;
+        hitCount++;
       }
     }
-    return null;
+    if( hitCount>1 ){
+      return null; //conflict
+    }
+    return retVal;
   }
 }

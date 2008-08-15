@@ -134,5 +134,11 @@ public class History implements Serializable {
     }
   }
 
+  public void printAllForTestCase(){
+    for( int i=0; i<list.size(); i++ ){
+       System.out.println( list.get(i).view );
+    }
+  }
+
   private static final long serialVersionUID = -5995303277916958873L;
 }
