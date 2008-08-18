@@ -22,4 +22,12 @@ public class LinearPredictor {
     return p.predictNext(last);
   }
 
+  public OneView getLast() {
+    return last;
+  }
+
+
+  public Predictor getPredictor() {
+    return p;
+  }
 }

@@ -16,8 +16,19 @@ public class OneView<T extends OneView> implements Serializable {
   public T next;
   public T prev;
 
+  public boolean isEmpty(){
+    return view.isEmpty();
+  }
+
   public Object get(String key) {
     return view.get(key);
+  }
+
+  public OneView cloneBranch(){
+    OneView v = new OneView();
+    v.view = new HashMap<String, Object>(view);
+    v.prev = prev;
+    return v;
   }
 
   public void mergeByAddNew(OneView other) {

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import predict.Predictor;
+import predict.CmdPredictionTree;
 
 /**
  * Created by IntelliJ IDEA.
@@ -227,6 +228,7 @@ public class Alg implements AlgIntf, Serializable {
     return predictionTree;
   }
 
+
   private void expandPrediction(PredictionTree2 pti, String c, List<PredictionTree2> notesToExplore) {
     Hist h = new Hist(pti.histOld, pti.viewNext, c);
     Causes2.PredictionBy prediction = causes2.predictAllViewByCausesWithBy(h);
@@ -328,6 +330,8 @@ public class Alg implements AlgIntf, Serializable {
     List<String> cs = allCommands();
 
     CmdSet cc = null;
+
+    //CmdPredictionTree pt3 = buildPredictionTree3(history.last, view);
 
     PredictionTree2 pt2 = buildPredictionTree(history.last, view);
     PredictionTree2.PositiveResultOrSmack smackRes2 = pt2.findPositiveResultOrSmacks();

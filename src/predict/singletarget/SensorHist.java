@@ -30,15 +30,40 @@ public class SensorHist {
 
   Object predict(OneView v) {
     Object retVal = null;
-    long hitCount=0;
+    long hitCountR=0;
     for (Object val : vals.keySet()) {
       TargetHist th = vals.get(val);
-      if (th.reasonablyAccepted(v)) {
+      Rule raccept = th.acceptedByRules(v);
+      if (raccept!=null) {
         retVal = val;
-        hitCount++;
+        hitCountR++;
       }
     }
-    if( hitCount>1 ){
+    if( hitCountR==1 ){
+      return retVal;
+    }
+    if( hitCountR>1 ){
+      return null; //conflict
+    }
+
+    // now when rules tell nothing trying less definite comparisons: 
+    long hitCount2=0;
+    Rule reason2=null;
+    for (Object val : vals.keySet()) {
+      TargetHist th = vals.get(val);
+      Rule reason = th.reasonablyAccepted(v);
+      if (reason!=null) {
+        // consider only rules with minimum depth
+        if( reason2==null || reason2.ruleMaxDepth()>reason.ruleMaxDepth() ){
+          retVal = val;
+          hitCount2=1;
+          reason2 = reason;
+        }else if( reason2.ruleMaxDepth()==reason.ruleMaxDepth() ){
+          hitCount2++; // will cause conflict
+        }
+      }
+    }
+    if( hitCount2>1 ){
       return null; //conflict
     }
     return retVal;

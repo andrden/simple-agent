@@ -29,7 +29,7 @@ public class TargetHist {
   List<OneView> unexpainedExamples(){
     List<OneView> ret = new ArrayList<OneView>();
     for( OneView v : examples ){
-      if( !acceptedByRules(v) ){
+      if( acceptedByRules(v)==null ){
         ret.add(v);
       }
     }
@@ -132,22 +132,18 @@ public class TargetHist {
   }
 
 
-  boolean acceptedByRules(OneView v) {
+  Rule acceptedByRules(OneView v) {
     if (rules.size()>0) {
       for( Rule r : rules ){
         if( r.ruleHolds(v) ){
-          return true;
+          return r;
         }
       }
     }
-    return false;
+    return null;
   }
 
-  boolean reasonablyAccepted(OneView v){
-    if( acceptedByRules(v) ){
-      return true;
-    }
-
+  Rule reasonablyAccepted(OneView v){
     // try complete equality:
     if (fullExampleMatch(v)) {
       // check same condition for other values of the same sensor
@@ -159,27 +155,28 @@ public class TargetHist {
         }
       }
       if (noOther) {
-        return true;
+        return new Rule(TargetHist.deepState(v,0));
       }
     }
 
-    if( intersectingRulesAccept(v) ){
-      return true;
+    Rule intersect = intersectingRulesAccept(v);
+    if( intersect!=null ){
+      return intersect;
     }
 
-    return false;
+    return null;
   }
 
-  boolean intersectingRulesAccept(OneView v){
+  Rule intersectingRulesAccept(OneView v){
     for( Rule r : rules ){
       Rule rinters = r.ruleIntersect(v); // trying a wider rule
       if( rinters!=null ){
         if( ruleVerify(rinters) ){
-          return true; // the wider rule has no current objections, accepting
+          return rinters; // the wider rule has no current objections, accepting
         }
       }
     }
-    return false;
+    return null;
   }
 
 

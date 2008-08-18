@@ -3,6 +3,9 @@ package predict;
 import junit.framework.TestCase;
 import mem.OneView;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -135,6 +138,27 @@ public class TestPredictor extends TestCase {
     assertEquals("1", p.predict().get("$")); // f=ORANGE, !=E is the cause
   }
 
+  public void testTree1(){
+    LinearPredictor p = new LinearPredictor();
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=ORANGE, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=WHITE, !=R, fl=GRAY, r=YELLOW, ff=BLACK, $=1, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=WHITE}");
+    addMultiMap(p, "{f=ORANGE, !=E, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=WHITE}");
+
+    addMultiMap(p, "{f=WHITE, !=Fb, fl=WHITE, r=BLACK, ff=BLACK, $=1, fr=YELLOW, l=WHITE}");
+    addMultiMap(p, "{f=BLACK, !=R, fl=BLACK, r=YELLOW, ff=BLACK, $=0, fr=BLACK, l=WHITE}");
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}");
+    addMultiMap(p, "{f=ORANGE, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}");
+
+    // !=E is reasonable here
+    List<String> cmds = Arrays.asList("L", "R", "N", "Fa", "Fb", "E", "Ep");
+    CmdPredictionTree tree = new PredictionTreeBuilder(p.getPredictor(), cmds).build(p.getLast());
+    System.currentTimeMillis();
+    //assertEquals("1", p.predict().get("$")); // f=ORANGE, !=E is the cause
+    assertTrue(false);
+  }
+
   public void test11(){ // inverted test10() to test for ordering dependent bugs
     LinearPredictor p = new LinearPredictor();
     addMultiMap(p, "{f=YELLOW, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=1, fr=WHITE, l=GRAY}");
@@ -149,6 +173,33 @@ public class TestPredictor extends TestCase {
     addMultiMap(p, "{f=ORANGE, !=E, fl=BLACK, r=WHITE, ff=WHITE, $=1, fr=BLACK, l=BLACK}");
 
     assertEquals("0", p.predict().get("$")); // f=ORANGE, !=E is the cause
+  }
+
+
+  public void testFastLearn2(){
+    LinearPredictor p = new LinearPredictor();
+    addMultiMapAll(p,
+    "{f=YELLOW, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}",
+    "{f=ORANGE, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}",
+    "{f=WHITE, !=R, fl=GRAY, r=YELLOW, ff=BLACK, $=1, fr=WHITE, l=GRAY}",
+    "{f=YELLOW, !=Ep, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=WHITE}",
+    "{f=ORANGE, !=E, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=WHITE}",
+    "{f=WHITE, !=Fb, fl=WHITE, r=BLACK, ff=BLACK, $=1, fr=YELLOW, l=WHITE}",
+    "{f=BLACK, !=R, fl=BLACK, r=YELLOW, ff=BLACK, $=0, fr=BLACK, l=WHITE}",
+    "{f=YELLOW, !=L, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}",
+    "{f=BLACK, !=R, fl=BLACK, r=YELLOW, ff=BLACK, $=0, fr=BLACK, l=WHITE}",
+    "{f=YELLOW, !=Ep, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}",
+    "{f=ORANGE, !=E, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}"
+    );
+    //{f=WHITE, !=N, fl=BLACK, r=WHITE, ff=WHITE, $=1, fr=BLACK, l=BLACK}
+    assertEquals("1", p.predict().get("$")); // f=ORANGE, !=E is the cause
+
+  }
+
+  void addMultiMapAll(LinearPredictor p, String... views) {
+    for( String v : views ){
+      addMultiMap(p, v);
+    }
   }
 
   void addMultiMap(LinearPredictor p, String view) {

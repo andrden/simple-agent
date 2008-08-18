@@ -37,6 +37,7 @@ public class Predictor implements PredictorIntf {
 
   public OneView predictNext(OneView v) {
     OneView vnext = new OneView();
+    vnext.prev = v;
     for (PredictorIntf i : algs) {
       OneView vi = i.predictNext(v);
       vnext.mergeByAddNew(vi);
