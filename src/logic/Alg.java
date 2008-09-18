@@ -11,6 +11,7 @@ import java.util.*;
 
 import predict.Predictor;
 import predict.CmdPredictionTree;
+import predict.PredictionTreeBuilder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,7 +23,7 @@ import predict.CmdPredictionTree;
 public class Alg implements AlgIntf, Serializable {
   World w;
   History history = new History();
-  Predictor predictor = new Predictor();
+  List<Approach> approaches = (List)Arrays.asList(new PredictorApproach());
   CmdSet curCmd = CmdSet.EMPTY;
 
   Map<String, List<String>> cmdGroups = new HashMap<String, List<String>>();
@@ -41,6 +42,7 @@ public class Alg implements AlgIntf, Serializable {
 
   Attempts attempts = new Attempts(this);
   CountingTree<String> lastSuccessfulCommands = new CountingTree<String>();
+  private boolean cause1use=false;
 
 
   public Alg(World w) {
@@ -85,13 +87,13 @@ public class Alg implements AlgIntf, Serializable {
     String cmd = curCmd.goNext(cmdGroups);
     if (history.last == null) {
       history.setLastResult(0, view);
-      predictor.add(history.next);
+      approaches.get(0).add(history.next);
     }
     history.nextCmd(cmd);
-    predictor.appendValsToLastView(Collections.singletonMap(Hist.CMD_KEY, (Object)cmd));
+    approaches.get(0).appendValsToLastView(Collections.singletonMap(Hist.CMD_KEY, (Object)cmd));
     log("====" + cmd + " foundFrom=" + curCmd.getFoundFrom());
 
-    log("====PRED "+predictor.predictNext(history.last));
+    log("====PRED "+approaches.get(0).predictionInfo(history.last));
     log("====PREDv1 "+causes.predictAllViewByCauses(history.last));
     log("====PREDv2 "+causes2.predictAllViewByCauses(history.last));
 
@@ -104,8 +106,10 @@ public class Alg implements AlgIntf, Serializable {
     if (result > 0) {
       interestingEvents.add(history.getNextHist());
     }
-    new CmdCompletionAnalyzer(this).resultAnalyse(result, view);
-    predictor.add(history.next);
+    if( cause1use ){
+      new CmdCompletionAnalyzer(this).resultAnalyse(result, view);
+    }
+    approaches.get(0).add(history.next);
   }
 
   PredictionTree buildPredictionTreeOld(Hist last, Map<String, Object> view) {
@@ -331,31 +335,27 @@ public class Alg implements AlgIntf, Serializable {
 
     CmdSet cc = null;
 
-    //CmdPredictionTree pt3 = buildPredictionTree3(history.last, view);
+    for( Approach appr : approaches ){
+      /*@todo maybe Collections.shuffle and let other approaches preview the cmd -
+        Rnd can this way sometimes make it's reasonable attempts */
 
-    PredictionTree2 pt2 = buildPredictionTree(history.last, view);
-    PredictionTree2.PositiveResultOrSmack smackRes2 = pt2.findPositiveResultOrSmacks();
-    if (smackRes2 != null && smackRes2.cmd != null) {
-      CmdSet cc2 = new CmdSet(smackRes2.cmd);
-      cc2.setFoundFrom("using pred tree smacks " + smackRes2.description);
-      log("cause2 cmd ===>>> " + cc2);
+      //@todo maybe introduce to History - approach which suggested Cmd - to see in dynamics which is better
+      CmdSet c = appr.suggestCmd(history.getNextHist(), cs);
+      if( c!=null ){
+        return c;
+      }
     }
 
-    PredictionTree pt = buildPredictionTreeOld(history.last, view);
-    PredictionTree.PositiveResultOrSmack smackRes = pt.findPositiveResultOrSmacks();
-    if (smackRes != null && smackRes.cmd != null) {
-      cc = new CmdSet(smackRes.cmd);
-      cc.setFoundFrom("using pred tree smacks " + smackRes.description);
-    }
 
-//    if( cc==null ){
-//      Map<String,CauseMaxStruct> predictedByCauses = predictByCauses(view);
-//      cc = findMaxCmdByCauses(predictedByCauses, view);
-//      if( cc!=null ){
-//          // @todo strange place
-//          breakPoint();
-//      }
-//    }
+      if( cause1use ){
+        PredictionTree pt = buildPredictionTreeOld(history.last, view);
+        PredictionTree.PositiveResultOrSmack smackRes = pt.findPositiveResultOrSmacks();
+        if (smackRes != null && smackRes.cmd != null) {
+          cc = new CmdSet(smackRes.cmd);
+          cc.setFoundFrom("using pred tree smacks " + smackRes.description);
+        }
+      }
+
 
     double emotionCoef = cc == null ? experimentLevel : experimentLevelIfSmacks;
     CmdSet nextCmd;

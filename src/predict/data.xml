@@ -1,0 +1,31 @@
+<?xml version='1.0'?>
+<data>
+
+<testTooManyRules1>
+  {f=YELLOW, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=YELLOW, !=R, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=YELLOW, !=Fa, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=YELLOW}
+  {f=YELLOW, !=L, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=YELLOW}
+  {f=YELLOW, !=Fb, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+
+  {f=YELLOW, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=ORANGE, !=N, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=ORANGE, !=N, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=ORANGE, !=R, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=YELLOW, !=N, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=ORANGE}
+
+  {f=YELLOW, !=L, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=ORANGE}
+  {f=ORANGE, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=ORANGE, !=Fb, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=ORANGE, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=WHITE, !=N, fl=GRAY, r=YELLOW, ff=BLACK, $=1, fr=WHITE, l=GRAY}
+
+  {f=WHITE, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=WHITE, !=Fa, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=WHITE, !=N, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=WHITE, !=L, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
+  {f=GRAY, !=Ep, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=GRAY, l=BLACK}
+
+</testTooManyRules1>
+
+</data>

@@ -30,7 +30,7 @@ public class CmdPredictionTree {
     return predictionTree;
   }
 
-  static class PositiveResultOrSmack {
+  public static class PositiveResultOrSmack {
     double probab;
     String cmd;
     String description;
@@ -40,6 +40,19 @@ public class CmdPredictionTree {
       this.cmd = cmd;
       this.description = description;
     }
+
+
+    public String getCmd() {
+      return cmd;
+    }
+  }
+
+  boolean positiveResult(){
+    Object r = start.get(Hist.RES_KEY);
+    if( r==null ){
+      return false;
+    }
+    return Integer.parseInt(r.toString())>0;
   }
 
   /**
@@ -47,33 +60,32 @@ public class CmdPredictionTree {
    *
    * @return
    */
-//  public CmdPredictionTree.PositiveResultOrSmack findPositiveResultOrSmacks() {
-//    Integer res = viewNext == null ? null : Hist.getResult(viewNext);
-//    if (res != null && res > 0) {
-//      return new CmdPredictionTree.PositiveResultOrSmack(1, null, "res=" + res);
-//    }
-//
-//    Map<String, CmdPredictionTree.PositiveResultOrSmack> onCmds = new HashMap<String, CmdPredictionTree.PositiveResultOrSmack>();
-//    for (String nextStepCmd : onCommand.keySet()) {
-//      CmdPredictionTree nextStep = onCommand.get(nextStepCmd);
-//      CmdPredictionTree.PositiveResultOrSmack nextSmack = nextStep.findPositiveResultOrSmacks();
-//      if (nextSmack != null) {
-//        nextSmack.description = nextStepCmd + " -> " + nextSmack.description;
-//        nextSmack.cmd = nextStepCmd;
-//        nextSmack.depth++;
-//        onCmds.put(nextStepCmd, nextSmack);
-//      }
-//    }
-//
-//    CmdPredictionTree.PositiveResultOrSmack rnow = null;
-//
-//    if (onCmds.size() != 0) {
-//      CmdPredictionTree.PositiveResultOrSmack r = findShortest(onCmds);
-//      return moreDefinite(rnow, r);
-//    }
-//
-//    return rnow;
-//  }
+  public CmdPredictionTree.PositiveResultOrSmack findPositiveResultOrSmacks() {
+    if (positiveResult()) {
+      return new CmdPredictionTree.PositiveResultOrSmack(1, null, "res=" + start.get(Hist.RES_KEY));
+    }
+
+    Map<String, CmdPredictionTree.PositiveResultOrSmack> onCmds = new HashMap<String, CmdPredictionTree.PositiveResultOrSmack>();
+    for (String nextStepCmd : onCommand.keySet()) {
+      CmdPredictionTree nextStep = onCommand.get(nextStepCmd);
+      CmdPredictionTree.PositiveResultOrSmack nextSmack = nextStep.findPositiveResultOrSmacks();
+      if (nextSmack != null) {
+        nextSmack.description = nextStepCmd + " -> " + nextSmack.description;
+        nextSmack.cmd = nextStepCmd;
+        nextSmack.depth++;
+        onCmds.put(nextStepCmd, nextSmack);
+      }
+    }
+
+    CmdPredictionTree.PositiveResultOrSmack rnow = null;
+
+    if (onCmds.size() != 0) {
+      CmdPredictionTree.PositiveResultOrSmack r = findShortest(onCmds);
+      return moreDefinite(rnow, r);
+    }
+
+    return rnow;
+  }
 
   CmdPredictionTree.PositiveResultOrSmack moreDefinite(CmdPredictionTree.PositiveResultOrSmack a, CmdPredictionTree.PositiveResultOrSmack b) {
     if (a == null) {

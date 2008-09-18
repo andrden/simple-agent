@@ -114,7 +114,7 @@ public class Main extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.pack();
 
-    new Thread() {
+    new Thread("cr6 ActionNext") {
       public void run() {
         while (true) {
           ssleep(700);
@@ -246,7 +246,7 @@ public class Main extends JFrame {
     alg.cmdCompleted(result);
     long dt1 = System.currentTimeMillis() - t1;
 
-    logArea.append(cmd + " " + dt0 + " / " + dt1 + "ms \n");
+    logArea.append(cmd + " n" + dt0 + " / r" + dt1 + "ms \n");
   }
 
   private void refreshAllViews() {

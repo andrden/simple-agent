@@ -29,6 +29,10 @@ public class SensorHist {
   }
 
   Object predict(OneView v) {
+    if( vals.size()==1 ){
+      return vals.keySet().iterator().next();
+    }
+
     Object retVal = null;
     long hitCountR=0;
     for (Object val : vals.keySet()) {

@@ -19,7 +19,17 @@ public class TargetHist {
 
   List<OneView> examples = new ArrayList<OneView>();
   List<Rule> rules = new ArrayList<Rule>();
+  //List<Rule> oldRules = new ArrayList<Rule>();
 
+  public int ruleHoldsCount(Rule r){
+    int c=0;
+    for( int i=0; i<examples.size(); i++ ){
+      if( r.ruleHolds(examples.get(i)) ){
+        c++;
+      }
+    }
+    return c;
+  }
 
   public TargetHist(SensorHist sensor, Object sensorVal) {
     this.sensor = sensor;
@@ -42,8 +52,14 @@ public class TargetHist {
       return;
     }
     examples.add(v);
-    if (examples.size() >= 2) {
-      ruleFromExamples(examples.size()-1);
+    if( sensor.vals.size()==1 ){
+      // I'm the only one value ever obtained, no rules needed, always predict me
+      return;
+    }
+    if( acceptedByRules(v)==null ){
+      if (examples.size() >= 2) {
+        ruleFromExamples(examples.size()-1);
+      }
     }
 
     for( TargetHist other : sensor.vals.values() ){
@@ -84,10 +100,10 @@ public class TargetHist {
 
   private void ruleFromExamples(){
     for( int i=1; i<examples.size(); i++ ){
-      ruleFromExamples(i);
       if( unexpainedExamples().isEmpty() ){
         return;
       }
+      ruleFromExamples(i);
     }
   }
 
@@ -107,8 +123,8 @@ public class TargetHist {
         if (!m.isEmpty()) {
           Rule rm = new Rule(m);
           if( !alreadyInList(rm) && ruleVerify(rm) ){  // only if not contradicts with other values
-            log("guess val="+this.sensorVal+" rule="+rm);
-            rules.add(rm);
+            //log("guess val="+this.sensorVal+" rule="+rm);
+            newRuleToSet(rm);
             if( unexpainedExamples().isEmpty() ){
               return;
             }
@@ -116,6 +132,59 @@ public class TargetHist {
         }
       }
     }
+  }
+
+  private void newRuleToSet(Rule rm) {
+    if( sensorVal.equals("BLACK") && sensor.sensorName.equals("ff")  ){
+      System.currentTimeMillis();
+    }
+    for( Iterator<Rule> i = rules.iterator(); i.hasNext(); ){
+      Rule r = i.next();
+      if( rm.widerOrEqTo(r) ){
+        i.remove(); // clean up list from partial more specific rules
+      }else if( explainsMore(rm, r) ){
+        i.remove(); // clean up list from partial extra complicated rules
+      }
+    }
+
+    rules.add(rm);
+    sortRulesByHoldsCount();
+    if( examples.size()>10 && rules.size()>examples.size() ){
+      throw new RuntimeException("Too many rules");
+    }
+
+      if( rules.size()>5 ){
+        throw new RuntimeException("Too many rules "+rules.size());
+      }
+  }
+
+  void sortRulesByHoldsCount(){
+    final Map<Integer,Comparable> m = new HashMap<Integer,Comparable>();
+    for( Rule r : rules ){
+      m.put(System.identityHashCode(r), ruleHoldsCount(r));
+    }
+    Collections.sort(rules, new Comparator<Rule>(){
+      public int compare(Rule o1, Rule o2) {
+        // sort by ruleHoldsCount() desc
+        return m.get(System.identityHashCode(o2)).compareTo(m.get(System.identityHashCode(o1)));
+      }
+    });
+  }
+
+
+  boolean explainsMore(Rule newr, Rule oldr){
+    boolean res=false;
+    for( OneView v : examples ){
+      boolean newh = newr.ruleHolds(v);
+      boolean oldh = oldr.ruleHolds(v);
+      if( !newh && oldh ){
+          return false;
+      }
+      if( newh && !oldh ){
+        res = true;
+      }
+    }
+    return res;
   }
 
   boolean alreadyInList(Rule r){

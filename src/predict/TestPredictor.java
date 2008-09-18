@@ -3,8 +3,11 @@ package predict;
 import junit.framework.TestCase;
 import mem.OneView;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.Arrays;
 import java.util.List;
+
+import org.w3c.dom.Document;
 
 /**
  * Created by IntelliJ IDEA.
@@ -154,9 +157,7 @@ public class TestPredictor extends TestCase {
     // !=E is reasonable here
     List<String> cmds = Arrays.asList("L", "R", "N", "Fa", "Fb", "E", "Ep");
     CmdPredictionTree tree = new PredictionTreeBuilder(p.getPredictor(), cmds).build(p.getLast());
-    System.currentTimeMillis();
-    //assertEquals("1", p.predict().get("$")); // f=ORANGE, !=E is the cause
-    assertTrue(false);
+    assertNotNull( tree.findPositiveResultOrSmacks() );
   }
 
   public void test11(){ // inverted test10() to test for ordering dependent bugs
@@ -175,6 +176,19 @@ public class TestPredictor extends TestCase {
     assertEquals("0", p.predict().get("$")); // f=ORANGE, !=E is the cause
   }
 
+  public void testTooManyRules1() throws Exception{
+    LinearPredictor p = new LinearPredictor();
+    Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+            getClass().getResourceAsStream("data.xml"));
+    String txt = d.getElementsByTagName("testTooManyRules1").item(0).getTextContent();
+    for( String s : txt.split("\n") ){
+      s = s.trim();
+      if( s.length()==0 ){
+        continue;
+      }
+      addMultiMap(p, s);
+    }
+  }
 
   public void testFastLearn2(){
     LinearPredictor p = new LinearPredictor();
@@ -225,8 +239,10 @@ public class TestPredictor extends TestCase {
   private void plainSeqProc(String task) {
     LinearPredictor p = new LinearPredictor();
     StringBuilder hist = new StringBuilder();
+    StringBuilder compleated = new StringBuilder();
     for (int i = 0; i < task.length(); i++) {
       char c = task.charAt(i);
+      compleated.append(c);
       if (c == ' ') {
         continue;
       }
