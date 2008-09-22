@@ -64,6 +64,7 @@ public class Alg implements AlgIntf, Serializable {
   }
 
   public synchronized String nextCmd(String forcedCmd) {
+    log("------------------------------------");
     Map<String, Object> view = w.view();
     if (forcedCmd != null) {
       curCmd = new CmdSet(forcedCmd);

@@ -72,9 +72,11 @@ public class TargetHist {
 
   void ruleInvalidateByOther(OneView v){
     boolean rulesOk=true;
+    List<Rule> removedRules = new ArrayList<Rule>();
     for( Iterator<Rule> i = rules.iterator(); i.hasNext(); ){
       Rule r = i.next();
       if( r.ruleHolds(v) ){ // rule was incorrect, alas
+        removedRules.add(r);
         i.remove();
         rulesOk=false;
       }
@@ -99,11 +101,16 @@ public class TargetHist {
   }
 
   private void ruleFromExamples(){
-    for( int i=1; i<examples.size(); i++ ){
+    int runCount=0;
+    for( int i=examples.size()-1; i>=0;  i-- ){
       if( unexpainedExamples().isEmpty() ){
         return;
       }
       ruleFromExamples(i);
+      runCount++;
+      if( runCount>10 ){
+        return; // only last 10 examples - to avoid spending too much time
+      }
     }
   }
 
@@ -120,7 +127,7 @@ public class TargetHist {
         Map<ViewDepthElem, Object> cmp = deepState(cmpEx, d);
         Map<ViewDepthElem, Object> m = deepState(vi, d);
         retainEquals(m, cmp);
-        if (!m.isEmpty()) {
+        if (!m.isEmpty() && m.size()<5) {
           Rule rm = new Rule(m);
           if( !alreadyInList(rm) && ruleVerify(rm) ){  // only if not contradicts with other values
             //log("guess val="+this.sensorVal+" rule="+rm);
@@ -154,7 +161,8 @@ public class TargetHist {
     }
 
       if( rules.size()>5 ){
-        throw new RuntimeException("Too many rules "+rules.size());
+        //throw new RuntimeException("Too many rules "+rules.size());
+        rules.remove(rules.size()-1); // last is with least holds count
       }
   }
 

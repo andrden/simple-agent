@@ -255,7 +255,7 @@ public class GridWorld1 implements WorldGridView, Serializable {
   }
 
   void addNewObject(Color color) {
-    if (count(color) > width * height * 0.1) {
+    if (count(color) > width * height * 0.2) {
       return;
     }
     long t0 = System.currentTimeMillis();
