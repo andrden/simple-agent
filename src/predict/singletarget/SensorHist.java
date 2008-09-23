@@ -4,6 +4,7 @@ import mem.OneView;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,12 +15,22 @@ import java.util.Map;
 public class SensorHist {
   final String sensorName;
   Map<Object, TargetHist> vals = new HashMap<Object, TargetHist>();
+  Set<String> skippedViewKeys;
 
   public SensorHist(String sensorName) {
     this.sensorName = sensorName;
   }
 
-  void add(Object val, OneView v) {
+  public void setSkippedViewKeys(Set<String> skippedViewKeys) {
+    this.skippedViewKeys = skippedViewKeys;
+  }
+
+  /**
+   *
+   * @param val
+   * @param v - next state, v.prev finishes info which can be used for prediction
+   */
+  public void add(Object val, OneView v) {
     TargetHist th = vals.get(val);
     if (th == null) {
       th = new TargetHist(this, val);
@@ -28,7 +39,7 @@ public class SensorHist {
     th.addExample(v.prev);
   }
 
-  Object predict(OneView v) {
+  public Object predict(OneView v) {
     if( vals.size()==1 ){
       return vals.keySet().iterator().next();
     }
@@ -71,5 +82,13 @@ public class SensorHist {
       return null; //conflict
     }
     return retVal;
+  }
+
+  public boolean skipViewKey(String k) {
+    return skippedViewKeys!=null && skippedViewKeys.contains(k);
+  }
+
+  public String getSensorName() {
+    return sensorName;
   }
 }

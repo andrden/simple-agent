@@ -19,6 +19,10 @@ public class Hist extends OneView<Hist> {
 
   }
 
+  public Integer getResult() {
+    return (Integer) view.get(Hist.RES_KEY);
+  }
+
   public int getResultFromNext() {
     Integer i = (Integer) next.view.get(RES_KEY);
     if (i == null) {

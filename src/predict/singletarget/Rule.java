@@ -24,13 +24,25 @@ public class Rule {
   }
 
   boolean ruleHolds(OneView v) {
-    Map<ViewDepthElem, Object> cmp = TargetHist.deepState(v, ruleMaxDepth());
+    Map<ViewDepthElem, Object> cmp = deepState(v, ruleMaxDepth());
     Map<ViewDepthElem, Object> ruleCopy = new HashMap<ViewDepthElem, Object>(rule);
     TargetHist.retainEquals(ruleCopy, cmp);
     if (ruleCopy.size() == rule.size()) {
       return true;
     }
     return false;
+  }
+
+  Map<ViewDepthElem, Object> deepState(OneView v, int depth) {
+    Map<ViewDepthElem, Object> ret = new HashMap<ViewDepthElem, Object>();
+    for (int i = 0; v != null && i <= depth; i++) {
+      Map<String, Object> all = v.getViewAll();
+      for (String k : all.keySet()) {
+          ret.put(new ViewDepthElem(i, k), all.get(k));
+      }
+      v = v.prev;
+    }
+    return ret;
   }
 
   /**
@@ -45,7 +57,7 @@ public class Rule {
   }
 
   Rule ruleIntersect(OneView v) {
-    Map<ViewDepthElem, Object> cmp = TargetHist.deepState(v, ruleMaxDepth());
+    Map<ViewDepthElem, Object> cmp = deepState(v, ruleMaxDepth());
     Map<ViewDepthElem, Object> ruleCopy = new HashMap<ViewDepthElem, Object>(rule);
     TargetHist.retainEquals(ruleCopy, cmp);
     if (!ruleCopy.isEmpty()) {

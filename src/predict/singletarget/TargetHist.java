@@ -232,7 +232,7 @@ public class TargetHist {
         }
       }
       if (noOther) {
-        return new Rule(TargetHist.deepState(v,0));
+        return new Rule(deepState(v,0));
       }
     }
 
@@ -282,12 +282,14 @@ public class TargetHist {
     }
   }
 
-  static Map<ViewDepthElem, Object> deepState(OneView v, int depth) {
+  Map<ViewDepthElem, Object> deepState(OneView v, int depth) {
     Map<ViewDepthElem, Object> ret = new HashMap<ViewDepthElem, Object>();
     for (int i = 0; v != null && i <= depth; i++) {
       Map<String, Object> all = v.getViewAll();
       for (String k : all.keySet()) {
-        ret.put(new ViewDepthElem(i, k), all.get(k));
+        if( !sensor.skipViewKey(k) ){
+          ret.put(new ViewDepthElem(i, k), all.get(k));
+        }
       }
       v = v.prev;
     }
