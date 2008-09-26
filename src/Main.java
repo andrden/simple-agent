@@ -30,6 +30,7 @@ public class Main extends JFrame {
   WorldGridView world = new GridWorld1();
   int totalResult = 0;
   AlgIntf alg = new Alg((World) world);
+  final Object algCmdSync = new Object();
   int step = 0;
 
   Set<String> algCmdGroups = new HashSet<String>();
@@ -121,7 +122,7 @@ public class Main extends JFrame {
           if (autoNext.isSelected() || alg.hasPlans()) {
             //SwingUtilities.invokeLater(new Runnable(){
             //public void run() {
-            actionNext();
+            execCmd(null);
             //}
             //});
           }
@@ -136,7 +137,7 @@ public class Main extends JFrame {
     JButton next = new JButton("Next");
     next.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        actionNext();
+        execCmd(null);
       }
     });
     nextPanel.add(next);
@@ -224,29 +225,27 @@ public class Main extends JFrame {
     });
   }
 
-  void actionNext() {
-    execCmd(null);
-  }
-
   private void execCmd(String cmd) {
-    long t0 = System.currentTimeMillis();
-    cmd = alg.nextCmd(cmd);
-    long dt0 = System.currentTimeMillis() - t0;
-    step++;
+    synchronized(algCmdSync) {
+      long t0 = System.currentTimeMillis();
+      cmd = alg.nextCmd(cmd);
+      long dt0 = System.currentTimeMillis() - t0;
+      step++;
 
-    if (world.commandWrong(cmd)) {
-      System.out.println("Main: cmd wrong " + cmd);
+      if (world.commandWrong(cmd)) {
+        System.out.println("Main: cmd wrong " + cmd);
+      }
+      int result = world.command(cmd);
+      logView(result);
+
+      refreshAllViews();
+
+      long t1 = System.currentTimeMillis();
+      alg.cmdCompleted(result);
+      long dt1 = System.currentTimeMillis() - t1;
+
+      logArea.append(cmd + " n" + dt0 + " / r" + dt1 + "ms \n");
     }
-    int result = world.command(cmd);
-    logView(result);
-
-    refreshAllViews();
-
-    long t1 = System.currentTimeMillis();
-    alg.cmdCompleted(result);
-    long dt1 = System.currentTimeMillis() - t1;
-
-    logArea.append(cmd + " n" + dt0 + " / r" + dt1 + "ms \n");
   }
 
   private void refreshAllViews() {

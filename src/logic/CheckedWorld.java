@@ -35,6 +35,9 @@ public class CheckedWorld implements World, Serializable {
   public List<String> commands() {
     List<String> c = w.commands();
     for (String s : c) {
+      if( s.contains(" ") ){
+        throw new RuntimeException(s + " has spaces");
+      }
       if (sensors.contains(s)) {
         throw new RuntimeException(s + " is a sensor");
       }
