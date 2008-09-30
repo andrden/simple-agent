@@ -156,7 +156,7 @@ public class TestPredictor extends TestCase {
 
     // !=E is reasonable here
     List<String> cmds = Arrays.asList("L", "R", "N", "Fa", "Fb", "E", "Ep");
-    CmdPredictionTree tree = new PredictionTreeBuilder(p.getPredictor(), cmds).build(p.getLast());
+    CmdPredictionTree tree = new PredictionTreeBuilder(p.getPredictor(), cmds, 2).build(p.getLast());
     assertNotNull( tree.findPositiveResultOrSmacks() );
   }
 

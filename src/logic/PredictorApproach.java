@@ -5,6 +5,7 @@ import predict.CmdPredictionTree;
 import predict.PredictionTreeBuilder;
 import predict.singletarget.SensorHist;
 import mem.Hist;
+import mem.OneView;
 
 import java.util.*;
 
@@ -19,7 +20,23 @@ public class PredictorApproach implements Approach{
   Map<String,SensorHist> goodNextCmd = new HashMap<String,SensorHist>();
   LinkedList<Hist> lastSteps = new LinkedList<Hist>();
 
+  GoodNextCmdFeedback goodNextCmdFeedback = null;
+
+  class GoodNextCmdFeedback{
+
+  }
+
   public PredictorApproach() {
+  }
+
+  public List<SensorHist> goodNextCmdsWithPositiveRules(){
+    List<SensorHist> ret = new ArrayList<SensorHist>();
+    for( SensorHist s : goodNextCmd.values() ){
+      if( s.hasRulesForVal("+") ){
+        ret.add(s);
+      }
+    }
+    return ret;
   }
 
   SensorHist goodNextCmd(String cmd){
@@ -32,18 +49,18 @@ public class PredictorApproach implements Approach{
     return s;
   }
 
-  List<String> predictGoodNextCmd(Hist next){
+  List<String> predictGoodNextCmd(OneView next){
     List<String> bestSec=null;
     StringBuilder sb = new StringBuilder();
     for( SensorHist s : goodNextCmd.values() ){
 
-      - predict() here need be replaced with predictOrConflict()
-      - if we have a conflicting set of rules we need to check that,
-      APPLY that cmd to IMPROVE our MODEL
+//      - predict() here need be replaced with predictOrConflict()
+//      - if we have a conflicting set of rules we need to check that,
+//      APPLY that cmd to IMPROVE our MODEL
+//
+//      E - had conflicting + and -
 
-      E - had conflicting + and -             
-
-      if( s.valsSize()>1 /* has alternatives */ &&  "+".equals(s.predict(next)) ){
+      if( s.valsSize()>1 /* has alternatives */ &&  s.valAcceptedByRules(next, "+") ){
         List<String> sec = splitCmdSec(s.getSensorName());
         if( bestSec==null || bestSec.size() > sec.size() ){
           bestSec = sec;
@@ -61,6 +78,22 @@ public class PredictorApproach implements Approach{
       CmdSet cc2 = new CmdSet(bcmd.get(0));
       cc2.setFoundFrom("from sequence " + bcmd);
       return cc2;
+    }
+
+    //Prediction system knows that Ep at YELLOW causes ORANGE long before
+    //goodCmd encounters such happy event. We need to use that!
+    if( next!=null ){
+      CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 1)
+              .build(next);
+      for( String c : possibleCommands ){
+        OneView v = tree.viewOnCommand(c);
+        List<String> bcmd2 = predictGoodNextCmd(v);
+        if( bcmd2!=null ){
+          CmdSet cc2 = new CmdSet(c);
+          cc2.setFoundFrom("from sequence " + bcmd2 + " after prediction on " + c);
+          return cc2;
+        }
+      }
     }
 
 //    CmdPredictionTree.PositiveResultOrSmack positiveRes = null;

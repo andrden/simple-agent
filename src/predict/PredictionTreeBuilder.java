@@ -14,18 +14,19 @@ import java.util.*;
 public class PredictionTreeBuilder {
   Predictor predictor;
   List<String> allCommands;
-  static final int MAX_DEPTH = 2; // 5
+  int maxDepth;
 
-  public PredictionTreeBuilder(Predictor predictor, List<String> allCommands) {
+  public PredictionTreeBuilder(Predictor predictor, List<String> allCommands, int maxDepth) {
     this.predictor = predictor;
     this.allCommands = allCommands;
+    this.maxDepth = maxDepth;
   }
 
   public CmdPredictionTree build(OneView startPoint) {
     CmdPredictionTree predictionTree = new CmdPredictionTree(startPoint);
 
     List<CmdPredictionTree> readyNotes = Arrays.asList(predictionTree);
-    for (int i = 0; i < MAX_DEPTH && readyNotes.size() > 0; i++) {
+    for (int i = 0; i < maxDepth && readyNotes.size() > 0; i++) {
       List<CmdPredictionTree> notesToExplore = new ArrayList<CmdPredictionTree>();
       for (CmdPredictionTree pti : readyNotes) {
 //        if (pti.noop) {

@@ -24,6 +24,14 @@ public class CmdPredictionTree {
     this.start = start;
   }
 
+  public OneView viewOnCommand(String cmd){
+    CmdPredictionTree t = onCommand.get(cmd);
+    if( t!=null ){
+      return t.start;
+    }
+    return null;
+  }
+
   public CmdPredictionTree addChild(String command, OneView nextStart) {
     CmdPredictionTree predictionTree = new CmdPredictionTree(nextStart);
     onCommand.put(command, predictionTree);

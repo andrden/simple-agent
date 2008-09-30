@@ -43,6 +43,21 @@ public class SensorHist {
     return vals.size();
   }
 
+  /**
+   * Can be conflicting with other values if our prior experience is limited.
+   * @param v
+   * @param val
+   * @return
+   */
+  public boolean valAcceptedByRules(OneView v, Object val){
+    return vals.get(val).acceptedByRules(v)!=null;
+  }
+
+  public boolean hasRulesForVal(Object val){
+    TargetHist th = vals.get(val);
+    return ( th!=null && th.rules.size()>0 );
+  }
+
   public Object predict(OneView v) {
     if( vals.size()==1 ){
       return vals.keySet().iterator().next();
