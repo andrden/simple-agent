@@ -210,6 +210,10 @@ public class TestPredictor extends TestCase {
 
   }
 
+  void testRuleGeneralization(){
+    ...
+  }
+
   void addMultiMapAll(LinearPredictor p, String... views) {
     for( String v : views ){
       addMultiMap(p, v);

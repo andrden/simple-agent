@@ -28,7 +28,8 @@ public class SensorHist {
   /**
    *
    * @param val
-   * @param v - next state, v.prev finishes info which can be used for prediction
+   * @param v - next state, v.prev finishes info which can be used for prediction,
+   * v usually has info describing the result because of which this categorization is taking place.
    */
   public void add(Object val, OneView v) {
     TargetHist th = vals.get(val);

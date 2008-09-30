@@ -20,12 +20,6 @@ public class PredictorApproach implements Approach{
   Map<String,SensorHist> goodNextCmd = new HashMap<String,SensorHist>();
   LinkedList<Hist> lastSteps = new LinkedList<Hist>();
 
-  GoodNextCmdFeedback goodNextCmdFeedback = null;
-
-  class GoodNextCmdFeedback{
-
-  }
-
   public PredictorApproach() {
   }
 
@@ -68,7 +62,7 @@ public class PredictorApproach implements Approach{
         sb.append(", "+s.getSensorName());
       }
     }
-    System.out.println("predictGoodNextCmd()="+sb);
+    //System.out.println("predictGoodNextCmd()="+sb);
     return bestSec;
   }
 
@@ -118,12 +112,22 @@ public class PredictorApproach implements Approach{
         predictor.appendValsToLastView(sensors);
     }
 
-    String cmdSec(List<Hist> steps){
+    String cmdSeq(List<Hist> steps){
       StringBuilder sb = new StringBuilder();
       for( Hist h : steps ){
         sb.append(" "+h.prev.getCommand());
       }
       return sb.toString();
+    }
+
+    List<SensorHist> cmdSeqsStartingWith(String cmd){
+      List<SensorHist> ret =  new ArrayList<SensorHist>();
+      for( String s : goodNextCmd.keySet() ){
+        if( splitCmdSec(s).get(0).equals(cmd) ){
+          ret.add(goodNextCmd.get(s));
+        }
+      }
+      return ret;
     }
 
     List<String> splitCmdSec(String cmdSec){
@@ -149,8 +153,9 @@ public class PredictorApproach implements Approach{
 
           lastSteps.addLast(next);
 
+
           for( int i=lastSteps.size()-1; i>=0; i-- ){
-            String sec = cmdSec(lastSteps.subList(i, lastSteps.size()));
+            String sec = cmdSeq(lastSteps.subList(i, lastSteps.size()));
             if( next.getResult()>0 ){
               SensorHist s = goodNextCmd(sec);
               s.add("+", lastSteps.get(i));
@@ -159,6 +164,15 @@ public class PredictorApproach implements Approach{
               if( s!=null ){
                 s.add("-", lastSteps.get(i));
               }
+            }
+          }
+
+          boolean noop = next.viewMatch(next.prev, false);
+          if( next.getResult()<0 || noop){
+            String cmd = next.prev.getCommand();
+            List<SensorHist> seqs = cmdSeqsStartingWith(cmd);
+            for( SensorHist s : seqs ){
+              s.add("-", next);
             }
           }
 

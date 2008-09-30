@@ -51,6 +51,9 @@ public class TargetHist {
     if (v == null) {
       return;
     }
+    if( examples.size()>0 && examples.get(examples.size()-1)==v){
+      return;
+    }
     examples.add(v);
     if( sensor.vals.size()==1 ){
       // I'm the only one value ever obtained, no rules needed, always predict me

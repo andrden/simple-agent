@@ -28,7 +28,10 @@ public class Main extends JFrame {
   //WorldGridView grid = new SeqReact3();
   //WorldGridView world = new State1();
   WorldGridView world = new GridWorld1();
-  int totalResult = 0;
+
+  int totalResultPlus = 0;
+  int totalResultMinus = 0;
+
   AlgIntf alg = new Alg((World) world);
   final Object algCmdSync = new Object();
   int step = 0;
@@ -191,7 +194,8 @@ public class Main extends JFrame {
       ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(stateStorage()));
       o.writeObject(world);
       o.writeObject(alg);
-      o.writeInt(totalResult);
+      o.writeInt(totalResultPlus);
+      o.writeInt(totalResultMinus);
       o.writeInt(step);
       o.close();
     } catch (Exception e) {
@@ -204,7 +208,8 @@ public class Main extends JFrame {
       ObjectInputStream i = new ObjectInputStream(new FileInputStream(stateStorage()));
       world = (WorldGridView) i.readObject();
       alg = (AlgIntf) i.readObject();
-      totalResult = i.readInt();
+      totalResultPlus = i.readInt();
+      totalResultMinus = i.readInt();
       step = i.readInt();
       i.close();
     } catch (Exception e) {
@@ -250,8 +255,9 @@ public class Main extends JFrame {
 
   private void refreshAllViews() {
     gridCanvas.repaint();
-    String res = "Step #" + step + "   Result: " + totalResult + " of " + world.availableResults()
-            + " missed " + (world.availableResults() - totalResult);
+    String res = "Step #" + step + "   Result: " + totalResultPlus+"/"+totalResultMinus
+            + " of " + world.availableResults();
+            //+ " missed " + (world.availableResults() - totalResult);
     setTitle(res);
 
     for (String g : alg.cmdGroups()) {
@@ -263,7 +269,11 @@ public class Main extends JFrame {
   }
 
   void logView(int r) {
-    totalResult += r;
+    if( r>=0 ){
+      totalResultPlus += r;
+    }else{
+      totalResultMinus += r;
+    }
     logArea.append(r + "  " + world.view() + "\n");
     logAreaScrollPane.getViewport().setViewPosition(new Point(0, logArea.getHeight()));
 
