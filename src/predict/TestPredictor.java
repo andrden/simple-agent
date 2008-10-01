@@ -2,12 +2,15 @@ package predict;
 
 import junit.framework.TestCase;
 import mem.OneView;
+import mem.Hist;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 import org.w3c.dom.Document;
+import predict.singletarget.SensorHist;
 
 /**
  * Created by IntelliJ IDEA.
@@ -210,8 +213,38 @@ public class TestPredictor extends TestCase {
 
   }
 
-  void testRuleGeneralization(){
-    ...
+  public void testRuleGeneralization() throws Exception{
+    SensorHist sensor = new SensorHist("E");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.CMD_KEY));
+
+    LinearPredictor p = new LinearPredictor();
+    Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+            getClass().getResourceAsStream("data.xml"));
+    String txt = d.getElementsByTagName("testRuleGeneralization").item(0).getTextContent();
+    for( String s : txt.split("\n") ){
+      s = s.trim();
+      if( s.length()==0 ){
+        continue;
+      }
+
+      boolean quest=false;
+      if( s.startsWith("?") ){
+        quest=true;
+        s = s.substring(1);
+      }
+
+      String key = "-";
+      if( s.startsWith("+") ){
+        key = "+";
+        s = s.substring(1);
+      }
+      addMultiMap(p, s);
+      if( quest ){
+        assertTrue( sensor.valAcceptedByRules(p.last, key) );
+      }else{
+        sensor.add(key, p.last);
+      }
+    }
   }
 
   void addMultiMapAll(LinearPredictor p, String... views) {

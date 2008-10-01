@@ -28,4 +28,66 @@
 
 </testTooManyRules1>
 
+<testRuleGeneralization>
+   {f=WHITE, !=E, fl=YELLOW, r=GRAY, ff=BLACK, $=0, fr=WHITE, l=WHITE}
+   {f=BLACK, !=E, fl=YELLOW, r=WHITE, ff=YELLOW, $=0, fr=BLACK, l=YELLOW}
+   {f=WHITE, !=E, fl=WHITE, r=GRAY, ff=BLACK, $=0, fr=WHITE, l=BLACK}
+  {f=WHITE, !=E, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=GRAY, l=BLACK}
+   {f=BLACK, !=E, fl=BLACK, r=GRAY, ff=BLACK, $=0, fr=BLACK, l=BLACK}
+   {f=WHITE, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=BLACK}
+  {f=BLACK, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+  {f=BLACK, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=-1, fr=BLACK, l=WHITE}
+   {f=BLACK, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=WHITE, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=WHITE, r=ORANGE, ff=BLACK, $=0, fr=YELLOW, l=WHITE}
+   {f=WHITE, !=E, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=WHITE, l=BLACK}
+   {f=BLACK, !=E, fl=BLACK, r=YELLOW, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=BLACK, !=E, fl=BLACK, r=YELLOW, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=YELLOW, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=ORANGE, l=BLACK}
+   {f=BLACK, !=E, fl=BLACK, r=YELLOW, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=ORANGE, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=ORANGE}
+   {f=WHITE, !=E, fl=ORANGE, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=ORANGE}
+   {f=WHITE, !=E, fl=WHITE, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=BLACK}
+   {f=WHITE, !=E, fl=WHITE, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=BLACK}
+   {f=WHITE, !=E, fl=WHITE, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=WHITE}
+   {f=WHITE, !=E, fl=WHITE, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=WHITE}
+   {f=WHITE, !=E, fl=WHITE, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=WHITE}
+   {f=WHITE, !=E, fl=BLACK, r=WHITE, ff=ORANGE, $=0, fr=WHITE, l=BLACK}
+   {f=WHITE, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=ORANGE, l=BLACK}
+   {f=WHITE, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=ORANGE, l=BLACK}
+   {f=WHITE, !=E, fl=BLACK, r=WHITE, ff=YELLOW, $=1, fr=WHITE, l=BLACK}
+   {f=WHITE, !=E, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=WHITE, l=YELLOW}
+   {f=WHITE, !=E, fl=WHITE, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=WHITE}
+   {f=WHITE, !=E, fl=WHITE, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=WHITE}
+   {f=GRAY, !=E, fl=YELLOW, r=BLACK, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=GRAY, !=E, fl=YELLOW, r=BLACK, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=YELLOW, r=BLACK, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=BLACK, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=WHITE, l=BLACK}
+   {f=BLACK, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=YELLOW, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=BLACK}
+   {f=WHITE, !=E, fl=WHITE, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=WHITE}
+   {f=WHITE, !=E, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=BLACK, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=WHITE, l=BLACK}
+   {f=WHITE, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=BLACK}
+   {f=BLACK, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=WHITE, r=BLACK, ff=WHITE, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=WHITE, r=BLACK, ff=WHITE, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=WHITE, r=BLACK, ff=WHITE, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=WHITE, r=BLACK, ff=WHITE, $=0, fr=BLACK, l=WHITE}
+   {f=WHITE, !=E, fl=WHITE, r=BLACK, ff=WHITE, $=0, fr=BLACK, l=WHITE}
+
+
+
+
+
+
+   +{f=ORANGE, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=WHITE}
+   +{f=ORANGE, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=ORANGE, l=BLACK}
+   +{f=ORANGE, !=E, fl=BLACK, r=WHITE, ff=YELLOW, $=0, fr=WHITE, l=BLACK}
+   +{f=ORANGE, !=E, fl=YELLOW, r=WHITE, ff=BLACK, $=0, fr=WHITE, l=BLACK}
+  
+  ?+{f=ORANGE, !=E, fl=YELLOW, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}
+</testRuleGeneralization>
 </data>
