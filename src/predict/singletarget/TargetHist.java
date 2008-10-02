@@ -145,9 +145,31 @@ public class TargetHist {
   }
 
   private void newRuleToSet(Rule rm) {
-    if( sensorVal.equals("BLACK") && sensor.sensorName.equals("ff")  ){
-      System.currentTimeMillis();
+    removeMoveSpecificRules(rm);
+    for( Rule r : rules ){
+      Rule comm = rm.ruleIntersect(r);
+      if( comm!=null ){
+        if( ruleVerify(comm) ){
+          removeMoveSpecificRules(comm);
+          rm = comm;
+          break; // adding this new more generic rule instead
+        }
+      }
     }
+
+    rules.add(rm);
+    sortRulesByHoldsCount();
+//    if( examples.size()>10 && rules.size()>examples.size() ){
+//      throw new RuntimeException("Too many rules");
+//    }
+
+      if( rules.size()>5 ){
+        //throw new RuntimeException("Too many rules "+rules.size());
+        rules.remove(rules.size()-1); // last is with least holds count
+      }
+  }
+
+  private void removeMoveSpecificRules(Rule rm) {
     for( Iterator<Rule> i = rules.iterator(); i.hasNext(); ){
       Rule r = i.next();
       if( rm.widerOrEqTo(r) ){
@@ -156,17 +178,6 @@ public class TargetHist {
         i.remove(); // clean up list from partial extra complicated rules
       }
     }
-
-    rules.add(rm);
-    sortRulesByHoldsCount();
-    if( examples.size()>10 && rules.size()>examples.size() ){
-      throw new RuntimeException("Too many rules");
-    }
-
-      if( rules.size()>5 ){
-        //throw new RuntimeException("Too many rules "+rules.size());
-        rules.remove(rules.size()-1); // last is with least holds count
-      }
   }
 
   void sortRulesByHoldsCount(){

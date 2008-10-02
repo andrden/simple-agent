@@ -56,6 +56,15 @@ public class Rule {
     return ruleCopy.size()==rule.size(); // if contains all my conditions
   }
 
+  Rule ruleIntersect(Rule other){
+    Map<ViewDepthElem, Object> ruleCopy = new HashMap<ViewDepthElem, Object>(other.rule);
+    TargetHist.retainEquals(ruleCopy, rule);
+    if( ruleCopy.size()==0 ){
+      return null;
+    }
+    return new Rule(ruleCopy);
+  }
+
   Rule ruleIntersect(OneView v) {
     Map<ViewDepthElem, Object> cmp = deepState(v, ruleMaxDepth());
     Map<ViewDepthElem, Object> ruleCopy = new HashMap<ViewDepthElem, Object>(rule);
