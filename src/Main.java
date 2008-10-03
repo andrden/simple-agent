@@ -2,9 +2,11 @@ import intf.AlgIntf;
 import intf.World;
 import logic.Alg;
 import worlds.GridWorld1;
+import worlds.GridWorld2;
 import worlds.intf.WorldGridView;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -22,12 +24,8 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class Main extends JFrame {
-  //WorldGridView grid = new Feed0();
-  //WorldGridView grid = new SeqReact0();
-  //WorldGridView grid = new SeqReact3minus();
-  //WorldGridView grid = new SeqReact3();
-  //WorldGridView world = new State1();
-  WorldGridView world = new GridWorld1();
+  //WorldGridView world = new GridWorld1();
+  WorldGridView world = new GridWorld2();
 
   int totalResultPlus = 0;
   int totalResultMinus = 0;
@@ -45,7 +43,7 @@ public class Main extends JFrame {
   JPanel cmdPanel = new JPanel();
 
   JToggleButton autoNext = new JToggleButton("Run>>");
-  JLabel resultMark = new JLabel();
+  JLabel resultMark = new JLabel("|", SwingConstants.CENTER);
   JPanel gridPanel = new JPanel();
   Canvas gridCanvas = new Canvas() {
     public void update(Graphics g) {
@@ -113,7 +111,7 @@ public class Main extends JFrame {
     logAreaScrollPane.setPreferredSize(new Dimension(300, 300));
     add(logAreaScrollPane);
 
-    logView(0);
+    logView("", 0);
     setVisible(true);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.pack();
@@ -153,6 +151,12 @@ public class Main extends JFrame {
       }
     });
     nextPanel.add(byCauses);
+
+    resultMark.setBorder(
+            BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(5,5,5,5),        
+            BorderFactory.createLineBorder(Color.LIGHT_GRAY)));
+
     nextPanel.add(resultMark);
 
     JButton save = new JButton("Save*");
@@ -241,7 +245,7 @@ public class Main extends JFrame {
         System.out.println("Main: cmd wrong " + cmd);
       }
       int result = world.command(cmd);
-      logView(result);
+      logView(cmd, result);
 
       refreshAllViews();
 
@@ -255,8 +259,8 @@ public class Main extends JFrame {
 
   private void refreshAllViews() {
     gridCanvas.repaint();
-    String res = "Step #" + step + "   Result: " + totalResultPlus+"/"+totalResultMinus
-            + " of " + world.availableResults();
+    String res = "Step #" + step + "   Result: " + totalResultPlus+"/"+totalResultMinus;
+           // + " of " + world.availableResults();
             //+ " missed " + (world.availableResults() - totalResult);
     setTitle(res);
 
@@ -268,7 +272,7 @@ public class Main extends JFrame {
     }
   }
 
-  void logView(int r) {
+  void logView(String cmd, int r) {
     if( r>=0 ){
       totalResultPlus += r;
     }else{
@@ -279,15 +283,18 @@ public class Main extends JFrame {
 
     resultMark.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
     if (r == 0) {
-      resultMark.setText("");
+      resultMark.setText(cmd);
     } else {
-      resultMark.setText("Result: " + r);
+      resultMark.setText(cmd+ " res=" + r);
     }
     if (r < 0) {
       resultMark.setForeground(Color.RED);
     }
     if (r > 0) {
       resultMark.setForeground(Color.BLUE);
+    }
+    if (r == 0) {
+      resultMark.setForeground(Color.BLACK);
     }
   }
 

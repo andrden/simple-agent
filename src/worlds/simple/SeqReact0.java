@@ -1,11 +1,10 @@
-package worlds;
+package worlds.simple;
 
 import worlds.intf.WorldGridView;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 /**
  * Rules to learn from this world:
@@ -19,31 +18,14 @@ import java.util.Map;
  * Optional rules:
  * 4) L then R -> noop
  */
-public class Feed0 implements WorldGridView {
+public class SeqReact0 implements WorldGridView {
   int availableResults = 0;
-
   String[] FIELD_INIT = {
-          "bbbbbbb bbb",
-          "b yy  b byb",
-          "by by bbb b",
+          "b        ",
   };
 
-  enum Dir {
-    left(-1, 0, "<"),
-    up(0, -1, "^"),
-    right(1, 0, ">"),
-    down(0, 1, "V");
-
-    int dx;
-    int dy;
-    String ch;
-
-    Dir(int dx, int dy, String ch) {
-      this.dx = dx;
-      this.dy = dy;
-      this.ch = ch;
-    }
-  }
+  List<Color> seq = new ArrayList<Color>();
+  String correctCmd;
 
   int width = FIELD_INIT[0].length();
   int height = FIELD_INIT.length;
@@ -51,18 +33,30 @@ public class Feed0 implements WorldGridView {
   int x0 = 2;
   int y0 = 2;
   int dirIdx = 0;
-  int result = 0;
-  String prevCommand = null;
 
-  Feed0.Dir getDir() {
-    return Feed0.Dir.values()[dirIdx];
+  Random rnd = new Random();
+
+  void nextSeq() {
+    if (rnd.nextBoolean()) {
+      seq.add(Color.YELLOW);
+      correctCmd = "B";
+    } else {
+      seq.add(Color.BLACK);
+      correctCmd = "C";
+    }
+    availableResults++;
   }
 
-  Point getFwd() {
-    return new Point(x0 + getDir().dx, y0 + getDir().dy);
+
+  public int availableResults() {
+    return availableResults;
   }
 
-  public Feed0() {
+  public boolean commandWrong(String cmd) {
+    return false;
+  }
+
+  public SeqReact0() {
     for (int i = 0; i < width; i++) {
       for (int j = 0; j < height; j++) {
         Color c;
@@ -105,47 +99,36 @@ public class Feed0 implements WorldGridView {
     return cdata[x][y];
   }
 
-  public Color getColor(Point p) {
-    return getColorDisplay(p.x, p.y);
-  }
 
   public String getChar(int x, int y) {
-    if (x == x0 && y == y0) {
-      return getDir().ch;
-    }
+//    if( x==x0 && y==y0 ){
+//      return getDir().ch;
+//    }
     return null;
   }
 
 
   public java.util.List<String> commands() {
-    return Arrays.asList("L", "R", "N", "j");
+    return Arrays.asList("A", "B", "C");
   }
 
-
-  public int availableResults() {
-    return availableResults;
-  }
-
-  public boolean commandWrong(String cmd) {
-    return false;
-  }
 
   public int command(String cmd) {
-    availableResults++;
-    if (cmd.equals("j")) {
-      result = -1;
-    }
-    if (cmd.equals("L")) {
-      result = -1;
-    }
+    int result = 0;
 
-    prevCommand = cmd;
+    if (seq.isEmpty()) {
+      if (!cmd.equals(correctCmd)) {
+        result = -1;
+      }
+      nextSeq();
+    }
+    cdata[0][0] = seq.remove(0);
     return result;
   }
 
 
   public Map<String, Object> view() {
-    return Collections.singletonMap("f", (Object) getColor(getFwd()));
+    return Collections.singletonMap("f", (Object) getColorDisplay(0, 0));
   }
 
 

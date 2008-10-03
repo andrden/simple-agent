@@ -1,4 +1,4 @@
-package worlds;
+package worlds.simple;
 
 import worlds.intf.WorldGridView;
 
@@ -17,7 +17,7 @@ import java.util.*;
  * Optional rules:
  * 4) L then R -> noop
  */
-public class SeqReact3 implements WorldGridView {
+public class SeqReact3minus implements WorldGridView {
   int availableResults = 0;
 
   String[] FIELD_INIT = {
@@ -33,35 +33,35 @@ public class SeqReact3 implements WorldGridView {
   int x0 = 2;
   int y0 = 2;
   int dirIdx = 0;
+  int result = 0;
 
   Random rnd = new Random();
 
   void nextSeq() {
-    availableResults++;
-    int sw = (int) (Math.random() * 4);
-    switch (sw) {
+    //availableResults++;
+    switch ((int) (Math.random() * 4)) {
       case 0:
         seq.add(Color.YELLOW);
         seq.add(Color.BLACK);
-        //seq.add(Color.GREEN);
+        seq.add(Color.GREEN);
         correctCmd = "A";
         break;
       case 1:
         seq.add(Color.YELLOW);
         seq.add(Color.YELLOW);
-        //seq.add(Color.GREEN);
+        seq.add(Color.GREEN);
         correctCmd = "B";
         break;
       case 2:
         seq.add(Color.BLACK);
         seq.add(Color.YELLOW);
-        //seq.add(Color.GREEN);
+        seq.add(Color.GREEN);
         correctCmd = "B";
         break;
       case 3:
         seq.add(Color.BLACK);
         seq.add(Color.BLACK);
-        //seq.add(Color.GREEN);
+        seq.add(Color.GREEN);
         correctCmd = "C";
         break;
     }
@@ -73,8 +73,11 @@ public class SeqReact3 implements WorldGridView {
     return availableResults;
   }
 
+  public boolean commandWrong(String cmd) {
+    return false;
+  }
 
-  public SeqReact3() {
+  public SeqReact3minus() {
     for (int i = 0; i < width; i++) {
       for (int j = 0; j < height; j++) {
         Color c;
@@ -130,41 +133,21 @@ public class SeqReact3 implements WorldGridView {
     return Arrays.asList("A", "B", "C");
   }
 
-  public boolean commandWrong(String cmd) {
-    if (seq.isEmpty()) {
-      if (!cmd.equals(correctCmd)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
 
   public int command(String cmd) {
-    int result = 0;
-
     if (seq.isEmpty()) {
-      if (cmd.equals(correctCmd)) {
-        result = 1;
+      if (!cmd.equals(correctCmd)) {
+        result = -1;
       }
       nextSeq();
     }
     cdata[0][0] = seq.remove(0);
-    if (seq.isEmpty()) {
-      cdata[1][0] = Color.GREEN;
-    } else {
-      cdata[1][0] = Color.WHITE;
-    }
     return result;
   }
 
 
   public Map<String, Object> view() {
-    Map<String, Object> m = new HashMap<String, Object>();
-    m.put("f", getColorDisplay(0, 0));
-    m.put("s", getColorDisplay(1, 0));
-    m.put("r", "" + (int) (Math.random() * 100));
-    return m;
+    return Collections.singletonMap("f", (Object) getColorDisplay(0, 0));
   }
 
 

@@ -1,4 +1,4 @@
-package worlds;
+package worlds.simple;
 
 import utils.Utils;
 import worlds.intf.WorldGridView;
