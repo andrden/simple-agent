@@ -90,4 +90,26 @@
   
   ?+{f=ORANGE, !=E, fl=YELLOW, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}
 </testRuleGeneralization>
+
+<testRulesFor2Categories>
+  {f=BLACK, !=Fb, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}
+  +{f=ORANGE, !=E, fl=WHITE, r=BLUE, ff=BLACK, $=0, ffr=BLACK, frr=WHITE, rr=BLACK, fr=YELLOW, l=YELLOW}
+
+ {f=BLACK, !=Fb, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}
+ {f=BLACK, !=Fb, fl=WHITE, r=BLUE, ff=GRAY, $=0, ffr=YELLOW, frr=YELLOW, rr=ORANGE, fr=YELLOW, l=WHITE}
+ {f=BLACK, !=Fb, fl=WHITE, r=BLUE, ff=GRAY, $=0, ffr=YELLOW, frr=YELLOW, rr=WHITE, fr=YELLOW, l=WHITE}
+ {f=BLACK, !=Fb, fl=WHITE, r=BLUE, ff=GRAY, $=0, ffr=YELLOW, frr=YELLOW, rr=WHITE, fr=YELLOW, l=WHITE}
+ {f=WHITE, !=Fb, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=YELLOW, frr=GRAY, rr=GRAY, fr=BLACK, l=WHITE}
+
+ +{f=ORANGE, !=E, fl=YELLOW, r=BLUE, ff=GRAY, $=0, ffr=GRAY, frr=GRAY, rr=WHITE, fr=GRAY, l=YELLOW}
+ +{f=ORANGE, !=E, fl=YELLOW, r=BLUE, ff=GRAY, $=0, ffr=GRAY, frr=GRAY, rr=WHITE, fr=GRAY, l=YELLOW}
+ +{f=ORANGE, !=E, fl=YELLOW, r=BLUE, ff=GRAY, $=0, ffr=GRAY, frr=GRAY, rr=WHITE, fr=GRAY, l=YELLOW}
+
+  {f=WHITE, !=Fb, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=YELLOW, frr=GRAY, rr=GRAY, fr=BLACK, l=WHITE}
+  {f=WHITE, !=Fb, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=YELLOW, frr=GRAY, rr=GRAY, fr=BLACK, l=WHITE}
+  {f=BLACK, !=Fb, fl=WHITE, r=BLUE, ff=GRAY, $=0, ffr=YELLOW, frr=YELLOW, rr=WHITE, fr=YELLOW, l=WHITE}
+  {f=WHITE, !=Fb, fl=YELLOW, r=BLUE, ff=YELLOW, $=0, ffr=GRAY, frr=YELLOW, rr=WHITE, fr=BLACK, l=GRAY}
+
+ ?{f=WHITE, fl=YELLOW, r=BLUE, ff=YELLOW, $=-1, ffr=GRAY, frr=YELLOW, rr=WHITE, fr=BLACK, l=GRAY}
+</testRulesFor2Categories>
 </data>

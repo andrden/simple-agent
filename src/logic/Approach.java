@@ -14,6 +14,15 @@ import java.util.Map;
  */
 public interface Approach {
   CmdSet suggestCmd(Hist next, List<String> possibleCommands);
+
+  /**
+   *
+   * @param next
+   * @param cmd
+   * @return true if cmd acceptable, false if should be avoided
+   */
+  boolean assessCmd(Hist next, String cmd);
+
   String predictionInfo(Hist curr);
   void appendValsToLastView(Map<String, Object> sensors);
   public void add(Hist next);

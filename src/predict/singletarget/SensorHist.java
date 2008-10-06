@@ -32,12 +32,22 @@ public class SensorHist {
    * v usually has info describing the result because of which this categorization is taking place.
    */
   public void add(Object val, OneView v) {
+    TargetHist th = targetHist(val);
+    th.addExample(v.prev);
+  }
+
+  private TargetHist targetHist(Object val) {
     TargetHist th = vals.get(val);
     if (th == null) {
       th = new TargetHist(this, val);
       vals.put(val, th);
     }
-    th.addExample(v.prev);
+    return th;
+  }
+
+  public void addAsCurrent(Object val, OneView v) {
+    TargetHist th = targetHist(val);
+    th.addExample(v);
   }
 
   public int valsSize(){

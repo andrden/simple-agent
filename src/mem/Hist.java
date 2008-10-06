@@ -2,6 +2,8 @@ package mem;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
+import java.util.Arrays;
 
 /**
  */
@@ -78,21 +80,11 @@ public class Hist extends OneView<Hist> {
   }
 
   public boolean viewMatch(Map<String, Object> v, boolean withCmd) {
-    for (String k : v.keySet()) {
-      if (RES_KEY.equals(k)) {
-        continue;
-      }
-      if (!withCmd && CMD_KEY.equals(k)) {
-        continue;
-      }
-      if (!view.containsKey(k)) {
-        return false;
-      }
-      if (!view.get(k).equals(v.get(k))) {
-        return false;
-      }
+    if( withCmd ){
+      return viewMatch(v, Collections.singleton(RES_KEY));
+    }else{
+      return viewMatch(v, Arrays.asList(RES_KEY, CMD_KEY));
     }
-    return true;
   }
 
   public boolean viewMatch(Hist h, boolean withCmd) {

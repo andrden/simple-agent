@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,6 +25,10 @@ public class OneView<T extends OneView> implements Serializable {
     return view.get(key);
   }
 
+  /**
+   * Make a clone at the same level and same prev. view
+   * @return
+   */
   public OneView cloneBranch(){
     OneView v = new OneView();
     v.view = new HashMap<String, Object>(view);
@@ -56,5 +61,27 @@ public class OneView<T extends OneView> implements Serializable {
     Map<String, Object> ret = new HashMap<String, Object>(view);
     return ret;
   }
+
+  /**
+   * Everything in 'v' must be present (and equal) in local view - then 'true' is returned 
+   * @param v
+   * @param skipKeys
+   * @return
+   */
+  public boolean viewMatch(Map<String, Object> v, Collection<String> skipKeys) {
+    for (String k : v.keySet()) {
+      if( skipKeys.contains(k) ){
+        continue;
+      }
+      if (!view.containsKey(k)) {
+        return false;
+      }
+      if (!view.get(k).equals(v.get(k))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 
 }

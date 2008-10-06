@@ -42,7 +42,7 @@ public class Alg implements AlgIntf, Serializable {
 
   Attempts attempts = new Attempts(this);
   CountingTree<String> lastSuccessfulCommands = new CountingTree<String>();
-  private boolean cause1use=false;
+  //private boolean cause1use=false;
 
 
   public Alg(World w) {
@@ -107,9 +107,9 @@ public class Alg implements AlgIntf, Serializable {
     if (result > 0) {
       interestingEvents.add(history.getNextHist());
     }
-    if( cause1use ){
-      new CmdCompletionAnalyzer(this).resultAnalyse(result, view);
-    }
+//    if( cause1use ){
+//      new CmdCompletionAnalyzer(this).resultAnalyse(result, view);
+//    }
     approaches.get(0).add(history.next);
   }
 
@@ -348,14 +348,14 @@ public class Alg implements AlgIntf, Serializable {
     }
 
 
-      if( cause1use ){
-        PredictionTree pt = buildPredictionTreeOld(history.last, view);
-        PredictionTree.PositiveResultOrSmack smackRes = pt.findPositiveResultOrSmacks();
-        if (smackRes != null && smackRes.cmd != null) {
-          cc = new CmdSet(smackRes.cmd);
-          cc.setFoundFrom("using pred tree smacks " + smackRes.description);
-        }
-      }
+//      if( cause1use ){
+//        PredictionTree pt = buildPredictionTreeOld(history.last, view);
+//        PredictionTree.PositiveResultOrSmack smackRes = pt.findPositiveResultOrSmacks();
+//        if (smackRes != null && smackRes.cmd != null) {
+//          cc = new CmdSet(smackRes.cmd);
+//          cc.setFoundFrom("using pred tree smacks " + smackRes.description);
+//        }
+//      }
 
 
     double emotionCoef = cc == null ? experimentLevel : experimentLevelIfSmacks;
@@ -407,17 +407,32 @@ public class Alg implements AlgIntf, Serializable {
       return null;
     }
 
-    List<String> cset = new ArrayList<String>(cs);
+//    List<String> cset = new ArrayList<String>(cs);
 
-    filterNoopCmds(view, cset);
-    if (cset.size() == 0) {
-      // 0.1 - emotional koef.
-      // Low if we are before difficult controlled situation.
-      // High if we are in panic.
+//    filterNoopCmds(view, cset);
+//    if (cset.size() == 0) {
+//      // 0.1 - emotional koef.
+//      // Low if we are before difficult controlled situation.
+//      // High if we are in panic.
+//      nextCmd = attempts.randomWithIntent(cs, view);
+//    } else {
+//      nextCmd = attempts.randomWithIntent(cset, view);
+//    }
+
+    rpt:
+    for( int rpt=0; rpt<5; rpt++ ){
       nextCmd = attempts.randomWithIntent(cs, view);
-    } else {
-      nextCmd = attempts.randomWithIntent(cset, view);
+      for( Approach a : approaches ){
+        if( !a.assessCmd(history.getNextHist(), nextCmd.getCommand()) ){
+          log(nextCmd+" - not good");
+          continue rpt;
+        }
+      }
     }
+
+    // out of rpt attempts
+    nextCmd = attempts.randomWithIntent(cs, view);
+
     return nextCmd;
   }
 

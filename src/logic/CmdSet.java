@@ -26,6 +26,10 @@ public class CmdSet implements Serializable {
     this.command = command;
   }
 
+  public String getCommand() {
+    return command;
+  }
+
   public static CmdSet createWithSrc(String cmd, String foundFrom) {
     CmdSet c = new CmdSet(cmd);
     c.setFoundFrom(foundFrom);

@@ -5,11 +5,14 @@ import mem.OneView;
 import mem.Hist;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
+import java.io.IOException;
 
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 import predict.singletarget.SensorHist;
 
 /**
@@ -216,11 +219,20 @@ public class TestPredictor extends TestCase {
   public void testRuleGeneralization() throws Exception{
     SensorHist sensor = new SensorHist("E");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.CMD_KEY));
+    examplesForSensorHist(sensor, "testRuleGeneralization");
+  }
 
+  public void testRulesFor2Categories() throws Exception{
+    SensorHist sensor = new SensorHist("$");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.CMD_KEY));
+    examplesForSensorHist(sensor, "testRulesFor2Categories");
+  }
+
+  private void examplesForSensorHist(SensorHist sensor, String xmlElem) throws Exception {
     LinearPredictor p = new LinearPredictor();
     Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
             getClass().getResourceAsStream("data.xml"));
-    String txt = d.getElementsByTagName("testRuleGeneralization").item(0).getTextContent();
+    String txt = d.getElementsByTagName(xmlElem).item(0).getTextContent();
     for( String s : txt.split("\n") ){
       s = s.trim();
       if( s.length()==0 ){
@@ -240,9 +252,9 @@ public class TestPredictor extends TestCase {
       }
       addMultiMap(p, s);
       if( quest ){
-        assertTrue( sensor.valAcceptedByRules(p.last, key) );
+        assertTrue( key, sensor.valAcceptedByRules(p.last, key) );
       }else{
-        sensor.add(key, p.last);
+        sensor.addAsCurrent(key, p.last);
       }
     }
   }
