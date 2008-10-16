@@ -16,9 +16,9 @@ public class Predictor implements PredictorIntf {
   List<PredictorIntf> algs;
 
   public Predictor() {
-    algs = Arrays.asList(
-            new predict.singletarget.Pred(),
-            new predict.singlesensor.Pred()
+    algs = Arrays . <PredictorIntf> asList(
+            new predict.singletarget.Pred() /*,
+            new predict.singlesensor.Pred()   */
     );
   }
 

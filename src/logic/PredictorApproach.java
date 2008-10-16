@@ -9,6 +9,8 @@ import mem.OneView;
 
 import java.util.*;
 
+import utils.Utils;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -66,6 +68,12 @@ public class PredictorApproach implements Approach{
     return bestSec;
   }
 
+  /**
+   * Returns true if no objections
+   * @param next
+   * @param cmd
+   * @return
+   */
   public boolean assessCmd(Hist next, String cmd) {
     if( next==null ){
       return true;
@@ -95,21 +103,33 @@ public class PredictorApproach implements Approach{
       return cc2;
     }
 
+    if( next==null ){
+      return null;
+    }
+
     //Prediction system knows that Ep at YELLOW causes ORANGE long before
     //goodCmd encounters such happy event. We need to use that!
-    if( next!=null ){
-      CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 1)
-              .build(next);
-      for( String c : possibleCommands ){
-        OneView v = tree.viewOnCommand(c);
-        List<String> bcmd2 = predictGoodNextCmd(v);
-        if( bcmd2!=null ){
-          CmdSet cc2 = new CmdSet(c);
-          cc2.setFoundFrom("from sequence " + bcmd2 + " after prediction on " + c);
-          return cc2;
-        }
+    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 1)
+            .build(next);
+    MinMaxFinder minPredicted = new MinMaxFinder();
+    for( String c : possibleCommands ){
+      OneView v = tree.viewOnCommand(c);
+      minPredicted.add(v.getViewAll().size(), c);
+      List<String> bcmd2 = predictGoodNextCmd(v);
+      if( bcmd2!=null ){
+        CmdSet cc2 = new CmdSet(c);
+        cc2.setFoundFrom("from sequence " + bcmd2 + " after prediction on " + c);
+        return cc2;
       }
     }
+
+    List<String> minPredCmds = minPredicted.getMinNames();
+    if( minPredCmds.size()!=possibleCommands.size() ){
+      CmdSet cs = new CmdSet( Utils.rnd(minPredCmds) );
+      cs.setFoundFrom("min predicted");
+      return cs;
+    }
+
 
 //    CmdPredictionTree.PositiveResultOrSmack positiveRes = null;
 //    if( next!=null ){

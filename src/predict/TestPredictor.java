@@ -30,7 +30,7 @@ public class TestPredictor extends TestCase {
     assertEquals("1", p.predict().get("a"));
   }
 
-  public void test2() {
+  public void testFastLearn3() {
     LinearPredictor p = new LinearPredictor();
     p.add(new OneView().pt("a", "1"));
     p.add(new OneView().pt("a", "0"));
@@ -246,13 +246,15 @@ public class TestPredictor extends TestCase {
       }
 
       String key = "-";
-      if( s.startsWith("+") ){
-        key = "+";
+      if( s.startsWith("+") || s.startsWith("0") ){
+        key = s.substring(0,1);
         s = s.substring(1);
       }
       addMultiMap(p, s);
       if( quest ){
-        assertTrue( key, sensor.valAcceptedByRules(p.last, key) );
+        boolean acc = sensor.valAcceptedByRules(p.last, key);
+        Object wekaKey = sensor.predictWithWeka(p.last);
+        assertTrue( key, acc);
       }else{
         sensor.addAsCurrent(key, p.last);
       }

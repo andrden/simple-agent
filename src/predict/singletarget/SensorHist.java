@@ -2,9 +2,12 @@ package predict.singletarget;
 
 import mem.OneView;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import weka.classifiers.Classifier;
+import weka.classifiers.trees.J48;
+import weka.core.Instances;
+import weka.core.Instance;
 
 /**
  * Created by IntelliJ IDEA.
@@ -61,7 +64,53 @@ public class SensorHist {
    * @return
    */
   public boolean valAcceptedByRules(OneView v, Object val){
-    return vals.get(val).acceptedByRules(v)!=null;
+    return val.equals( predictWithWeka(v) );
+    //return vals.get(val).acceptedByRules(v)!=null;
+  }
+
+  public Object predictWithWeka(OneView vnew){
+    WekaBuilder wf = new WekaBuilder();
+    for( TargetHist t : vals.values() ){
+      for( OneView v : t.examples ){
+        wf.collectAttrs(v, skippedViewKeys);
+      }
+    }
+
+    LinkedHashSet<String> forRes = new LinkedHashSet<String>();
+    List forResObj = new ArrayList();
+    for( Object o : vals.keySet() ){
+      forResObj.add(o);
+      forRes.add(o.toString());
+    }
+    wf.mkInstances(forRes);
+
+
+    for( Object tv : vals.keySet() ){
+      TargetHist t = vals.get(tv);
+      for( OneView v : t.examples ){
+        wf.addInstance(v, tv.toString());
+      }
+    }
+
+    Instances ins = wf.getInstances();
+    Classifier classif = new J48();
+    try {
+      classif.buildClassifier(ins);
+    } catch (Exception e) {
+      throw new RuntimeException("",e);
+    }
+
+    double d;
+    try {
+      d = classif.classifyInstance( wf.mkInstance(vnew) );
+    } catch (Exception e) {
+      throw new RuntimeException("",e);
+    }
+
+    if( d== Instance.missingValue() ){
+      return null;
+    }
+    return forResObj.get((int)d);
   }
 
   public boolean hasRulesForVal(Object val){
@@ -70,6 +119,11 @@ public class SensorHist {
   }
 
   public Object predict(OneView v) {
+    return predictWithWeka(v);
+    //return predictSimpleWay(v);
+  }
+
+  private Object predictSimpleWay(OneView v) {
     if( vals.size()==1 ){
       return vals.keySet().iterator().next();
     }
@@ -91,7 +145,7 @@ public class SensorHist {
       return null; //conflict
     }
 
-    // now when rules tell nothing trying less definite comparisons: 
+    // now when rules tell nothing trying less definite comparisons:
     long hitCount2=0;
     Rule reason2=null;
     for (Object val : vals.keySet()) {
@@ -120,5 +174,20 @@ public class SensorHist {
 
   public String getSensorName() {
     return sensorName;
+  }
+
+  public String toString() {
+    StringBuilder sb = new StringBuilder(sensorName);
+    sb.append(" {");
+    boolean first=true;
+    for( Object v : vals.keySet() ){
+      if( !first ){
+        sb.append(",");
+      }
+      sb.append(v);
+      first = false;
+    }
+    sb.append("}");
+    return sb.toString();
   }
 }

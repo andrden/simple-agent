@@ -19,6 +19,9 @@ public class TargetHist {
 
   List<OneView> examples = new ArrayList<OneView>();
   List<Rule> rules = new ArrayList<Rule>();
+
+  //needed Rules log - created, invalidated by...
+  List<String> rulesLog = new ArrayList<String>();
   //List<Rule> oldRules = new ArrayList<Rule>();
 
   public int ruleHoldsCount(Rule r){
@@ -81,6 +84,7 @@ public class TargetHist {
       if( r.ruleHolds(v) ){ // rule was incorrect, alas
         removedRules.add(r);
         i.remove();
+        rulesLog.add(r+" removed by conflicting example "+v);
         rulesOk=false;
       }
     }
@@ -158,6 +162,7 @@ public class TargetHist {
     }
 
     rules.add(rm);
+    rulesLog.add(rm+" added");
     sortRulesByHoldsCount();
 //    if( examples.size()>10 && rules.size()>examples.size() ){
 //      throw new RuntimeException("Too many rules");
@@ -165,7 +170,8 @@ public class TargetHist {
 
       if( rules.size()>5 ){
         //throw new RuntimeException("Too many rules "+rules.size());
-        rules.remove(rules.size()-1); // last is with least holds count
+        Rule removed = rules.remove(rules.size()-1); // last is with least holds count
+        rulesLog.add(removed+" removed too many rules");
       }
   }
 
@@ -174,8 +180,10 @@ public class TargetHist {
       Rule r = i.next();
       if( rm.widerOrEqTo(r) ){
         i.remove(); // clean up list from partial more specific rules
+        rulesLog.add(r+" removed by wider "+rm);
       }else if( explainsMore(rm, r) ){
         i.remove(); // clean up list from partial extra complicated rules
+        rulesLog.add(r+" removed by explains more "+rm);
       }
     }
   }
@@ -236,19 +244,19 @@ public class TargetHist {
 
   Rule reasonablyAccepted(OneView v){
     // try complete equality:
-    if (fullExampleMatch(v)) {
-      // check same condition for other values of the same sensor
-      boolean noOther = true;
-      for (TargetHist hi : sensor.vals.values()) {
-        if (hi != this && hi.fullExampleMatch(v)) {
-          noOther = false;
-          break;
-        }
-      }
-      if (noOther) {
-        return new Rule(deepState(v,0));
-      }
-    }
+//    if (fullExampleMatch(v)) {
+//      // check same condition for other values of the same sensor
+//      boolean noOther = true;
+//      for (TargetHist hi : sensor.vals.values()) {
+//        if (hi != this && hi.fullExampleMatch(v)) {
+//          noOther = false;
+//          break;
+//        }
+//      }
+//      if (noOther) {
+//        return new Rule(deepState(v,0));
+//      }
+//    }
 
     Rule intersect = intersectingRulesAccept(v);
     if( intersect!=null ){
