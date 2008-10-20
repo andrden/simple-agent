@@ -20,6 +20,8 @@ public class SensorHist {
   Map<Object, TargetHist> vals = new HashMap<Object, TargetHist>();
   Set<String> skippedViewKeys;
 
+  Classifier lastUsedClassifier;
+
   public SensorHist(String sensorName) {
     this.sensorName = sensorName;
   }
@@ -93,24 +95,47 @@ public class SensorHist {
     }
 
     Instances ins = wf.getInstances();
-    Classifier classif = new J48();
+    J48 myClassif = new J48();
+    myClassif.setUnpruned(true);
+    myClassif.setConfidenceFactor(1);
+    lastUsedClassifier = myClassif;
     try {
-      classif.buildClassifier(ins);
+      lastUsedClassifier.buildClassifier(ins);
     } catch (Exception e) {
       throw new RuntimeException("",e);
     }
 
     double d;
     try {
-      d = classif.classifyInstance( wf.mkInstance(vnew) );
+//      { 0.5, 0.5 } - J48 classifies as first, bug! don't use classifyInstance()
+//      source code for J48?
+//      Weka alg comparison?
+
+//      ((SensorHist)((HashMap.Entry)((HashMap)((Pred)p.p.algs.toArray()[0]).singles).entrySet().toArray()[0]).getValue()).lastUsedClassifier = Type is unknown for '((HashMap)((Pred)p.p.algs.toArray()[0]).singles).entrySet()'
+//     -C 0.25 -M 2
+
+      // confidence must be 0.99, min=1
+
+      //      http://grb.mnsu.edu/grbts/doc/manual/J48_Decision_Trees.html
+
+      d = lastUsedClassifier.classifyInstance( wf.mkInstance(vnew) );
+      if( d == Instance.missingValue() ){
+        return null;
+      }
+
+      double[] dist = lastUsedClassifier.distributionForInstance( wf.mkInstance(vnew) );
+      int di = (int)d;
+      double dProb = dist[ di ];
+      for( int i=0; i<dist.length; i++ ){
+        if( i!=di && dist[i] >= dProb/1.5 ){
+          return null; // there is no really outstanding class predicted
+        }
+      }
+      return forResObj.get(di);
+
     } catch (Exception e) {
       throw new RuntimeException("",e);
     }
-
-    if( d== Instance.missingValue() ){
-      return null;
-    }
-    return forResObj.get((int)d);
   }
 
   public boolean hasRulesForVal(Object val){

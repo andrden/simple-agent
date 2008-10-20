@@ -39,12 +39,12 @@ public class TestPredictor extends TestCase {
     assertEquals("0", p.predict().get("a"));
   }
 
-  public void test3() {
+  public void testTimebased3() {
     String task = "110011>0";
     plainSeqProc(task);
   }
 
-  public void test4() {
+  public void testTimebased4() {
     // this is a complex task - we must treat 'inside rpt group 101' as another sensor
     // to see difference in situation
     String task = "0 1012 11 1012 01 10>12 0 101>2 0 10>12 101>2 11111 10>12 11";
@@ -117,7 +117,11 @@ public class TestPredictor extends TestCase {
     addMulti(p, "Abw0");
     addMulti(p, "Nhq1");
     addMulti(p, "Yhp0");
+    addMulti(p, "Nbp0");
     addMulti(p, "Avk0");
+
+    // J48 chooses 'c' as best describing attribute here, why???
+
     assertEquals("1", p.predict().get("d")); // A => d=1 (don't require Ab)
   }
 

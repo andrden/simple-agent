@@ -19,6 +19,7 @@ import weka.WekaUtils;
  */
 public class WekaBuilder {
   static final String RES_ATTR_NAME = "RES";
+  static final String ATTR_DUMMY_VALUE = "DUMMY";
 
   LinkedHashMap<String,LinkedHashSet<String>> attrs = new LinkedHashMap<String, LinkedHashSet<String>>();
   Instances ins;
@@ -40,6 +41,15 @@ public class WekaBuilder {
 
   void mkInstances(LinkedHashSet<String> forRes){
     attrs.put(RES_ATTR_NAME, forRes);
+
+    for( String aname : attrs.keySet() ){
+      LinkedHashSet<String> vs = attrs.get(aname);
+      if( vs.size()==1 ){ // J48 - Cannot handle unary class
+        vs.add(ATTR_DUMMY_VALUE);
+      }
+    }
+
+
     ins = new WekaUtils().makeInstances(attrs);
   }
 
@@ -62,9 +72,12 @@ public class WekaBuilder {
           wi.setValue(i, clazz);
         }
       }else{
-        String atVal = v.get(n).toString();
-        if( attrs.get(n).contains(atVal) ){
-          wi.setValue(i, atVal);
+        Object atValObj = v.get(n);
+        if( atValObj!=null ){
+          String atVal = atValObj.toString();
+          if( attrs.get(n).contains(atVal) ){
+            wi.setValue(i, atVal);
+          }
         }
       }
       i++;
