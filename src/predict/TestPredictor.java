@@ -111,18 +111,20 @@ public class TestPredictor extends TestCase {
 
   public void test9() { // test for rule auto-extension
     LinearPredictor p = new LinearPredictor();
-    addMulti(p, "Abz0");
-    addMulti(p, "Njq1");
-    addMulti(p, "Mjq0");
-    addMulti(p, "Abw0");
-    addMulti(p, "Nhq1");
-    addMulti(p, "Yhp0");
-    addMulti(p, "Nbp0");
-    addMulti(p, "Avk0");
+    addMulti(p, "1Abz0");
+    addMulti(p, "2Njq1");
+    addMulti(p, "1Mjq0");
+    addMulti(p, "2Abw0");
+    addMulti(p, "1Nhq1");
+    addMulti(p, "2Yhp0");
+    addMulti(p, "1Nbp0");
+    addMulti(p, "2Avk0");
 
     // J48 chooses 'c' as best describing attribute here, why???
+    // DecisionStump is correct here!
 
-    assertEquals("1", p.predict().get("d")); // A => d=1 (don't require Ab)
+    Object pred = p.predict().get("e");
+    assertEquals("1", pred); // b=A => e=1 (don't require Ab)
   }
 
   public void testFastLearn1(){
@@ -232,6 +234,12 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testRulesFor2Categories");
   }
 
+  public void testOverDecisionStump() throws Exception{
+    SensorHist sensor = new SensorHist("$");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
+    examplesForSensorHist(sensor, "testOverDecisionStump");
+  }
+
   private void examplesForSensorHist(SensorHist sensor, String xmlElem) throws Exception {
     LinearPredictor p = new LinearPredictor();
     Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
@@ -250,15 +258,20 @@ public class TestPredictor extends TestCase {
       }
 
       String key = "-";
-      if( s.startsWith("+") || s.startsWith("0") ){
-        key = s.substring(0,1);
-        s = s.substring(1);
+      int posBr = s.indexOf("{");
+      if( posBr>0 ){
+        key = s.substring(0,posBr);
+        s = s.substring(posBr);
       }
+//      if( s.startsWith("+") || s.startsWith("0") ){
+//        key = s.substring(0,1);
+//        s = s.substring(1);
+//      }
       addMultiMap(p, s);
       if( quest ){
         boolean acc = sensor.valAcceptedByRules(p.last, key);
         Object wekaKey = sensor.predictWithWeka(p.last);
-        assertTrue( key, acc);
+        assertTrue( "key="+key+" wekaKey="+wekaKey, acc);
       }else{
         sensor.addAsCurrent(key, p.last);
       }

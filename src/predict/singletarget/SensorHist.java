@@ -6,6 +6,9 @@ import java.util.*;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.trees.J48;
+import weka.classifiers.trees.ADTree;
+import weka.classifiers.trees.BFTree;
+import weka.classifiers.trees.DecisionStump;
 import weka.core.Instances;
 import weka.core.Instance;
 
@@ -37,8 +40,19 @@ public class SensorHist {
    * v usually has info describing the result because of which this categorization is taking place.
    */
   public void add(Object val, OneView v) {
+    if( v.prev==null ){
+      return;
+    }
     TargetHist th = targetHist(val);
     th.addExample(v.prev);
+  }
+
+  public void printAsTestCase(){
+    for( TargetHist th : vals.values() ){
+      for( OneView v : th.examples ){
+        System.out.println(th.sensorVal+""+v.getViewAll());
+      }
+    }
   }
 
   private TargetHist targetHist(Object val) {
@@ -95,9 +109,16 @@ public class SensorHist {
     }
 
     Instances ins = wf.getInstances();
-    J48 myClassif = new J48();
-    myClassif.setUnpruned(true);
-    myClassif.setConfidenceFactor(1);
+    if( ins.numInstances()<1 ){
+      return null;
+    }
+
+//    J48 myClassif = new J48();
+//    myClassif.setUnpruned(true);
+//    myClassif.setConfidenceFactor(1);
+
+    DecisionStump myClassif  = new DecisionStump();
+
     lastUsedClassifier = myClassif;
     try {
       lastUsedClassifier.buildClassifier(ins);
