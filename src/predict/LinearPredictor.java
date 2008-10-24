@@ -18,6 +18,10 @@ public class LinearPredictor {
     p.add(v);
   }
 
+  void printRules(String elem){
+    p.printRules(elem);
+  }
+
   OneView predict() {
     return p.predictNext(last);
   }

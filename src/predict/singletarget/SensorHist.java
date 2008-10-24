@@ -11,6 +11,8 @@ import weka.classifiers.trees.BFTree;
 import weka.classifiers.trees.DecisionStump;
 import weka.core.Instances;
 import weka.core.Instance;
+import weka.core.Attribute;
+import com.pmstation.common.utils.PrivateFieldGetter;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,6 +26,14 @@ public class SensorHist {
   Set<String> skippedViewKeys;
 
   Classifier lastUsedClassifier;
+  Map<OneView, Object> exampleVals = new HashMap<OneView, Object>();
+
+  List<SRule> srules = new ArrayList<SRule>();
+  Object otherRulesResult = null;
+
+  public void printRules(){
+    System.out.println(srules+" other="+otherRulesResult);
+  }
 
   public SensorHist(String sensorName) {
     this.sensorName = sensorName;
@@ -45,6 +55,159 @@ public class SensorHist {
     }
     TargetHist th = targetHist(val);
     th.addExample(v.prev);
+    exampleVals.put(v.prev, val);
+
+    analyzeNewExample(val, v.prev);
+  }
+
+  boolean ruleIsExtra(SRule r){
+    for( SRule s : srules ){
+      if( r.condWiderIn(s) ){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  List<OneView> unexplainedExamples(){
+    List<OneView> ret = new ArrayList<OneView>();
+    for( OneView ve : exampleVals.keySet() ){
+      boolean found=false;
+      for( SRule r : srules ){
+        if( r.condHolds(ve) ){
+          found=true;
+          break;
+        }
+      }
+      if( !found ){
+        ret.add(ve);
+      }
+    }
+    return ret;
+  }
+
+  void analyzeNewExample(Object val, OneView vprev){
+    if( exampleVals.size()<2 ){
+      return;
+    }
+
+    boolean explained = verifyRules(val, vprev);
+    if( explained ){
+      return;
+    }
+    Object commonResAll = commonResValue(exampleVals.keySet());
+    if( commonResAll!=null ){
+      otherRulesResult=commonResAll;
+      return;
+    }
+
+    DecisionStump myClassif  = new DecisionStump();
+    WekaBuilder wf = buildClassifier(myClassif);
+    Attribute splitAttr = wf.getInstances().attribute((Integer)PrivateFieldGetter.evalNoEx(myClassif,"m_AttIndex"));
+
+    String attName = splitAttr.name();
+    Object attVal = wf.attVal(attName, ((Double)PrivateFieldGetter.evalNoEx(myClassif,"m_SplitPoint")).intValue() );
+    SRule r = new SRule(attName, attVal, true);
+    ruleCheckAndAdd(r);
+    SRule rn = new SRule(attName, attVal, false);
+    ruleCheckAndAdd(rn);
+
+    List<OneView> unex = unexplainedExamples();
+//    for( int j=0; j<10 && !unexplainedExamples().isEmpty(); j++ ){
+//      for( int i=unex.size()-1; i>=0; i-- ){
+//        if( singleAttrRuleHunting(unex.get(i)) ){
+//          //must try to find beautiful solution - break;
+//        }
+//      }
+//      unex = unexplainedExamples();
+//    }
+
+    Object commonResUnex = commonResValue(unex);
+    if( commonResUnex!=null ){
+      otherRulesResult=commonResUnex;
+    }
+  }
+
+  boolean singleAttrRuleHunting(OneView vprev){
+    Map<String, Object> m = vprev.getViewAll();
+    for( String s : m.keySet() ){
+      SRule r = new SRule(s, m.get(s), true);
+      if( ruleCheckAndAdd(r) ){
+        //must try to find beautiful solution - return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean ruleCheckAndAdd(SRule r) {
+    List<OneView> exList = examplesCondHolds(r);
+    Object commonRes = commonResValue(exList);
+    if( commonRes!=null ){
+      r.setResult(commonRes);
+      if( !ruleIsExtra(r) ){
+        srules.add(r);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean verifyRules(Object val, OneView vprev) {
+    boolean explained=false;
+    for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
+      SRule sr = i.next();
+      if( sr.condHolds(vprev) ){
+        if( !sr.getResult().equals(val) ){
+          i.remove();
+        }else{
+          explained=true;
+        }
+      }
+    }
+    if( !explained && otherRulesResult!=null ){
+      if( !otherRulesResult.equals(val) ){
+        otherRulesResult=null;
+      }else{
+        explained=true;
+      }
+    }
+    return explained;
+  }
+
+  Object predictWithDecisionStumpBasedRules(OneView vprev){
+    for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
+      SRule sr = i.next();
+      if( sr.condHolds(vprev) ){
+        return sr.getResult();
+      }
+    }
+    return otherRulesResult; // can be null if no global 'other' rule exists
+  }
+
+  Object commonResValue(Collection<OneView> exList){
+    Object com = null;
+    for( OneView v : exList ){
+      Object r = exampleVals.get(v);
+      if( com!=null ){
+        if( !com.equals(r) ){
+          return null;
+        }
+      }
+      com=r;
+    }
+    return com;
+  }
+
+  List<OneView> examplesCondHolds(SRule r){
+    List<OneView> ret = new ArrayList<OneView>();
+    for( TargetHist t : vals.values() ){
+      for( OneView v : t.examples ){
+        if( r.condHolds(v) ){
+          ret.add(v);
+        }
+      }
+    }
+    return ret;
   }
 
   public void printAsTestCase(){
@@ -84,21 +247,18 @@ public class SensorHist {
     //return vals.get(val).acceptedByRules(v)!=null;
   }
 
-  public Object predictWithWeka(OneView vnew){
-    WekaBuilder wf = new WekaBuilder();
+  public WekaBuilder buildClassifier(Classifier myClassif){
+    WekaBuilder wf = new WekaBuilder(myClassif);
     for( TargetHist t : vals.values() ){
       for( OneView v : t.examples ){
         wf.collectAttrs(v, skippedViewKeys);
       }
     }
 
-    LinkedHashSet<String> forRes = new LinkedHashSet<String>();
-    List forResObj = new ArrayList();
     for( Object o : vals.keySet() ){
-      forResObj.add(o);
-      forRes.add(o.toString());
+      wf.addForRes(o);
     }
-    wf.mkInstances(forRes);
+    wf.mkInstances();
 
 
     for( Object tv : vals.keySet() ){
@@ -113,18 +273,24 @@ public class SensorHist {
       return null;
     }
 
+
+    try {
+      wf.getClassifier().buildClassifier(ins);
+    } catch (Exception e) {
+      throw new RuntimeException("",e);
+    }
+    return wf;
+  }
+
+  public Object predictWithWeka(OneView vnew){
 //    J48 myClassif = new J48();
 //    myClassif.setUnpruned(true);
 //    myClassif.setConfidenceFactor(1);
 
     DecisionStump myClassif  = new DecisionStump();
-
     lastUsedClassifier = myClassif;
-    try {
-      lastUsedClassifier.buildClassifier(ins);
-    } catch (Exception e) {
-      throw new RuntimeException("",e);
-    }
+
+    WekaBuilder wf = buildClassifier(myClassif);
 
     double d;
     try {
@@ -152,7 +318,7 @@ public class SensorHist {
           return null; // there is no really outstanding class predicted
         }
       }
-      return forResObj.get(di);
+      return wf.getForResObj(di);
 
     } catch (Exception e) {
       throw new RuntimeException("",e);
@@ -165,7 +331,8 @@ public class SensorHist {
   }
 
   public Object predict(OneView v) {
-    return predictWithWeka(v);
+    return predictWithDecisionStumpBasedRules(v);
+    //return predictWithWeka(v);
     //return predictSimpleWay(v);
   }
 

@@ -17,6 +17,13 @@ public class Pred implements PredictorIntf {
 
   OneView lastOneView;
 
+  public void printRules(String elem) {
+    SensorHist sh = singles.get(elem);
+    if( sh!=null ){
+      sh.printRules();
+    }
+  }
+
   public void printRules(){
     for( String s : singles.keySet() ){
       log( " === " + s);

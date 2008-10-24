@@ -30,13 +30,13 @@ public class WekaUtils {
 
   }
 
-  public Instances makeInstances(LinkedHashMap<String, LinkedHashSet<String>> attrsMap){
+  public Instances makeInstances(LinkedHashMap<String, LinkedHashSet<Object>> attrsMap){
     FastVector attrs = new FastVector();
     for( String aname : attrsMap.keySet() ){
-      LinkedHashSet<String> vs = attrsMap.get(aname);
+      LinkedHashSet<Object> vs = attrsMap.get(aname);
       FastVector my_nominal_values = new FastVector(vs.size());
-      for( String s : vs ){
-        my_nominal_values.addElement(s);
+      for( Object s : vs ){
+        my_nominal_values.addElement(s.toString());
       }
       Attribute att = new Attribute(aname, my_nominal_values);
       attrs.addElement(att);

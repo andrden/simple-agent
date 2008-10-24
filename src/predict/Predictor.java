@@ -22,6 +22,11 @@ public class Predictor implements PredictorIntf {
     );
   }
 
+  public void printRules(String elem) {
+    for( PredictorIntf i : algs ){
+      i.printRules(elem);
+    }
+  }
 
   public void appendValsToLastView(Map<String, Object> sensors) {
     for (PredictorIntf i : algs) {

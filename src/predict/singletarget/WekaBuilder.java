@@ -2,14 +2,12 @@ package predict.singletarget;
 
 import mem.OneView;
 
-import java.util.LinkedHashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import weka.core.Instances;
 import weka.core.Instance;
 import weka.WekaUtils;
+import weka.classifiers.Classifier;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,8 +19,17 @@ public class WekaBuilder {
   static final String RES_ATTR_NAME = "RES";
   static final String ATTR_DUMMY_VALUE = "DUMMY";
 
-  LinkedHashMap<String,LinkedHashSet<String>> attrs = new LinkedHashMap<String, LinkedHashSet<String>>();
+  final Classifier clsf;
+  LinkedHashMap<String,LinkedHashSet<Object>> attrs = new LinkedHashMap<String, LinkedHashSet<Object>>();
   Instances ins;
+
+  LinkedHashSet<Object> forRes = new LinkedHashSet<Object>();
+  List forResObj = new ArrayList();
+
+
+  public WekaBuilder(Classifier clsf) {
+    this.clsf = clsf;
+  }
 
   void collectAttrs(OneView v, Set<String> skippedViewKeys){
     Map<String, Object> m = v.getViewAll();
@@ -30,25 +37,29 @@ public class WekaBuilder {
       if( skippedViewKeys!=null && skippedViewKeys.contains(s) ){
         continue;
       }
-      LinkedHashSet<String> vals = attrs.get(s);
+      LinkedHashSet<Object> vals = attrs.get(s);
       if( vals==null ){
-        vals = new LinkedHashSet<String>();
+        vals = new LinkedHashSet<Object>();
         attrs.put(s, vals);
       }
-      vals.add(m.get(s).toString());
+      vals.add(m.get(s));
     }
   }
 
-  void mkInstances(LinkedHashSet<String> forRes){
+  void addForRes(Object o){
+    forResObj.add(o);
+    forRes.add(o.toString());
+  }
+
+  void mkInstances(){
     attrs.put(RES_ATTR_NAME, forRes);
 
     for( String aname : attrs.keySet() ){
-      LinkedHashSet<String> vs = attrs.get(aname);
+      LinkedHashSet<Object> vs = attrs.get(aname);
       if( vs.size()==1 ){ // J48 - Cannot handle unary class
         vs.add(ATTR_DUMMY_VALUE);
       }
     }
-
 
     ins = new WekaUtils().makeInstances(attrs);
   }
@@ -87,5 +98,24 @@ public class WekaBuilder {
 
   public Instances getInstances() {
     return ins;
+  }
+
+  public Classifier getClassifier() {
+    return clsf;
+  }
+
+  public Object getForResObj(int idx){
+    return forResObj.get(idx);
+  }
+
+  public Object attVal(String attName, int idx){
+    int i=0;
+    for( Object v : attrs.get(attName) ){
+      if( i==idx ){
+        return v;
+      }
+      i++;
+    }
+    throw new NoSuchElementException(attName+" "+idx);
   }
 }

@@ -16,4 +16,6 @@ public interface PredictorIntf {
   void appendValsToLastView(Map<String, Object> sensors);
 
   OneView predictNext(OneView v);
+
+  void printRules(String elem);
 }

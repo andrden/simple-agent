@@ -23,7 +23,7 @@ import predict.singletarget.SensorHist;
  */
 public class TestPredictor extends TestCase {
 
-  public void test1() {
+  public void testTimebased1() {
     LinearPredictor p = new LinearPredictor();
     p.add(new OneView().pt("a", "1"));
     p.add(new OneView().pt("a", "1"));
@@ -61,7 +61,7 @@ public class TestPredictor extends TestCase {
 //    plainSeqProc(task);
 //  }
 
-  public void test5() {
+  public void testTimebased5() {
     // this is a complex task - we must treat 'inside rpt group 101' as another sensor
     // to see difference in situation
     String task = "0 101 22 101 00 10>1 00 10>1 10>1 11111 10>1 11";
@@ -70,13 +70,13 @@ public class TestPredictor extends TestCase {
 
   public void test6() {
     LinearPredictor p = new LinearPredictor();
-    addMulti(p, "A0");
-    addMulti(p, "B2");
-    addMulti(p, "A3");
-    addMulti(p, "B2");
-    addMulti(p, "C4");
-    addMulti(p, "A1");
-    assertEquals("2", p.predict().get("b"));
+    addMulti(p, "A0");p.printRules("b");  //2
+    addMulti(p, "B2");p.printRules("b");  //3
+    addMulti(p, "A3");p.printRules("b");  //2
+    addMulti(p, "B2");p.printRules("b");  //4
+    addMulti(p, "C4");p.printRules("b");  //1
+    addMulti(p, "A1");p.printRules("b");  //?
+    assertEquals("2", p.predict().get("b"));  // a=A => b=2
   }
 
   public void test7() {
@@ -99,14 +99,14 @@ public class TestPredictor extends TestCase {
 
   public void test8() {
     LinearPredictor p = new LinearPredictor();
-    addMulti(p, "An1");
-    addMulti(p, "Ak1");
-    addMulti(p, "Ap0");
-    addMulti(p, "Ap1");
-    addMulti(p, "Ak1");
-    addMulti(p, "Bk0");
-    addMulti(p, "Ak0");
-    assertEquals("0", p.predict().get("c")); // b=k => c=0
+    addMulti(p, "zAn1");
+    addMulti(p, "zAk1");
+    addMulti(p, "xAp0");
+    addMulti(p, "xAp1");
+    addMulti(p, "zAk1");
+    addMulti(p, "zBk0");
+    addMulti(p, "xAk0");
+    assertEquals("0", p.predict().get("d")); // c=k => d=0
   }
 
   public void test9() { // test for rule auto-extension
