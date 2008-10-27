@@ -53,11 +53,7 @@ public class SensorHist {
     if( v.prev==null ){
       return;
     }
-    TargetHist th = targetHist(val);
-    th.addExample(v.prev);
-    exampleVals.put(v.prev, val);
-
-    analyzeNewExample(val, v.prev);
+    addAsCurrent(val, v.prev);
   }
 
   boolean ruleIsExtra(SRule r){
@@ -113,14 +109,14 @@ public class SensorHist {
     ruleCheckAndAdd(rn);
 
     List<OneView> unex = unexplainedExamples();
-//    for( int j=0; j<10 && !unexplainedExamples().isEmpty(); j++ ){
-//      for( int i=unex.size()-1; i>=0; i-- ){
-//        if( singleAttrRuleHunting(unex.get(i)) ){
-//          //must try to find beautiful solution - break;
-//        }
-//      }
-//      unex = unexplainedExamples();
-//    }
+    for( int j=0; j<10 && !unexplainedExamples().isEmpty(); j++ ){
+      for( int i=unex.size()-1; i>=0; i-- ){
+        if( singleAttrRuleHunting(unex.get(i)) ){
+          //must try to find beautiful solution - break;
+        }
+      }
+      unex = unexplainedExamples();
+    }
 
     Object commonResUnex = commonResValue(unex);
     if( commonResUnex!=null ){
@@ -141,6 +137,9 @@ public class SensorHist {
 
   private boolean ruleCheckAndAdd(SRule r) {
     List<OneView> exList = examplesCondHolds(r);
+    if( exList.size()<2 ){
+      return false;
+    }
     Object commonRes = commonResValue(exList);
     if( commonRes!=null ){
       r.setResult(commonRes);
@@ -230,6 +229,9 @@ public class SensorHist {
   public void addAsCurrent(Object val, OneView v) {
     TargetHist th = targetHist(val);
     th.addExample(v);
+    exampleVals.put(v, val);
+
+    analyzeNewExample(val, v);
   }
 
   public int valsSize(){
@@ -243,7 +245,8 @@ public class SensorHist {
    * @return
    */
   public boolean valAcceptedByRules(OneView v, Object val){
-    return val.equals( predictWithWeka(v) );
+    return val.equals( predict(v) );
+    //return val.equals( predictWithWeka(v) );
     //return vals.get(val).acceptedByRules(v)!=null;
   }
 

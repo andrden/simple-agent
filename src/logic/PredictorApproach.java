@@ -114,7 +114,7 @@ public class PredictorApproach implements Approach{
     MinMaxFinder minPredicted = new MinMaxFinder();
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
-      minPredicted.add(v.getViewAll().size(), c);
+      minPredicted.add(v==null ? 0 : v.getViewAll().size(), c);
       List<String> bcmd2 = predictGoodNextCmd(v);
       if( bcmd2!=null ){
         CmdSet cc2 = new CmdSet(c);

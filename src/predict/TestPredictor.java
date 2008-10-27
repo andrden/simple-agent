@@ -30,7 +30,7 @@ public class TestPredictor extends TestCase {
     assertEquals("1", p.predict().get("a"));
   }
 
-  public void testFastLearn3() {
+  public void testTimebasedFastLearn3() {
     LinearPredictor p = new LinearPredictor();
     p.add(new OneView().pt("a", "1"));
     p.add(new OneView().pt("a", "0"));
@@ -77,6 +77,13 @@ public class TestPredictor extends TestCase {
     addMulti(p, "C4");p.printRules("b");  //1
     addMulti(p, "A1");p.printRules("b");  //?
     assertEquals("2", p.predict().get("b"));  // a=A => b=2
+//@data
+//2,B,3
+//0,A,2
+//3,A,2
+//4,C,1
+//2,B,4
+
   }
 
   public void test7() {
@@ -240,8 +247,15 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testOverDecisionStump");
   }
 
+  public void testSimple2atrr() throws Exception{
+    SensorHist sensor = new SensorHist("$");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
+    examplesForSensorHist(sensor, "testSimple2atrr");
+  }
+
+
   private void examplesForSensorHist(SensorHist sensor, String xmlElem) throws Exception {
-    LinearPredictor p = new LinearPredictor();
+    //LinearPredictor p = new LinearPredictor();
     Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
             getClass().getResourceAsStream("data.xml"));
     String txt = d.getElementsByTagName(xmlElem).item(0).getTextContent();
@@ -267,13 +281,14 @@ public class TestPredictor extends TestCase {
 //        key = s.substring(0,1);
 //        s = s.substring(1);
 //      }
-      addMultiMap(p, s);
+      //addMultiMap(p, s);
+      OneView v = mkOneView(s);
       if( quest ){
-        boolean acc = sensor.valAcceptedByRules(p.last, key);
-        Object wekaKey = sensor.predictWithWeka(p.last);
+        boolean acc = sensor.valAcceptedByRules(v, key);
+        Object wekaKey = sensor.predictWithWeka(v);
         assertTrue( "key="+key+" wekaKey="+wekaKey, acc);
       }else{
-        sensor.addAsCurrent(key, p.last);
+        sensor.addAsCurrent(key, v);
       }
     }
   }
@@ -285,6 +300,11 @@ public class TestPredictor extends TestCase {
   }
 
   void addMultiMap(LinearPredictor p, String view) {
+    OneView v = mkOneView(view);
+    p.add(v);
+  }
+
+  private OneView mkOneView(String view) {
     OneView v = new OneView();
     String[] elems = view.split("[{}, ]+");
     for( String e : elems ){
@@ -293,7 +313,7 @@ public class TestPredictor extends TestCase {
         v.pt(pair[0], pair[1]);
       }
     }
-    p.add(v);
+    return v;
   }
 
   void addMulti(LinearPredictor p, String view) {

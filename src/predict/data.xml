@@ -298,4 +298,74 @@
 
   ?0{f=WHITE, !=Fb, fl=GRAY, r=BLUE, ff=GRAY, $=0, ffr=GRAY, frr=WHITE, rr=WHITE, fr=WHITE, l=WHITE}
 </testOverDecisionStump>
+<testSimple2atrr>
+  0{f=YELLOW, fl=WHITE, !=Ep, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
+  0{f=ORANGE, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
+  0{f=WHITE, fl=WHITE, !=Fb, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=ORANGE, fr=YELLOW, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=N, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=ORANGE, fr=YELLOW, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=Fx, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=ORANGE, fr=YELLOW, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=R, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=ORANGE, fr=YELLOW, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=E, ff=BLACK, r=BLUE, $=1, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
+  0{f=WHITE, fl=WHITE, !=Fx, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
+  0{f=WHITE, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
+  0{f=WHITE, fl=WHITE, !=N, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=WHITE, fr=YELLOW, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=Ep, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=WHITE, fr=YELLOW, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=Fx, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=WHITE, fr=YELLOW, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=E, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=WHITE, fr=YELLOW, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=E, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=WHITE, fr=YELLOW, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=WHITE, fr=YELLOW, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=N, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=GRAY, rr=WHITE, fr=WHITE, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=E, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=GRAY, rr=WHITE, fr=WHITE, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=Ep, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=GRAY, rr=WHITE, fr=WHITE, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=GRAY, rr=WHITE, fr=WHITE, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=Ep, ff=YELLOW, r=BLUE, $=0, frr=WHITE, ffr=YELLOW, rr=WHITE, fr=WHITE, l=YELLOW}
+  0{f=BLACK, fl=WHITE, !=Ep, ff=YELLOW, r=BLUE, $=0, frr=WHITE, ffr=YELLOW, rr=WHITE, fr=WHITE, l=YELLOW}
+  0{f=BLACK, fl=WHITE, !=E, ff=YELLOW, r=BLUE, $=0, frr=WHITE, ffr=YELLOW, rr=WHITE, fr=WHITE, l=YELLOW}
+  0{f=BLACK, fl=WHITE, !=E, ff=YELLOW, r=BLUE, $=0, frr=WHITE, ffr=YELLOW, rr=WHITE, fr=WHITE, l=YELLOW}
+  0{f=BLACK, fl=WHITE, !=N, ff=YELLOW, r=BLUE, $=0, frr=WHITE, ffr=YELLOW, rr=WHITE, fr=WHITE, l=YELLOW}
+  0{f=BLACK, fl=WHITE, !=R, ff=YELLOW, r=BLUE, $=0, frr=WHITE, ffr=YELLOW, rr=WHITE, fr=WHITE, l=YELLOW}
+  0{f=WHITE, fl=WHITE, !=Fb, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=GRAY, rr=WHITE, fr=WHITE, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=N, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=Ep, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=Ep, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=Fx, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  0{f=BLACK, fl=WHITE, !=E, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  1{f=ORANGE, fl=WHITE, !=E, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=0, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+  -1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+
+  ?-1{f=BLACK, fl=WHITE, !=Fb, ff=WHITE, r=BLUE, $=-1, frr=GRAY, ffr=WHITE, rr=WHITE, fr=GRAY, l=WHITE}
+</testSimple2atrr>
 </data>
