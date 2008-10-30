@@ -82,6 +82,17 @@ public class SensorHist {
     return ret;
   }
 
+  SRule ruleByDecisionStump(Collection<OneView> views){
+    DecisionStump myClassif  = new DecisionStump();
+    WekaBuilder wf = buildClassifier(myClassif, views);
+    Attribute splitAttr = wf.getInstances().attribute((Integer)PrivateFieldGetter.evalNoEx(myClassif,"m_AttIndex"));
+
+    String attName = splitAttr.name();
+    Object attVal = wf.attVal(attName, ((Double)PrivateFieldGetter.evalNoEx(myClassif,"m_SplitPoint")).intValue() );
+    SRule r = new SRule(attName, attVal, true);
+    return r;
+  }
+
   void analyzeNewExample(Object val, OneView vprev){
     if( exampleVals.size()<2 ){
       return;
@@ -96,16 +107,9 @@ public class SensorHist {
       otherRulesResult=commonResAll;
       return;
     }
-
-    DecisionStump myClassif  = new DecisionStump();
-    WekaBuilder wf = buildClassifier(myClassif);
-    Attribute splitAttr = wf.getInstances().attribute((Integer)PrivateFieldGetter.evalNoEx(myClassif,"m_AttIndex"));
-
-    String attName = splitAttr.name();
-    Object attVal = wf.attVal(attName, ((Double)PrivateFieldGetter.evalNoEx(myClassif,"m_SplitPoint")).intValue() );
-    SRule r = new SRule(attName, attVal, true);
+    SRule r = ruleByDecisionStump( exampleVals.keySet() );
     ruleCheckAndAdd(r);
-    SRule rn = new SRule(attName, attVal, false);
+    SRule rn = r.negate();
     ruleCheckAndAdd(rn);
 
     List<OneView> unex = unexplainedExamples();
@@ -136,7 +140,10 @@ public class SensorHist {
   }
 
   private boolean ruleCheckAndAdd(SRule r) {
-    List<OneView> exList = examplesCondHolds(r);
+    if( r.complexity()>2 ){
+      return false;
+    }
+    List<OneView> exList = examplesCondHolds(exampleVals.keySet(), r);
     if( exList.size()<2 ){
       return false;
     }
@@ -147,6 +154,19 @@ public class SensorHist {
         srules.add(r);
         return true;
       }
+    }else{
+      SRule subR = ruleByDecisionStump(exList);
+      SRule rnew = r.andRule(subR);
+      if( rnew.complexity()>r.complexity() ){
+        ruleCheckAndAdd(rnew);
+        ruleCheckAndAdd(rnew.negate());
+      }
+
+//      List<OneView> exList2 = examplesCondHolds(exList, subR);
+//      Object commonRes2 = commonResValue(exList2);
+//      if( commonRes2!=null && exList2.size()>=2 ){
+//        System.na n oTime();
+//      }
     }
     return false;
   }
@@ -197,13 +217,11 @@ public class SensorHist {
     return com;
   }
 
-  List<OneView> examplesCondHolds(SRule r){
+  List<OneView> examplesCondHolds(Collection<OneView> views, SRule r) {
     List<OneView> ret = new ArrayList<OneView>();
-    for( TargetHist t : vals.values() ){
-      for( OneView v : t.examples ){
-        if( r.condHolds(v) ){
-          ret.add(v);
-        }
+    for (OneView v : views) {
+      if (r.condHolds(v)) {
+        ret.add(v);
       }
     }
     return ret;
@@ -250,12 +268,10 @@ public class SensorHist {
     //return vals.get(val).acceptedByRules(v)!=null;
   }
 
-  public WekaBuilder buildClassifier(Classifier myClassif){
+  public WekaBuilder buildClassifier(Classifier myClassif, Collection<OneView> views){
     WekaBuilder wf = new WekaBuilder(myClassif);
-    for( TargetHist t : vals.values() ){
-      for( OneView v : t.examples ){
-        wf.collectAttrs(v, skippedViewKeys);
-      }
+    for( OneView v : views ){
+      wf.collectAttrs(v, skippedViewKeys);
     }
 
     for( Object o : vals.keySet() ){
@@ -264,11 +280,8 @@ public class SensorHist {
     wf.mkInstances();
 
 
-    for( Object tv : vals.keySet() ){
-      TargetHist t = vals.get(tv);
-      for( OneView v : t.examples ){
-        wf.addInstance(v, tv.toString());
-      }
+    for( OneView v : views ){
+      wf.addInstance(v, exampleVals.get(v).toString());
     }
 
     Instances ins = wf.getInstances();
@@ -293,7 +306,7 @@ public class SensorHist {
     DecisionStump myClassif  = new DecisionStump();
     lastUsedClassifier = myClassif;
 
-    WekaBuilder wf = buildClassifier(myClassif);
+    WekaBuilder wf = buildClassifier(myClassif, exampleVals.keySet());
 
     double d;
     try {

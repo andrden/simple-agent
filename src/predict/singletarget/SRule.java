@@ -16,12 +16,40 @@ public class SRule {
   private Map<String,Object> negCond = new HashMap<String,Object>();
   private Object result;
 
+  SRule(){
+
+  }
+
+  int complexity(){
+    return cond.size() + negCond.size();
+  }
+
   SRule(String attr, Object val, boolean positive){
     if( positive ){
       cond.put(attr, val);
     }else{
       negCond.put(attr, val);
     }
+  }
+
+  SRule negate(){
+    SRule n = new SRule();
+    n.cond.putAll(negCond);
+    n.negCond.putAll(cond);
+    n.result=result;
+    return n;
+  }
+
+  SRule andRule(SRule r){
+    SRule n = new SRule();
+
+    n.cond.putAll(cond);
+    n.cond.putAll(r.cond);
+
+    n.negCond.putAll(negCond);
+    n.negCond.putAll(r.negCond);
+
+    return n;
   }
 
   boolean condWiderIn(SRule other){
