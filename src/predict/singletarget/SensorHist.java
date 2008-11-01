@@ -118,6 +118,7 @@ public class SensorHist {
         if( singleAttrRuleHunting(unex.get(i)) ){
           //must try to find beautiful solution - break;
         }
+     //   break; // process only last example
       }
       unex = unexplainedExamples();
     }
@@ -193,11 +194,32 @@ public class SensorHist {
     return explained;
   }
 
-  Object predictWithDecisionStumpBasedRules(OneView vprev){
+  Object predictWithDecisionStumpBasedRulesNoOther(OneView vprev){
+    Object res=null;
     for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
       SRule sr = i.next();
       if( sr.condHolds(vprev) ){
-        return sr.getResult();
+        Object resi = sr.getResult();
+        if( resi!=null && res!=null && !resi.equals(res) ){
+          throw new RuntimeException("rule conflict");
+        }
+        res = resi;
+      }
+    }
+    return res;
+  }
+
+  Object predictWithDecisionStumpBasedRules(OneView vprev){
+    Object res = predictWithDecisionStumpBasedRulesNoOther(vprev);
+    if( res!=null ){
+      return res;
+    }
+    if( otherRulesResult==null ){
+      // we don't have prediction at hand
+      singleAttrRuleHunting(vprev); // maybe we can derive it right now
+      res = predictWithDecisionStumpBasedRulesNoOther(vprev);
+      if( res!=null ){
+        return res;
       }
     }
     return otherRulesResult; // can be null if no global 'other' rule exists

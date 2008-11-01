@@ -297,7 +297,64 @@
   -1{f=WHITE, fl=WHITE, !=Fb, ff=GRAY, r=BLUE, $=0, frr=GRAY, ffr=YELLOW, rr=WHITE, fr=BLACK, l=WHITE}
 
   ?0{f=WHITE, !=Fb, fl=GRAY, r=BLUE, ff=GRAY, $=0, ffr=GRAY, frr=WHITE, rr=WHITE, fr=WHITE, l=WHITE}
-</testOverDecisionStump>
+
+<!--
+old code (full scan), single test
+srules = {java.util.ArrayList@784} size = 19
+[0] = {predict.singletarget.SRule@787}"{!=N} neg {} => 0"
+[1] = {predict.singletarget.SRule@788}"{f=ORANGE, !=E} neg {} => 1"
+[2] = {predict.singletarget.SRule@789}"{!=R} neg {} => 0"
+[3] = {predict.singletarget.SRule@790}"{} neg {f=ORANGE, rr=WHITE} => 0"
+[4] = {predict.singletarget.SRule@791}"{f=ORANGE, l=WHITE} neg {} => 1"
+[5] = {predict.singletarget.SRule@792}"{ffr=GRAY} neg {} => 0"
+[6] = {predict.singletarget.SRule@793}"{!=Fx} neg {} => 0"
+[7] = {predict.singletarget.SRule@794}"{!=L} neg {} => 0"
+[8] = {predict.singletarget.SRule@795}"{f=ORANGE, fl=BLACK} neg {} => 1"
+[9] = {predict.singletarget.SRule@796}"{$=1} neg {} => 0"
+[10] = {predict.singletarget.SRule@797}"{f=ORANGE, frr=BLACK} neg {} => 1"
+[11] = {predict.singletarget.SRule@798}"{!=Ep} neg {} => 0"
+[12] = {predict.singletarget.SRule@799}"{f=YELLOW} neg {} => 0"
+[13] = {predict.singletarget.SRule@800}"{frr=YELLOW} neg {} => 0"
+[14] = {predict.singletarget.SRule@801}"{fl=YELLOW} neg {} => 0"
+[15] = {predict.singletarget.SRule@802}"{ff=WHITE} neg {} => 0"
+[16] = {predict.singletarget.SRule@803}"{rr=YELLOW} neg {} => 0"
+[17] = {predict.singletarget.SRule@804}"{f=BLACK, !=Fb} neg {} => -1"
+[18] = {predict.singletarget.SRule@805}"{!=Fb, ff=GRAY} neg {} => -1"
+
+new code, single test
+
+srules = {java.util.ArrayList@786} size = 8
+[0] = {predict.singletarget.SRule@792}"{!=N} neg {} => 0"
+[1] = {predict.singletarget.SRule@793}"{f=ORANGE, !=E} neg {} => 1"
+[2] = {predict.singletarget.SRule@794}"{!=R} neg {} => 0"
+[3] = {predict.singletarget.SRule@795}"{} neg {f=ORANGE, rr=WHITE} => 0"
+[4] = {predict.singletarget.SRule@796}"{f=ORANGE, l=WHITE} neg {} => 1"
+[5] = {predict.singletarget.SRule@797}"{f=BLACK, !=Fb} neg {} => -1"
+[6] = {predict.singletarget.SRule@798}"{!=Fb, ff=GRAY} neg {} => -1"
+[7] = {predict.singletarget.SRule@799}"{!=Fx} neg {} => 0"
+
+new code, package
+
+srules = {java.util.ArrayList@819} size = 10
+[0] = {predict.singletarget.SRule@821}"{!=N} neg {} => 0"
+[1] = {predict.singletarget.SRule@822}"{f=ORANGE, !=E} neg {} => 1"
+[2] = {predict.singletarget.SRule@823}"{!=R} neg {} => 0"
+[3] = {predict.singletarget.SRule@824}"{} neg {f=ORANGE, rr=WHITE} => 0"
+[4] = {predict.singletarget.SRule@825}"{f=ORANGE, l=WHITE} neg {} => 1"
+[5] = {predict.singletarget.SRule@826}"{!=L} neg {} => 0"
+[6] = {predict.singletarget.SRule@827}"{f=BLACK, !=Fb} neg {} => -1"
+[7] = {predict.singletarget.SRule@828}"{} neg {!=Fb, $=0} => 0"
+[8] = {predict.singletarget.SRule@871}"{!=Fb, ff=GRAY} neg {} => -1"
+[9] = {predict.singletarget.SRule@872}"{ffr=GRAY} neg {} => 0"
+otherRulesResult = null
+
+
+{!=Fb, ff=GRAY} neg {} => -1 - this is just a false fear for ff=GRAY ! 
+-->
+</testOverDecisionStump - see which rule produces correct '0' in full scan and single test runs
+        Last from unexamplained rules, incorrect!!! - reordered
+        Use only really LAST example
+        >
 <testSimple2atrr>
   0{f=YELLOW, fl=WHITE, !=Ep, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
   0{f=ORANGE, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
