@@ -295,6 +295,7 @@
   -1{f=BLACK, fl=BLACK, !=Fb, ff=BLACK, r=BLUE, $=0, frr=GRAY, ffr=BLACK, rr=WHITE, fr=WHITE, l=YELLOW}
   -1{f=BLACK, fl=BLACK, !=Fb, ff=BLACK, r=BLUE, $=0, frr=GRAY, ffr=BLACK, rr=WHITE, fr=WHITE, l=YELLOW}
   -1{f=WHITE, fl=WHITE, !=Fb, ff=GRAY, r=BLUE, $=0, frr=GRAY, ffr=YELLOW, rr=WHITE, fr=BLACK, l=WHITE}
+  0{f=WHITE, fl=WHITE, !=Fb, ff=GRAY, r=BLUE, $=0, frr=GRAY, ffr=YELLOW, rr=WHITE, fr=YELLOW, l=WHITE}
 
   ?0{f=WHITE, !=Fb, fl=GRAY, r=BLUE, ff=GRAY, $=0, ffr=GRAY, frr=WHITE, rr=WHITE, fr=WHITE, l=WHITE}
 
@@ -349,12 +350,15 @@ srules = {java.util.ArrayList@819} size = 10
 otherRulesResult = null
 
 
-{!=Fb, ff=GRAY} neg {} => -1 - this is just a false fear for ff=GRAY ! 
--->
-</testOverDecisionStump - see which rule produces correct '0' in full scan and single test runs
+{!=Fb, ff=GRAY} neg {} => -1 - this is just a false fear for ff=GRAY !
+
+
+ - see which rule produces correct '0' in full scan and single test runs
         Last from unexamplained rules, incorrect!!! - reordered
         Use only really LAST example
-        >
+-->
+</testOverDecisionStump>
+
 <testSimple2atrr>
   0{f=YELLOW, fl=WHITE, !=Ep, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
   0{f=ORANGE, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}

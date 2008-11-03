@@ -26,7 +26,7 @@ public class SensorHist {
   Set<String> skippedViewKeys;
 
   Classifier lastUsedClassifier;
-  Map<OneView, Object> exampleVals = new HashMap<OneView, Object>();
+  LinkedHashMap<OneView, Object> exampleVals = new LinkedHashMap<OneView, Object>();
 
   List<SRule> srules = new ArrayList<SRule>();
   Object otherRulesResult = null;
@@ -118,7 +118,7 @@ public class SensorHist {
         if( singleAttrRuleHunting(unex.get(i)) ){
           //must try to find beautiful solution - break;
         }
-     //   break; // process only last example
+        break; // process only last example
       }
       unex = unexplainedExamples();
     }
@@ -196,14 +196,18 @@ public class SensorHist {
 
   Object predictWithDecisionStumpBasedRulesNoOther(OneView vprev){
     Object res=null;
+    SRule rres=null;
     for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
       SRule sr = i.next();
       if( sr.condHolds(vprev) ){
         Object resi = sr.getResult();
         if( resi!=null && res!=null && !resi.equals(res) ){
-          throw new RuntimeException("rule conflict");
+          //throw new RuntimeException("rule conflict "+sr+" "+rres);
+          System.out.println("rule conflict "+sensorName+" "+sr+" "+rres+" view="+vprev);
+          return null;
         }
         res = resi;
+        rres = sr;
       }
     }
     return res;
