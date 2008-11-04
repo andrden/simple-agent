@@ -3,6 +3,7 @@ import intf.World;
 import logic.Alg;
 import worlds.GridWorld1;
 import worlds.GridWorld2;
+import worlds.GridWorld3;
 import worlds.intf.WorldGridView;
 
 import javax.swing.*;
@@ -25,7 +26,8 @@ import java.util.Set;
  */
 public class Main extends JFrame {
   //WorldGridView world = new GridWorld1();
-  WorldGridView world = new GridWorld2();
+  //WorldGridView world = new GridWorld2();
+  WorldGridView world = new GridWorld3();
 
   int totalResultPlus = 0;
   int totalResultMinus = 0;
