@@ -39,6 +39,7 @@ public class Utils {
     if (c.equals(Color.WHITE)) return "WHITE";
     if (c.equals(Color.GRAY)) return "GRAY";
     if (c.equals(Color.BLUE)) return "BLUE";
+    if (c.equals(Color.CYAN)) return "CYAN";
     throw new IllegalArgumentException("" + c);
   }
 

@@ -22,18 +22,45 @@ public class PredictorApproach implements Approach{
   Map<String,SensorHist> goodNextCmd = new HashMap<String,SensorHist>();
   LinkedList<Hist> lastSteps = new LinkedList<Hist>();
 
+  Plan currentPlan = null;
+  class Plan{
+    List<String> cmds;
+    int pos=0;
+
+    Plan(List<String> cmds) {
+      this.cmds = cmds;
+    }
+
+    CmdSet nextCmdSet(){
+      String desc = cmds.toString();
+      String cmd = next();
+      CmdSet cs = new CmdSet(cmd);
+      cs.setFoundFrom("currentPlan "+desc);
+      return cs;
+    }
+
+    String next(){
+      String c = cmds.get(pos);
+      pos++;
+      if( pos>=cmds.size() ){
+        currentPlan=null;
+      }
+      return c;
+    }
+  }
+
   public PredictorApproach() {
   }
 
-  public List<SensorHist> goodNextCmdsWithPositiveRules(){
-    List<SensorHist> ret = new ArrayList<SensorHist>();
-    for( SensorHist s : goodNextCmd.values() ){
-      if( s.hasRulesForVal("+") ){
-        ret.add(s);
-      }
-    }
-    return ret;
-  }
+//  public List<SensorHist> goodNextCmdsWithPositiveRules(){
+//    List<SensorHist> ret = new ArrayList<SensorHist>();
+//    for( SensorHist s : goodNextCmd.values() ){
+//      if( s.hasRulesForVal("+") ){
+//        ret.add(s);
+//      }
+//    }
+//    return ret;
+//  }
 
   SensorHist goodNextCmd(String cmd){
     SensorHist s = goodNextCmd.get(cmd);
@@ -96,11 +123,21 @@ public class PredictorApproach implements Approach{
   }
 
   public CmdSet suggestCmd(Hist next, List<String> possibleCommands) {
+    if( currentPlan!=null ){
+      return currentPlan.nextCmdSet();
+    }
+
     List<String> bcmd = predictGoodNextCmd(next);
     if( bcmd!=null ){
-      CmdSet cc2 = new CmdSet(bcmd.get(0));
+      currentPlan = new Plan(bcmd);
+      return currentPlan.nextCmdSet();
+      /*
+      String command = bcmd.get(0);
+      CmdSet cc2 = new CmdSet(command);
+      //CmdSet cc2 = new CmdSet(bcmd.toArray(new String[0]));
       cc2.setFoundFrom("from sequence " + bcmd);
       return cc2;
+      */
     }
 
     if( next==null ){

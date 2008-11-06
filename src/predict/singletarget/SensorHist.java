@@ -20,9 +20,9 @@ import com.pmstation.common.utils.PrivateFieldGetter;
  * Date: 4/8/2008
  * Time: 17:37:58
  */
-public class SensorHist {
+public class SensorHist implements java.io.Serializable{
   final String sensorName;
-  Map<Object, TargetHist> vals = new HashMap<Object, TargetHist>();
+  Set<Object> vals = new HashSet<Object>();
   Set<String> skippedViewKeys;
 
   Classifier lastUsedClassifier;
@@ -253,26 +253,15 @@ public class SensorHist {
     return ret;
   }
 
-  public void printAsTestCase(){
-    for( TargetHist th : vals.values() ){
-      for( OneView v : th.examples ){
-        System.out.println(th.sensorVal+""+v.getViewAll());
-      }
+  public void printAsTestCase() {
+    for (OneView v : exampleVals.keySet()) {
+      System.out.println(exampleVals.get(v) + "" + v.getViewAll());
     }
   }
 
-  private TargetHist targetHist(Object val) {
-    TargetHist th = vals.get(val);
-    if (th == null) {
-      th = new TargetHist(this, val);
-      vals.put(val, th);
-    }
-    return th;
-  }
 
   public void addAsCurrent(Object val, OneView v) {
-    TargetHist th = targetHist(val);
-    th.addExample(v);
+    vals.add(val);
     exampleVals.put(v, val);
 
     analyzeNewExample(val, v);
@@ -300,7 +289,7 @@ public class SensorHist {
       wf.collectAttrs(v, skippedViewKeys);
     }
 
-    for( Object o : vals.keySet() ){
+    for( Object o : vals ){
       wf.addForRes(o);
     }
     wf.mkInstances();
@@ -367,61 +356,12 @@ public class SensorHist {
     }
   }
 
-  public boolean hasRulesForVal(Object val){
-    TargetHist th = vals.get(val);
-    return ( th!=null && th.rules.size()>0 );
-  }
-
   public Object predict(OneView v) {
     return predictWithDecisionStumpBasedRules(v);
     //return predictWithWeka(v);
     //return predictSimpleWay(v);
   }
 
-  private Object predictSimpleWay(OneView v) {
-    if( vals.size()==1 ){
-      return vals.keySet().iterator().next();
-    }
-
-    Object retVal = null;
-    long hitCountR=0;
-    for (Object val : vals.keySet()) {
-      TargetHist th = vals.get(val);
-      Rule raccept = th.acceptedByRules(v);
-      if (raccept!=null) {
-        retVal = val;
-        hitCountR++;
-      }
-    }
-    if( hitCountR==1 ){
-      return retVal;
-    }
-    if( hitCountR>1 ){
-      return null; //conflict
-    }
-
-    // now when rules tell nothing trying less definite comparisons:
-    long hitCount2=0;
-    Rule reason2=null;
-    for (Object val : vals.keySet()) {
-      TargetHist th = vals.get(val);
-      Rule reason = th.reasonablyAccepted(v);
-      if (reason!=null) {
-        // consider only rules with minimum depth
-        if( reason2==null || reason2.ruleMaxDepth()>reason.ruleMaxDepth() ){
-          retVal = val;
-          hitCount2=1;
-          reason2 = reason;
-        }else if( reason2.ruleMaxDepth()==reason.ruleMaxDepth() ){
-          hitCount2++; // will cause conflict
-        }
-      }
-    }
-    if( hitCount2>1 ){
-      return null; //conflict
-    }
-    return retVal;
-  }
 
   public boolean skipViewKey(String k) {
     return skippedViewKeys!=null && skippedViewKeys.contains(k);
@@ -435,7 +375,7 @@ public class SensorHist {
     StringBuilder sb = new StringBuilder(sensorName);
     sb.append(" {");
     boolean first=true;
-    for( Object v : vals.keySet() ){
+    for( Object v : vals ){
       if( !first ){
         sb.append(",");
       }

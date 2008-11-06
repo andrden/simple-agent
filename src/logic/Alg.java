@@ -29,7 +29,7 @@ public class Alg implements AlgIntf, Serializable {
   Map<String, List<String>> cmdGroups = new HashMap<String, List<String>>();
 
   Causes causes = new Causes();
-  Causes2 causes2 = new Causes2();
+  //Causes2 causes2 = new Causes2();
   List<Hist> interestingEvents = new ArrayList<Hist>(); //- copy to Cause2
 
   // experimentLevel - emotional koef.
@@ -178,81 +178,81 @@ public class Alg implements AlgIntf, Serializable {
   }
 
 
-  PredictionTree2 buildPredictionTree(Hist last, Map<String, Object> view) {
-    PredictionTree2 predictionTree = new PredictionTree2(last, view);
-    predictionTree.smacks = causes2.smacksOfResult(predictionTree.histNew());
+//  PredictionTree2 buildPredictionTree(Hist last, Map<String, Object> view) {
+//    PredictionTree2 predictionTree = new PredictionTree2(last, view);
+//    predictionTree.smacks = causes2.smacksOfResult(predictionTree.histNew());
+//
+//
+//    List<PredictionTree2> readyNotes = Arrays.asList(predictionTree);
+//    for (int i = 0; i < 5 && readyNotes.size() > 0; i++) {
+//      List<PredictionTree2> notesToExplore = new ArrayList<PredictionTree2>();
+//      for (PredictionTree2 pti : readyNotes) {
+//        if (pti.noop) {
+//          continue;
+//        }
+//        for (String c : allCommands()) {
+//          expandPrediction(pti, c, notesToExplore);
+//
+//          Map<String, Object> viewCmd = new HashMap<String, Object>(view);
+//          viewCmd.put(Hist.CMD_KEY, c);
+//          for (Cause2 cc : causes2.list) {
+//            if (cc.isPositiveResult()) {
+//              Hist h = cc.unexplainedExamplesIntersect(viewCmd);
+//              if (h != null) {
+//                String cmd = h.getCommand();
+//                PredictionTree2 child = pti.onCommand.get(cmd);
+//                if (child == null) {
+//                  Hist hn = new Hist(pti.histOld, pti.viewNext, cmd);
+//                  child = pti.addChild(hn, cmd, null);
+//                }
+//                child.smacksEvent = h;
+//                if (child.viewNext == null) {
+//                  child.viewNext = new HashMap<String, Object>();
+//                }
+//                child.viewNext.put(cc.key, cc.val);
+//              }
+//            }
+//          }
+//        }
+//
+//        for (String c : allCommands()) {
+//          Hist h = new Hist(pti.histOld, pti.viewNext, c);
+//          if (causes.predictsNoop(h)) {
+//            PredictionTree2 child = pti.onCommand.get(c);
+//            if (child == null) {
+//              child = pti.addChild(h, c, null);
+//            }
+//            child.noop = true;
+//          }
+//        }
+//
+//
+//      }
+//      readyNotes = notesToExplore;
+//    }
+//    return predictionTree;
+//  }
 
 
-    List<PredictionTree2> readyNotes = Arrays.asList(predictionTree);
-    for (int i = 0; i < 5 && readyNotes.size() > 0; i++) {
-      List<PredictionTree2> notesToExplore = new ArrayList<PredictionTree2>();
-      for (PredictionTree2 pti : readyNotes) {
-        if (pti.noop) {
-          continue;
-        }
-        for (String c : allCommands()) {
-          expandPrediction(pti, c, notesToExplore);
-
-          Map<String, Object> viewCmd = new HashMap<String, Object>(view);
-          viewCmd.put(Hist.CMD_KEY, c);
-          for (Cause2 cc : causes2.list) {
-            if (cc.isPositiveResult()) {
-              Hist h = cc.unexplainedExamplesIntersect(viewCmd);
-              if (h != null) {
-                String cmd = h.getCommand();
-                PredictionTree2 child = pti.onCommand.get(cmd);
-                if (child == null) {
-                  Hist hn = new Hist(pti.histOld, pti.viewNext, cmd);
-                  child = pti.addChild(hn, cmd, null);
-                }
-                child.smacksEvent = h;
-                if (child.viewNext == null) {
-                  child.viewNext = new HashMap<String, Object>();
-                }
-                child.viewNext.put(cc.key, cc.val);
-              }
-            }
-          }
-        }
-
-        for (String c : allCommands()) {
-          Hist h = new Hist(pti.histOld, pti.viewNext, c);
-          if (causes.predictsNoop(h)) {
-            PredictionTree2 child = pti.onCommand.get(c);
-            if (child == null) {
-              child = pti.addChild(h, c, null);
-            }
-            child.noop = true;
-          }
-        }
-
-
-      }
-      readyNotes = notesToExplore;
-    }
-    return predictionTree;
-  }
-
-
-  private void expandPrediction(PredictionTree2 pti, String c, List<PredictionTree2> notesToExplore) {
-    Hist h = new Hist(pti.histOld, pti.viewNext, c);
-    Causes2.PredictionBy prediction = causes2.predictAllViewByCausesWithBy(h);
-    if (prediction != null) {
-      Map<String, Object> test = new HashMap<String, Object>(prediction.view);
-      test.remove(Hist.NOOP_KEY);
-      if ("0".equals("" + test.get(Hist.RES_KEY))) {
-        test.remove(Hist.RES_KEY);
-      }
-      if (test.size() > 0) { // if has smth. meaningful
-        PredictionTree2 node = pti.addChild(h, c, prediction);
-        node.smacks = causes2.smacksOfResult(node.histNew());
-        boolean val = prediction.view.get(Hist.RES_KEY) != null && ((Integer) prediction.view.get(Hist.RES_KEY)).intValue() != 0;
-        if (!val) { // if result of this branch not yet known
-          notesToExplore.add(node);
-        }
-      }
-    }
-  }
+//  private void expandPrediction(PredictionTree2 pti, String c, List<PredictionTree2> notesToExplore) {
+//    Hist h = new Hist(pti.histOld, pti.viewNext, c);
+//    Causes2.PredictionBy prediction = causes2.predictAllViewByCausesWithBy(h);
+//    if (prediction != null) {
+//      Map<String, Object> test = new HashMap<String, Object>(prediction.view);
+//      test.remove(Hist.NOOP_KEY);
+//      if ("0".equals("" + test.get(Hist.RES_KEY))) {
+//        test.remove(Hist.RES_KEY);
+//      }
+//      if (test.size() > 0) { // if has smth. meaningful
+//        PredictionTree2 node = pti.addChild(h, c, prediction);
+//        node.smacks = causes2.smacksOfResult(node.histNew());
+//        boolean val = prediction.view.get(Hist.RES_KEY) != null && ((Integer) prediction.view.get(Hist.RES_KEY)).intValue() != 0;
+//        if (!val) { // if result of this branch not yet known
+//          notesToExplore.add(node);
+//        }
+//      }
+//    }
+//  }
 
 //  CmdSet findMaxCmdByCauses(Map<String,CauseMaxStruct> predictedMinResults, Map<String, Object> view){
 //    if( predictedMinResults.isEmpty() ){

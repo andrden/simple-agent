@@ -253,6 +253,11 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testSimple2atrr");
   }
 
+  public void testPredictRepeated() throws Exception{
+    SensorHist sensor = new SensorHist("fr");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
+    examplesForSensorHist(sensor, "testPredictRepeated");
+  }
 
   private void examplesForSensorHist(SensorHist sensor, String xmlElem) throws Exception {
     //LinearPredictor p = new LinearPredictor();

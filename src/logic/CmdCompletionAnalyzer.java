@@ -18,14 +18,14 @@ import java.util.Map;
 public class CmdCompletionAnalyzer implements Serializable {
   Alg alg;
 
-  Causes2 causes2;
+  //Causes2 causes2;
   Causes causes;
   History history;
 
   public CmdCompletionAnalyzer(Alg alg) {
     this.alg = alg;
     causes = alg.causes;
-    causes2 = alg.causes2;
+    //causes2 = alg.causes2;
     history = alg.history;
   }
 
@@ -51,49 +51,49 @@ public class CmdCompletionAnalyzer implements Serializable {
     }
   }
 
-  void resultAnalyse2(int res, Map<String, Object> view) {
-    Hist hnext = history.getNextHist();
-    causes2.verifyAll(hnext);
-
-    Map<String, Object> prediction = causes2.predictAllViewByCauses(history.last);
-
-    PredictionTree2 predictionTree = alg.buildPredictionTree(history.last, view);
-    PredictionTree2 predictionTreeOld = null;
-    PredictionTree2.PositiveResultOrSmack currSmack = predictionTree.findPositiveResultOrSmacks();
-    if (res != 0 || currSmack != null) {
-      predictionTreeOld = alg.buildPredictionTree(history.last.prev, history.last.getViewOnly());
-      if (predictionTreeOld.findPositiveResultOrSmacks() == null) {
-        if (res != 0) {
-          Cause2 cau = causes2.find(Hist.RES_KEY, new Integer(res));
-          if (cau == null) {
-            cau = new Cause2(Hist.RES_KEY, new Integer(res));
-            causes2.add(cau);
-            cau.addExample(history.getNextHist());
-          }
-
-//          ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, null);
-//          findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
-        } else {
-          System.out.println("tree now smacks, tree old not: " + currSmack.description);
-          Map<String, Object> smack0 = predictionTree.getResultOrSmacksKeyView();
-          if (!Utils.containsAll(prediction, smack0)) {
-            // @todo State1 world: at every result +1 it looks from where f=RED appeared
-            // and obviously finds no cause - it's random - how to avoid repeated search?
-            // remember last steps to see they are the same? no! random 'r' and random 'f' colors
-            // make that impossible. Statistically only?
-            ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, smack0.keySet());
-            findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
-          }
-        }
-      }
+//  void resultAnalyse2(int res, Map<String, Object> view) {
+//    Hist hnext = history.getNextHist();
+//    causes2.verifyAll(hnext);
+//
+//    Map<String, Object> prediction = causes2.predictAllViewByCauses(history.last);
+//
+//    PredictionTree2 predictionTree = alg.buildPredictionTree(history.last, view);
+//    PredictionTree2 predictionTreeOld = null;
+//    PredictionTree2.PositiveResultOrSmack currSmack = predictionTree.findPositiveResultOrSmacks();
+//    if (res != 0 || currSmack != null) {
+//      predictionTreeOld = alg.buildPredictionTree(history.last.prev, history.last.getViewOnly());
+//      if (predictionTreeOld.findPositiveResultOrSmacks() == null) {
+//        if (res != 0) {
+//          Cause2 cau = causes2.find(Hist.RES_KEY, new Integer(res));
+//          if (cau == null) {
+//            cau = new Cause2(Hist.RES_KEY, new Integer(res));
+//            causes2.add(cau);
+//            cau.addExample(history.getNextHist());
+//          }
+//
+////          ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, null);
+////          findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
+//        } else {
+//          System.out.println("tree now smacks, tree old not: " + currSmack.description);
+//          Map<String, Object> smack0 = predictionTree.getResultOrSmacksKeyView();
+//          if (!Utils.containsAll(prediction, smack0)) {
+//            // @todo State1 world: at every result +1 it looks from where f=RED appeared
+//            // and obviously finds no cause - it's random - how to avoid repeated search?
+//            // remember last steps to see they are the same? no! random 'r' and random 'f' colors
+//            // make that impossible. Statistically only?
+//            ResultsAnalyzer a = new MainResultsAnalyzer(history, causes, smack0.keySet());
+//            findRelations(new ViewDepthGenerator(view.keySet()), history.last, a);
+//          }
+//        }
 //      }
-
-    }
-
-  }
+////      }
+//
+//    }
+//
+//  }
 
   void resultAnalyse(int res, Map<String, Object> view) {
-    resultAnalyse2(res, view);
+    //resultAnalyse2(res, view);
 
     findNoop(view);
 

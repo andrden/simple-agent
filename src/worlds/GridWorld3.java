@@ -57,7 +57,7 @@ public class GridWorld3 implements WorldGridView, Serializable {
 
   Cr cr = new Cr();
 
-  class Cr{
+  class Cr implements Serializable{
     int x0 = 2;
     int y0 = 2;
     int dirIdx = 1;
@@ -127,13 +127,8 @@ public class GridWorld3 implements WorldGridView, Serializable {
     return c;
   }
 
-  public boolean pointInCr(int x, int y){
+  public boolean pointInLimb(int x, int y){
     Point p = new Point(x, y);
-    if( getFwd(0,0).equals(p) ) return true;
-    if( getFwd(-1,0).equals(p) ) return true;
-    if( getFwd(0,-1).equals(p) ) return true;
-    if( getFwd(-1,-1).equals(p) ) return true;
-
     if( cr.larm ){
       if( getFwd(1,0).equals(p) ) return true;
     }
@@ -143,7 +138,21 @@ public class GridWorld3 implements WorldGridView, Serializable {
     return false;
   }
 
+  public boolean pointInCr(int x, int y){
+    Point p = new Point(x, y);
+    if( getFwd(0,0).equals(p) ) return true;
+    if( getFwd(-1,0).equals(p) ) return true;
+    if( getFwd(0,-1).equals(p) ) return true;
+    if( getFwd(-1,-1).equals(p) ) return true;
+
+    return pointInLimb(x,y);
+  }
+
   public Color getColor(int x, int y) {
+    if( pointInLimb(x,y) ){
+      return Color.CYAN;
+    }
+
     if( pointInCr(x, y) ){
       return Color.BLUE;
     }

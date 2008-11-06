@@ -5,6 +5,7 @@ import mem.OneView;
 
 import java.util.List;
 import java.util.Map;
+import java.io.Serializable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,7 +13,7 @@ import java.util.Map;
  * Date: 25/8/2008
  * Time: 18:00:40
  */
-public interface Approach {
+public interface Approach extends Serializable {
   CmdSet suggestCmd(Hist next, List<String> possibleCommands);
 
   /**

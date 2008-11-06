@@ -25,16 +25,16 @@ public class Pred implements PredictorIntf {
   }
 
   public void printRules(){
-    for( String s : singles.keySet() ){
-      log( " === " + s);
-      SensorHist sh = singles.get(s);
-      for( Object val : sh.vals.keySet() ){
-        TargetHist th = sh.vals.get(val);
-        if( !th.rules.isEmpty() ){
-          log(val+" when "+th.rules+" unexpl="+th.unexpainedExamples().size());
-        }
-      }
-    }
+//    for( String s : singles.keySet() ){
+//      log( " === " + s);
+//      SensorHist sh = singles.get(s);
+//      for( Object val : sh.vals.keySet() ){
+//        TargetHist th = sh.vals.get(val);
+//        if( !th.rules.isEmpty() ){
+//          log(val+" when "+th.rules+" unexpl="+th.unexpainedExamples().size());
+//        }
+//      }
+//    }
   }
 
   void log(String s){

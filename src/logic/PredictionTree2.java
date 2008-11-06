@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class PredictionTree2 {
   Hist histOld;
-  Causes2.SmacksOfResult smacks;
+  //Causes2.SmacksOfResult smacks;
   Map<String, Object> viewNext;
   Hist smacksEvent;
   Map<String, PredictionTree2> onCommand = new HashMap<String, PredictionTree2>();
@@ -52,9 +52,7 @@ public class PredictionTree2 {
     if (res != null && res > 0) {
       throw new UnsupportedOperationException(); // handled by a separate IF in Alg
     }
-    if (smacks != null) {
-      return smacks.ds.getElemsAtDepth(0);
-    } else {
+    {
       for (PredictionTree2 nextStep : onCommand.values()) {
         // run over first level branches
         if (nextStep.findPositiveResultOrSmacks() != null) {
@@ -111,9 +109,6 @@ public class PredictionTree2 {
     }
 
     PredictionTree2.PositiveResultOrSmack rnow = null;
-    if (smacks != null && smacks.cause.isPositiveResult()) {
-      rnow = new PredictionTree2.PositiveResultOrSmack(0.5, null, "" + smacks.cause);
-    }
     if (rnow == null && smacksEvent != null) {
       rnow = new PredictionTree2.PositiveResultOrSmack(0.5, null, "event.prev=" + smacksEvent.prev);
     }

@@ -3,6 +3,7 @@ package predict;
 import mem.OneView;
 
 import java.util.Map;
+import java.io.Serializable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,7 +11,7 @@ import java.util.Map;
  * Date: 25/7/2008
  * Time: 17:51:26
  */
-public interface PredictorIntf {
+public interface PredictorIntf extends Serializable {
   void add(OneView v);
 
   void appendValsToLastView(Map<String, Object> sensors);
