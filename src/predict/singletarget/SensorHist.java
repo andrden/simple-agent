@@ -160,7 +160,10 @@ public class SensorHist implements java.io.Serializable{
       SRule rnew = r.andRule(subR);
       if( rnew.complexity()>r.complexity() ){
         ruleCheckAndAdd(rnew);
-        ruleCheckAndAdd(rnew.negate());
+      }
+      SRule rnewNeg = r.andRule(subR.negate());
+      if( rnewNeg.complexity()>r.complexity() ){
+        ruleCheckAndAdd(rnewNeg);
       }
 
 //      List<OneView> exList2 = examplesCondHolds(exList, subR);
