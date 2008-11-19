@@ -1,9 +1,12 @@
 package audio;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.*;
+import javax.sound.sampled.spi.AudioFileWriter;
 import java.io.File;
+import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,7 +22,55 @@ public class AudioMain {
     new AudioMain().m();
   }
 
+  void wavWrite() throws Exception{
+    File fwav = new File("c:/tmp/precise_dial_tone.wav");  // a sine wave at 350 hertz and a sine wave at 440 hertz
+    AudioInputStream in = AudioSystem.getAudioInputStream(fwav);
+    in = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, in);
+    //int rate = 11025;
+    int rate = (int)in.getFormat().getFrameRate();
+    byte[] b = new byte[rate*3];
+
+    Map<Long,Double> freqs = new HashMap<Long,Double>();
+    Map<Long,Double> phase = new HashMap<Long,Double>();
+    //freqs.put(350l,1.);
+    //freqs.put(440l,1.);
+
+    for( long l=350; l<365; l++ ){
+      freqs.put(l, Math.exp(-(l-350)*3) );
+      freqs.put(l*2, Math.exp(-(l-350)*4) );
+      freqs.put(l*13/10, Math.exp(-(l-350)*4) );
+      freqs.put(l*11/10, 4*Math.exp(-(l-350)*2) );
+      //phase.put(l, Math.PI*Math.random());
+    }
+
+//    for( long l=550; l<570; l++ ){
+//      freqs.put(l, 1.*(l-549)/20);
+//      phase.put(l, Math.PI*Math.random());
+//    }
+
+    double max=0;
+    for( Double v : freqs.values() ){
+      max+=v;
+    }
+
+    for( int i=0; i<b.length; i++ ){
+      double v = 0;
+      for( Long f : freqs.keySet() ){
+        v += freqs.get(f)*Math.sin(2*Math.PI*i/rate*f /*+ phase.get(f)*/);
+      }
+      b[i] = (byte)(v/max*50);
+    }
+
+    AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(b), in.getFormat(), b.length);
+    AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File("c:/tmp/generated.wav"));
+  }
+
   void m() throws Exception{
+    wavWrite();
+    //wavTransform();
+  }
+
+  private void wavTransform() throws UnsupportedAudioFileException, IOException {
     //File fwav = new File("c:/tmp/accessed.wav");
     File fwav = new File("c:/tmp/precise_dial_tone.wav");  // a sine wave at 350 hertz and a sine wave at 440 hertz
     AudioInputStream in = AudioSystem.getAudioInputStream(fwav);
