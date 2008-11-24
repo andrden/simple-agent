@@ -15,7 +15,9 @@ public class AutoGroup {
     new AutoGroup().doit();
   }
 
-  TreeMap<String,Grp> grps = new TreeMap<String,Grp>();
+  Grper1 g1 = new Grper1();
+  Grper g = new Grper();
+
 
   void doit() throws Exception{
     BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("log1.properties")));
@@ -39,20 +41,7 @@ public class AutoGroup {
   }
 
   void next(final String s){
-    for( int i=s.length(); i>0; i-- ){
-      String prefix = s.substring(0,i);
-      Grp g = grps.get(prefix);
-      if( g!=null ){
-        g.add(s);
-        return;
-      }
-      String h = grps.higherKey(prefix);
-      if( h!=null && h.startsWith(prefix) ){
-        g = grps.get(h);
-        g.add(s);
-        return;
-      }
-    }
-    grps.put(s, new Grp(s));
+    g1.next(s);
+    g.next(s);
   }
 }
