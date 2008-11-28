@@ -360,7 +360,8 @@ public class SensorHist implements java.io.Serializable{
   }
 
   public Object predict(OneView v) {
-    return predictWithDecisionStumpBasedRules(v);
+    Object pred = predictWithDecisionStumpBasedRules(v);
+    return pred;
     //return predictWithWeka(v);
     //return predictSimpleWay(v);
   }

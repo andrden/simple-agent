@@ -259,6 +259,12 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testPredictRepeated");
   }
 
+  public void testPredictRepeated2() throws Exception{
+    SensorHist sensor = new SensorHist("fr");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
+    examplesForSensorHist(sensor, "testPredictRepeated2");
+  }
+
   private void examplesForSensorHist(SensorHist sensor, String xmlElem) throws Exception {
     //LinearPredictor p = new LinearPredictor();
     Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
@@ -291,7 +297,8 @@ public class TestPredictor extends TestCase {
       if( quest ){
         boolean acc = sensor.valAcceptedByRules(v, key);
         Object wekaKey = sensor.predictWithWeka(v);
-        assertTrue( "key="+key+" wekaKey="+wekaKey, acc);
+        Object pred = sensor.predict(v);
+        assertTrue( "key="+key+" wekaKey="+wekaKey+" pred="+pred, acc);
       }else{
         sensor.addAsCurrent(key, v);
       }

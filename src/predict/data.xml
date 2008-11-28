@@ -540,4 +540,75 @@ otherRulesResult = null
   ?BLACK{f=CYAN, fl=BLACK, !=R, ff=YELLOW, r=BLUE, $=0, frr=WHITE, ffr=YELLOW, rr=WHITE, fr=BLACK, l=BLACK}
 
 </testPredictRepeated>
+
+<testPredictRepeated2>
+  YELLOW{f=YELLOW, fl=WHITE, !=B2, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
+  WHITE{f=YELLOW, fl=WHITE, !=R, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
+  YELLOW{f=BLACK, fl=WHITE, !=L, ff=YELLOW, r=BLUE, $=0, frr=WHITE, ffr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}
+  ORANGE{f=YELLOW, fl=WHITE, !=A2F, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
+  ORANGE{f=YELLOW, fl=WHITE, !=A1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=ORANGE, l=YELLOW}
+  ORANGE{f=ORANGE, fl=WHITE, !=N, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=ORANGE, l=YELLOW}
+  ORANGE{f=ORANGE, fl=WHITE, !=B1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=ORANGE, l=YELLOW}
+  ORANGE{f=ORANGE, fl=WHITE, !=Fb, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=ORANGE, l=YELLOW}
+  ORANGE{f=ORANGE, fl=WHITE, !=A2B, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=ORANGE, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=A2F, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=ORANGE, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=A2F, ff=BLACK, r=BLUE, $=1, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=B2, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=B1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=N, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=N, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=B1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=N, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=B2, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=N, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=Fb, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=ORANGE, fl=WHITE, !=A1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=A1, ff=BLACK, r=BLUE, $=1, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=WHITE, fl=WHITE, !=A1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=N, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=B2, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=Fb, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=A2F, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=A1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=WHITE, fl=WHITE, !=B1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=WHITE, fl=WHITE, !=R, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=WHITE, fl=WHITE, !=A1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=B1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=B1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=B1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=N, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=A2B, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=A2B, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=B2, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=B1, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=Fb, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=B2, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=R, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=A2B, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  CYAN{f=CYAN, fl=WHITE, !=A2F, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=A2B, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=CYAN, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=B2, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=B2, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=Fb, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=Fb, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+  WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+ ?WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
+
+</testPredictRepeated2>
 </data>

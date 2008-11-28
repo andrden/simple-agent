@@ -63,6 +63,8 @@ public class GridWorld3 implements WorldGridView, Serializable {
     int dirIdx = 1;
     boolean larm=false;
     boolean rarm=false;
+    boolean lleg=false;
+    boolean rleg=false;
   }
 
   Dir getDir() {
@@ -135,6 +137,13 @@ public class GridWorld3 implements WorldGridView, Serializable {
     if( cr.rarm ){
       if( getFwd(1,-1).equals(p) ) return true;
     }
+
+    if( cr.lleg ){
+      if( getFwd(-2,0).equals(p) ) return true;
+    }
+    if( cr.rleg ){
+      if( getFwd(-2,-1).equals(p) ) return true;
+    }
     return false;
   }
 
@@ -187,7 +196,7 @@ public class GridWorld3 implements WorldGridView, Serializable {
   }
 
   public List<String> commands() {
-    return Arrays.asList("L", "R", "N", "Fb", "A1","A2F","A2B");
+    return Arrays.asList("L", "R", "N", "Fb", "A1","A2F","A2B","B1","B2");
   }
 
   int dirIdxLeft() {
@@ -205,11 +214,11 @@ public class GridWorld3 implements WorldGridView, Serializable {
 
   public int command(String cmd) {
     int result = 0;
-    if (cmd.equals("L") && !cr.larm && !cr.rarm) {
+    if (cmd.equals("L") && !cr.larm && !cr.rarm && !cr.lleg && !cr.rleg) {
       setX0Y0( getFwd(-1,0) );
       cr.dirIdx = dirIdxLeft();
     }
-    if (cmd.equals("R") && !cr.larm && !cr.rarm) {
+    if (cmd.equals("R") && !cr.larm && !cr.rarm && !cr.lleg && !cr.rleg) {
       setX0Y0( getFwd(0,-1) );
       cr.dirIdx++;
       if (cr.dirIdx == Dir.values().length) {
@@ -218,7 +227,7 @@ public class GridWorld3 implements WorldGridView, Serializable {
     }
 
     // Fa + Fb composition:
-    if (cmd.equals("Fb") && !cr.larm && !cr.rarm /*&& "Fa".equals(prevCommand)*/) {
+    if (cmd.equals("Fb") && !cr.larm && !cr.rarm  && !cr.lleg && !cr.rleg /*&& "Fa".equals(prevCommand)*/) {
       result = moveFwd();
     }
 
@@ -263,6 +272,12 @@ public class GridWorld3 implements WorldGridView, Serializable {
     if (cmd.equals("A2B") && cr.rarm) {
       cr.rarm=false;
     }
+    if (cmd.equals("B1") && cr.lleg) {
+      cr.lleg=false;
+    }
+    if (cmd.equals("B2") && cr.rleg) {
+      cr.rleg=false;
+    }
 
     prevCommand = cmd;
     return result;
@@ -270,12 +285,14 @@ public class GridWorld3 implements WorldGridView, Serializable {
 
   private int moveFwd() {
     int result = 0;
-    Point p = getFwd();
-    Color color = getColor(p);
+    Point prwd = getFwd();
+    Color color = getColor(prwd);
     Color colorFR = getColor(getFwd(1,-1));
     if (color.equals(Color.WHITE) && colorFR.equals(Color.WHITE) ) {
-      cr.x0 = p.x; // do move
-      cr.y0 = p.y;
+      cr.x0 = prwd.x; // do move
+      cr.y0 = prwd.y;
+      cr.lleg = true;
+      cr.rleg = true;
     } else if (color.equals(Color.BLACK) || colorFR.equals(Color.BLACK)) {
       result = -1;
     }
