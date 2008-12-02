@@ -102,6 +102,13 @@ public class SensorHist implements java.io.Serializable{
     if( explained ){
       return;
     }
+    makeNewRules();
+    if( !val.equals(predict(vprev)) ){
+      System.nanoTime();
+    }
+  }
+
+  private void makeNewRules() {
     Object commonResAll = commonResValue(exampleVals.keySet());
     if( commonResAll!=null ){
       otherRulesResult=commonResAll;
