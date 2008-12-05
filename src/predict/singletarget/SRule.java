@@ -20,6 +20,10 @@ public class SRule implements java.io.Serializable{
 
   }
 
+  SRule(Map<String,Object> cond){
+    this.cond=cond;
+  }
+
   int complexity(){
     return cond.size() + negCond.size();
   }

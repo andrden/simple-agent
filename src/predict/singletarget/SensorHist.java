@@ -13,6 +13,7 @@ import weka.core.Instances;
 import weka.core.Instance;
 import weka.core.Attribute;
 import com.pmstation.common.utils.PrivateFieldGetter;
+import utils.Utils;
 
 /**
  * Created by IntelliJ IDEA.
@@ -102,9 +103,41 @@ public class SensorHist implements java.io.Serializable{
     if( explained ){
       return;
     }
+
     makeNewRules();
-    if( !val.equals(predict(vprev)) ){
-      System.nanoTime();
+
+    if( !val.equals(predict(vprev)) && exampleVals.size()>3 ){
+      analyzeVerySimilar(vprev);
+    }
+  }
+
+  private void analyzeVerySimilar(OneView vprev) {
+    List<Map<String, Object>> comm = new ArrayList<Map<String, Object>>();
+    for( OneView ve : exampleVals.keySet() ){
+      if( ve!=vprev ){
+        Map<String, Object> m = Utils.intersection(ve.getViewAll(), vprev.getViewAll());
+        comm.add(m);
+      }
+    }
+    Collections.sort(comm, new Comparator<Map<String, Object>>(){
+      public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+        return o2.size() - o1.size();
+      }
+    });
+    for( Map<String, Object> m : comm ){
+      SRule r = new SRule(m);
+
+      List<OneView> exList = examplesCondHolds(exampleVals.keySet(), r);
+      if( exList.size()>2 ){
+        Object commonRes = commonResValue(exList);
+        if( commonRes!=null ){
+          r.setResult(commonRes);
+          if( !ruleIsExtra(r) ){
+            srules.add(r);
+            break;
+          }
+        }
+      }
     }
   }
 
@@ -151,6 +184,7 @@ public class SensorHist implements java.io.Serializable{
     if( r.complexity()>2 ){
       return false;
     }
+
     List<OneView> exList = examplesCondHolds(exampleVals.keySet(), r);
     if( exList.size()<2 ){
       return false;
