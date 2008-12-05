@@ -40,7 +40,7 @@ public class Main extends JFrame {
 
   JTextArea logArea = new JTextArea();
   JScrollPane logAreaScrollPane;
-  final int SIZE = 30;
+  final int SIZE = 25;
 
   JPanel cmdPanel = new JPanel();
 

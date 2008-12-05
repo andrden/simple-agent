@@ -151,7 +151,13 @@ public class PredictorApproach implements Approach{
     MinMaxFinder minPredicted = new MinMaxFinder();
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
-      minPredicted.add(v==null ? 0 : v.getViewAll().size(), c);
+      int countKnown = 0;
+      if( v != null ){
+        Map<String, Object> m = v.getViewAll();
+        m.remove(Hist.CMD_KEY); // don't count predicted Cmd as known system state
+        countKnown = m.size();
+      }
+      minPredicted.add(countKnown, c);
       List<String> bcmd2 = predictGoodNextCmd(v);
       if( bcmd2!=null ){
         CmdSet cc2 = new CmdSet(c);
@@ -162,8 +168,9 @@ public class PredictorApproach implements Approach{
 
     List<String> minPredCmds = minPredicted.getMinNames();
     if( minPredCmds.size()!=possibleCommands.size() ){
-      CmdSet cs = new CmdSet( Utils.rnd(minPredCmds) );
-      cs.setFoundFrom("min predicted");
+      String rndCmd = Utils.rnd(minPredCmds);
+      CmdSet cs = new CmdSet(rndCmd);
+      cs.setFoundFrom("min predicted - rnd "+minPredCmds+" view="+tree.viewOnCommand(rndCmd));
       return cs;
     }
 
