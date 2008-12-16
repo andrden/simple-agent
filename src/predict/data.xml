@@ -611,7 +611,7 @@ otherRulesResult = null
  ?WHITE{f=CYAN, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
 
 </testPredictRepeated2>
-<testPredictRepeated3>
+<testRecencyPredictRepeated3>
   YELLOW{f=YELLOW, fl=WHITE, !=A2B, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
   ORANGE{f=YELLOW, fl=WHITE, !=A2F, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
   ORANGE{f=YELLOW, fl=WHITE, !=B2, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=ORANGE, l=YELLOW}
@@ -776,5 +776,5 @@ otherRulesResult = null
   WHITE{f=WHITE, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
  ?WHITE{f=WHITE, fl=WHITE, !=L, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=WHITE, l=YELLOW}
 
-</testPredictRepeated3>
+</testRecencyPredictRepeated3>
 </data>

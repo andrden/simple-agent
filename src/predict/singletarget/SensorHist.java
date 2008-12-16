@@ -28,9 +28,12 @@ public class SensorHist implements java.io.Serializable{
 
   Classifier lastUsedClassifier;
   LinkedHashMap<OneView, Object> exampleVals = new LinkedHashMap<OneView, Object>();
+  List<OneView> exList = new ArrayList<OneView>();
 
   List<SRule> srules = new ArrayList<SRule>();
   Object otherRulesResult = null;
+
+  Set<String> decisiveAttrs = new HashSet<String>();
 
   public void printRules(){
     System.out.println(srules+" other="+otherRulesResult);
@@ -89,6 +92,7 @@ public class SensorHist implements java.io.Serializable{
     Attribute splitAttr = wf.getInstances().attribute((Integer)PrivateFieldGetter.evalNoEx(myClassif,"m_AttIndex"));
 
     String attName = splitAttr.name();
+    decisiveAttrs.add(attName);
     Object attVal = wf.attVal(attName, ((Double)PrivateFieldGetter.evalNoEx(myClassif,"m_SplitPoint")).intValue() );
     SRule r = new SRule(attName, attVal, true);
     return r;
@@ -104,12 +108,50 @@ public class SensorHist implements java.io.Serializable{
       return;
     }
 
+    /*
+    if( exampleVals.size()>140 ){
+      Map<String,Object> m = vprev.getViewAll();
+      List<Weighter> wlist = new ArrayList<Weighter>();
+      for( String s : m.keySet() ){
+        Object sval = m.get(s);
+        Weighter w = new Weighter(s, sval);
+        wlist.add(w);
+        for( OneView v : exampleVals.keySet() ){
+          if( sval.equals(v.get(s)) ){
+            if( exampleVals.get(v).equals(val) ){
+              w.eq++;
+            }else{
+              w.no++;
+            }
+          }
+        }
+      }
+      System.nanoTime();
+    }
+    */
+
     makeNewRules();
 
     if( !val.equals(predict(vprev)) && exampleVals.size()>3 ){
       analyzeVerySimilar(vprev);
     }
   }
+
+//  static class Weighter{
+//    String s;
+//    Object sval;
+//    long eq;
+//    long no;
+//
+//    Weighter(String s, Object sval) {
+//      this.s = s;
+//      this.sval = sval;
+//    }
+//
+//    public String toString() {
+//      return s+"="+sval+" eq="+eq+" no="+no;
+//    }
+//  }
 
   private void analyzeVerySimilar(OneView vprev) {
     List<Map<String, Object>> comm = new ArrayList<Map<String, Object>>();
@@ -180,12 +222,24 @@ public class SensorHist implements java.io.Serializable{
     return false;
   }
 
+  Collection<OneView> recentExamples(){
+    List<OneView> r = new ArrayList<OneView>();
+    for( int i=exList.size()-1; i>=0; i-- ){
+      if( r.size()>=10 ){
+        break;
+      }
+      r.add(exList.get(i));
+    }
+    return r;
+  }
+
   private boolean ruleCheckAndAdd(SRule r) {
     if( r.complexity()>2 ){
       return false;
     }
 
-    List<OneView> exList = examplesCondHolds(exampleVals.keySet(), r);
+    //List<OneView> exList = examplesCondHolds(exampleVals.keySet(), r);
+    List<OneView> exList = examplesCondHolds(recentExamples(), r);
     if( exList.size()<2 ){
       return false;
     }
@@ -307,6 +361,7 @@ public class SensorHist implements java.io.Serializable{
   public void addAsCurrent(Object val, OneView v) {
     vals.add(val);
     exampleVals.put(v, val);
+    exList.add(v);
 
     analyzeNewExample(val, v);
   }
