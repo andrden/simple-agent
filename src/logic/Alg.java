@@ -331,6 +331,13 @@ public class Alg implements AlgIntf, Serializable {
     return ret;
   }
 
+  public void printCmdPredictions(){
+    List<String> cs = allCommands();
+    for( Approach appr : approaches ){
+      appr.printCmdPredictions(history.getNextHist(), cs);
+    }
+  }
+
   private CmdSet calcNextCmd(Map<String, Object> view, boolean stepByStepFastCheck) {
     List<String> cs = allCommands();
 

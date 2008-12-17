@@ -115,7 +115,7 @@
 
  ?{f=WHITE, !=Fb, fl=YELLOW, r=BLUE, ff=YELLOW, $=-1, ffr=GRAY, frr=YELLOW, rr=WHITE, fr=BLACK, l=GRAY}
 </testRulesFor2Categories>
-<testOverDecisionStump>
+<testReorderedOverDecisionStump>
   0{f=YELLOW, fl=WHITE, !=Fb, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
   0{f=YELLOW, fl=WHITE, !=R, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}
   0{f=BLACK, fl=WHITE, !=L, ff=YELLOW, r=BLUE, $=0, frr=WHITE, ffr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}
@@ -357,7 +357,7 @@ otherRulesResult = null
         Last from unexamplained rules, incorrect!!! - reordered
         Use only really LAST example
 -->
-</testOverDecisionStump>
+</testReorderedOverDecisionStump>
 
 <testSimple2atrr>
   0{f=YELLOW, fl=WHITE, !=Ep, ff=BLACK, r=BLUE, $=0, frr=WHITE, ffr=BLACK, rr=BLACK, fr=YELLOW, l=YELLOW}

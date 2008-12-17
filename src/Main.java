@@ -186,6 +186,14 @@ public class Main extends JFrame {
     });
     nextPanel.add(prelevant);
 
+    JButton prnPredictions = new JButton("PrnPredictions");
+    prnPredictions.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        alg.printCmdPredictions();
+      }
+    });
+    nextPanel.add(prnPredictions);
+
     nextPanel.setBorder(BorderFactory.createEtchedBorder());
     return nextPanel;
   }
@@ -196,7 +204,7 @@ public class Main extends JFrame {
 
   void saveState() {
     try {
-      stateStorage().mkdirs();
+      stateStorage().getParentFile().mkdirs();
       ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(stateStorage()));
       o.writeObject(world);
       o.writeObject(alg);

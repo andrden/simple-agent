@@ -27,4 +27,6 @@ public interface Approach extends Serializable {
   String predictionInfo(Hist curr);
   void appendValsToLastView(Map<String, Object> sensors);
   public void add(Hist next);
+
+  void printCmdPredictions(Hist next, List<String> possibleCommands);
 }

@@ -122,6 +122,15 @@ public class PredictorApproach implements Approach{
     return true;
   }
 
+  public void printCmdPredictions(Hist next, List<String> possibleCommands){
+    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 1)
+            .build(next);
+    for( String c : possibleCommands ){
+      OneView v = tree.viewOnCommand(c);
+      System.out.println("On "+c+": "+v);
+    }
+  }
+
   public CmdSet suggestCmd(Hist next, List<String> possibleCommands) {
     if( currentPlan!=null ){
       return currentPlan.nextCmdSet();
@@ -271,4 +280,7 @@ public class PredictorApproach implements Approach{
 
         }
     }
+
+  private static final long serialVersionUID = -7282071316883621857L;
+
 }

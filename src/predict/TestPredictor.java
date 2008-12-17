@@ -5,14 +5,11 @@ import mem.OneView;
 import mem.Hist;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
-import java.io.IOException;
 
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 import predict.singletarget.SensorHist;
 
 /**
@@ -241,10 +238,10 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testRulesFor2Categories");
   }
 
-  public void testOverDecisionStump() throws Exception{
+  public void testReorderedOverDecisionStump() throws Exception{
     SensorHist sensor = new SensorHist("$");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
-    examplesForSensorHist(sensor, "testOverDecisionStump");
+    examplesForSensorHist(sensor, "testReorderedOverDecisionStump");
   }
 
   public void testSimple2atrr() throws Exception{

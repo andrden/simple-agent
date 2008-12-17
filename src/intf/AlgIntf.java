@@ -26,4 +26,6 @@ public interface AlgIntf {
   void printRelavantCauses();
 
   void setByCausesOnly(boolean byCausesOnly);
+
+  void printCmdPredictions();
 }
