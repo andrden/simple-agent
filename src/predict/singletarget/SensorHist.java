@@ -132,7 +132,9 @@ public class SensorHist implements java.io.Serializable{
 
     makeNewRules();
 
-    if( !val.equals(predict(vprev)) && exampleVals.size()>3 ){
+    //
+    //if( !val.equals(predict(vprev)) && exampleVals.size()>3 ){
+    if( !val.equals(predictWithDecisionStumpBasedRules(vprev)) && exampleVals.size()>3 ){
       analyzeVerySimilar(vprev);
     }
   }
@@ -316,6 +318,11 @@ public class SensorHist implements java.io.Serializable{
     if( res!=null ){
       return res;
     }
+
+
+/*
+    //rule hunding mustn't be done when predicting - defies unit testing
+
     if( otherRulesResult==null ){
       // we don't have prediction at hand
       singleAttrRuleHunting(vprev); // maybe we can derive it right now
@@ -324,6 +331,8 @@ public class SensorHist implements java.io.Serializable{
         return res;
       }
     }
+*/
+
     return otherRulesResult; // can be null if no global 'other' rule exists
   }
 

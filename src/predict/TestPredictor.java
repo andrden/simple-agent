@@ -8,9 +8,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
+import java.io.InputStreamReader;
 
 import org.w3c.dom.Document;
 import predict.singletarget.SensorHist;
+import utils.Utils;
 
 /**
  * Created by IntelliJ IDEA.
@@ -268,11 +270,27 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testRecencyPredictRepeated3");
   }
 
+  public void testRecencySpread() throws Exception{
+    SensorHist sensor = new SensorHist("f");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
+    examplesForSensorHistFile(sensor, "testRecencySpread.properties");
+  }
+
   private void examplesForSensorHist(SensorHist sensor, String xmlElem) throws Exception {
     //LinearPredictor p = new LinearPredictor();
     Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
             getClass().getResourceAsStream("data.xml"));
     String txt = d.getElementsByTagName(xmlElem).item(0).getTextContent();
+    examplesForSensorHistStr(sensor, txt);
+  }
+
+  private void examplesForSensorHistFile(SensorHist sensor, String file) throws Exception {
+    String txt = Utils.readAll(new InputStreamReader(getClass().getResourceAsStream(file), "utf-8"));
+    examplesForSensorHistStr(sensor, txt);
+  }
+
+
+  private void examplesForSensorHistStr(SensorHist sensor, String txt) {
     for( String s : txt.split("\n") ){
       s = s.trim();
       if( s.length()==0 ){
@@ -303,6 +321,7 @@ public class TestPredictor extends TestCase {
         Object pred = sensor.predict(v);
         assertTrue( "key="+key+" wekaKey="+wekaKey+" pred="+pred, acc);
       }else{
+        //sensor.predict(v); //......
         sensor.addAsCurrent(key, v);
       }
     }

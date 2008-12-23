@@ -131,5 +131,8 @@ public class SeqReact0 implements WorldGridView {
     return Collections.singletonMap("f", (Object) getColorDisplay(0, 0));
   }
 
+  public Map<String, Point> sensorLocations(){
+    return null;
+  }
 
 }

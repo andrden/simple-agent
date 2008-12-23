@@ -167,5 +167,8 @@ public class SeqReact3 implements WorldGridView {
     return m;
   }
 
+  public Map<String, Point> sensorLocations(){
+    return null;
+  }
 
 }

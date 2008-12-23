@@ -308,6 +308,9 @@ public class GridWorld1 implements WorldGridView, Serializable {
     return m;
   }
 
+  public Map<String, Point> sensorLocations(){
+    return null;
+  }
 
 }
 

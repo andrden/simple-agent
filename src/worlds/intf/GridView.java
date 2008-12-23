@@ -1,6 +1,7 @@
 package worlds.intf;
 
 import java.awt.*;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,4 +18,6 @@ public interface GridView {
   public Color getColorDisplay(int x, int y);
 
   public String getChar(int x, int y);
+
+  Map<String, Point> sensorLocations();
 }

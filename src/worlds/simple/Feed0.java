@@ -148,5 +148,9 @@ public class Feed0 implements WorldGridView {
     return Collections.singletonMap("f", (Object) getColor(getFwd()));
   }
 
+  public Map<String, Point> sensorLocations(){
+    return null;
+  }
+
 
 }

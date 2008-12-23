@@ -1,4 +1,4 @@
-package logic;
+package utils;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ public class MinMaxFinder {
   boolean first = true;
 
   double minVal;
+  double maxVal;
   List<String> minNames = new ArrayList<String>();
 
   public void add(double val, String name) {
@@ -20,13 +21,24 @@ public class MinMaxFinder {
       if( !first && val < minVal ){
         minNames.clear();
       }
-      minVal = val;
       minNames.add(name);
+      minVal = val;
+    }
+    if( first || val>= maxVal ){
+      maxVal=val;
     }
     first = false;
   }
 
   public List<String> getMinNames() {
     return minNames;
+  }
+
+  public double getMinVal() {
+    return minVal;
+  }
+
+  public double getMaxVal() {
+    return maxVal;
   }
 }

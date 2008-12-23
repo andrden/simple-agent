@@ -337,6 +337,10 @@ public class GridWorld3 implements WorldGridView, Serializable {
     return Math.max(Math.abs(p.x - cr.x0), Math.abs(p.y - cr.y0));
   }
 
+  public Map<String, Point> sensorLocations(){
+    return visibleCrRelatives();
+  }
+
   Map<String, Point> visibleCrRelatives() {
     Map<String, Point> m = new HashMap<String, Point>();
     m.put("f", new Point(1, 0));

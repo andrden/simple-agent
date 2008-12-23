@@ -3,6 +3,8 @@ package utils;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.io.Reader;
+import java.io.IOException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -93,4 +95,22 @@ public class Utils {
       }
     }
   }
+
+
+  /**
+   * Get all data from a Reader as a String.
+   * @param r Reader
+   * @throws java.io.IOException
+   * @return String
+   */
+  public static String readAll(Reader r) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    char[] buf = new char[4096];
+    int len;
+    while( (len=r.read(buf)) != -1 ){
+      sb.append(buf,0,len);
+    }
+    return sb.toString();
+  }
+  
 }

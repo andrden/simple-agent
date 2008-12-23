@@ -114,5 +114,8 @@ public class State1 implements WorldGridView {
     return m;
   }
 
+  public Map<String, Point> sensorLocations(){
+    return null;
+  }
 
 }
