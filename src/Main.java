@@ -50,8 +50,11 @@ public class Main extends JFrame {
 
   static abstract class GridCanvas extends Canvas{
     GridCanvas(){
-      setPreferredSize(new Dimension(getW() * SIZE + 1, getH() * SIZE + 1));
       setBackground(Color.RED); // to have update() called and flipping suppressed
+    }
+
+    public void setPrefSize(){
+      setPreferredSize(new Dimension(getW() * SIZE + 1, getH() * SIZE + 1));
     }
 
     public void update(Graphics g) {
@@ -98,7 +101,7 @@ public class Main extends JFrame {
     }
   }
 
-  Canvas gridCanvas = new GridCanvas() {
+  GridCanvas gridCanvas = new GridCanvas() {
     int getW() {
       return world.getWidth();
     }
@@ -116,37 +119,48 @@ public class Main extends JFrame {
     }
   };
 
-  Canvas crViewCanvas = new CrViewCanvas(); 
+  GridCanvas crViewCanvas = new CrViewCanvas();
 
   class CrViewCanvas extends GridCanvas {
     Map<Point,String> sensors = new HashMap<Point,String>();
+    MinMaxFinder xmm = new MinMaxFinder();
+    MinMaxFinder ymm = new MinMaxFinder();
+
     CrViewCanvas(){
       Map<String, Point> sloc = world.sensorLocations();
-      MinMaxFinder x = new MinMaxFinder();
-      MinMaxFinder y = new MinMaxFinder();
+      if( sloc==null ){
+        return;
+      }
       for( Point p : sloc.values() ){
-        x.add(p.getX(), "");
-        y.add(p.getY(), "");
+        xmm.add(p.getX(), "");
+        ymm.add(p.getY(), "");
       }
       for( String s : sloc.keySet() ){
         Point p = sloc.get(s);
-        sensors.put(new Point( (int)y.getMaxVal()-(int)p.getY() , (int)x.getMaxVal()-(int)p.getX() ) , s);
+        sensors.put(new Point( (int)ymm.getMaxVal()-(int)p.getY() , (int)xmm.getMaxVal()-(int)p.getX() ) , s);
       }
     }
 
     int getW() {
-      return 7;
+      return (int)(ymm.getMaxVal() - ymm.getMinVal() + 1);
     }
 
     int getH() {
-      return 8;
+      return (int)(xmm.getMaxVal() - xmm.getMinVal() + 1);
     }
 
     Color getColorDisplay(int i, int j) {
-      if( i==1 && j==0 ){
-        return Color.BLUE;
+      if( sensors.containsKey(new Point(i,j)) ){
+        String c = (String)world.view().get(sensors.get(new Point(i, j)));
+        Color cl;
+        try {
+          cl = (Color)Color.class.getDeclaredField(c).get(null);
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+        return cl;
       }
-      return Color.WHITE;
+      return Color.BLACK;
     }
 
     String getChar(int i, int j) {
@@ -158,6 +172,9 @@ public class Main extends JFrame {
   };
 
   public Main() throws HeadlessException {
+    gridCanvas.setPrefSize();
+    crViewCanvas.setPrefSize();
+
     setLayout(new FlowLayout());
     gridPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
     gridPanel.setLayout(new BorderLayout());
