@@ -56,7 +56,8 @@ public class HistoryFinder {
     for (int i = 0; i < els.size(); i++) {
       ViewDepthElem vde = els.get(i);
       HistoryFinder hf = children.get(vde);
-      int hfSize = hf.foundHistList.size();
+      List<Hist> hfList = hf.foundHistList;
+      int hfSize = hfList.size();
       if (hfSize == 0) {
         return hf.foundHistList; // no need going deeper, nothing will be found
       }

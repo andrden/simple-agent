@@ -3,6 +3,7 @@ import intf.World;
 import logic.Alg;
 import utils.MinMaxFinder;
 import worlds.GridWorld3;
+import worlds.Rubic2x2World;
 import worlds.intf.WorldGridView;
 
 import javax.swing.*;
@@ -27,7 +28,8 @@ import java.util.HashMap;
 public class Main extends JFrame {
   //WorldGridView world = new GridWorld1();
   //WorldGridView world = new GridWorld2();
-  WorldGridView world = new GridWorld3();
+  //WorldGridView world = new GridWorld3();
+  WorldGridView world = new Rubic2x2World();
 
   int totalResultPlus = 0;
   int totalResultMinus = 0;

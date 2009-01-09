@@ -368,6 +368,7 @@ public class SensorHist implements java.io.Serializable{
 
 
   public void addAsCurrent(Object val, OneView v) {
+    //@todo frequency of wrong predition here is our model completeness feeling
     vals.add(val);
     exampleVals.put(v, val);
     exList.add(v);

@@ -128,7 +128,7 @@ public class PredictorApproach implements Approach{
             .build(next);
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
-      System.out.println("On "+c+": "+v);
+      System.out.println("On "+c+": "+v.getViewAll().size()+" "+v);
     }
   }
 

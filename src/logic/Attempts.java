@@ -39,9 +39,9 @@ public class Attempts implements Serializable {
         return new CmdSet(cs.get(0));
         //continue;
       }
-      if( !vd.getEls().contains(new ViewDepthElem(0,"!")) ){
-        continue;
-      }
+//      if( !vd.getEls().contains(new ViewDepthElem(0,"!")) ){
+//        continue;
+//      }
       for (String c : cs) {
         DeepState ds = DeepState.lookBehind(vd, new Hist(history.last, view, c)).get(0);
         ds = ds.expandGroupCommands(alg.cmdGroups);
