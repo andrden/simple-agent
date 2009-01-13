@@ -10,7 +10,7 @@ import mem.OneView;
 import java.util.*;
 
 import utils.Utils;
-import utils.MinMaxFinder;
+import com.pmstation.common.utils.MinMaxFinder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -168,11 +168,13 @@ public class PredictorApproach implements Approach{
         countKnown = m.size();
       }
       minPredicted.add(countKnown, c);
-      List<String> bcmd2 = predictGoodNextCmd(v);
-      if( bcmd2!=null ){
-        CmdSet cc2 = new CmdSet(c);
-        cc2.setFoundFrom("from sequence " + bcmd2 + " after prediction on " + c);
-        return cc2;
+      if( v!=null ){
+        List<String> bcmd2 = predictGoodNextCmd(v);
+        if( bcmd2!=null ){
+          CmdSet cc2 = new CmdSet(c);
+          cc2.setFoundFrom("from sequence " + bcmd2 + " after prediction on " + c);
+          return cc2;
+        }
       }
     }
 

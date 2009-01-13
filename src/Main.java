@@ -1,9 +1,9 @@
 import intf.AlgIntf;
 import intf.World;
 import logic.Alg;
-import utils.MinMaxFinder;
-import worlds.GridWorld3;
+import com.pmstation.common.utils.MinMaxFinder;
 import worlds.Rubic2x2World;
+import worlds.ComparableSensors1;
 import worlds.intf.WorldGridView;
 
 import javax.swing.*;
@@ -29,7 +29,8 @@ public class Main extends JFrame {
   //WorldGridView world = new GridWorld1();
   //WorldGridView world = new GridWorld2();
   //WorldGridView world = new GridWorld3();
-  WorldGridView world = new Rubic2x2World();
+  //WorldGridView world = new Rubic2x2World();
+  WorldGridView world = new ComparableSensors1();
 
   int totalResultPlus = 0;
   int totalResultMinus = 0;
@@ -364,8 +365,11 @@ public class Main extends JFrame {
     gridCanvas.repaint();
     crViewCanvas.repaint();
     String res = "Step #" + step + "   Result: " + totalResultPlus+"/"+totalResultMinus;
-           // + " of " + world.availableResults();
-            //+ " missed " + (world.availableResults() - totalResult);
+    if( world.availableResults()>0 ){
+      res += " of " + world.availableResults();
+       //+ " missed " + (world.availableResults() - totalResult)
+
+    }
     setTitle(res);
 
     for (String g : alg.cmdGroups()) {
