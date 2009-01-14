@@ -166,9 +166,14 @@ public class PredictorApproach implements Approach{
         Map<String, Object> m = v.getViewAll();
         m.remove(Hist.CMD_KEY); // don't count predicted Cmd as known system state
         countKnown = m.size();
-      }
-      minPredicted.add(countKnown, c);
-      if( v!=null ){
+
+        Integer rr = Hist.getResult(v.getViewAll());
+        if( rr!=null && rr>0 ){
+          CmdSet cc2 = new CmdSet(c);
+          cc2.setFoundFrom("from res>0 after prediction on " + c);
+          return cc2;
+        }
+        
         List<String> bcmd2 = predictGoodNextCmd(v);
         if( bcmd2!=null ){
           CmdSet cc2 = new CmdSet(c);
@@ -176,6 +181,7 @@ public class PredictorApproach implements Approach{
           return cc2;
         }
       }
+      minPredicted.add(countKnown, c);
     }
 
     List<String> minPredCmds = minPredicted.getMinNames();
@@ -256,6 +262,7 @@ public class PredictorApproach implements Approach{
             if( next.getResult()>0 ){
               SensorHist s = goodNextCmd(sec);
               s.add("+", lastSteps.get(i));
+              negateCmdSeqsStarting(sec, lastSteps.get(i));
             }else{
               SensorHist s = goodNextCmd.get(sec);
               if( s!=null ){
@@ -283,6 +290,14 @@ public class PredictorApproach implements Approach{
 
         }
     }
+
+  void negateCmdSeqsStarting(String sec, OneView v){
+    for( String g : goodNextCmd.keySet() ){
+      if( g.startsWith(sec + " ") ){
+        goodNextCmd.get(g).add("-", v);
+      }
+    }
+  }
 
   private static final long serialVersionUID = -7282071316883621857L;
 

@@ -52,8 +52,9 @@ public class ComparableSensors1 implements WorldGridView, Serializable {
 
   public Map<String, Object> view() {
     Map<String, Object> ret = new HashMap<String, Object>();
-    ret.put("a", Utils.color2name(cells[0]));
-    ret.put("b", Utils.color2name(cells[1]));
+    //ret.put("a", Utils.color2name(cells[0]));
+    //ret.put("b", Utils.color2name(cells[1]));
+    ret.put("q", Boolean.toString(cells[0]==cells[1]));
     return ret;
   }
 
