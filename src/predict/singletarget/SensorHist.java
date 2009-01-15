@@ -58,6 +58,12 @@ public class SensorHist implements java.io.Serializable{
       return;
     }
     addAsCurrent(val, v.prev);
+
+    // auto-check
+    Object predictedNow = predict(v.prev);
+    if( predictedNow!=null && !val.equals(predictedNow) ){
+      throw new RuntimeException(  "just added "+val+" auto-check predicted "+predictedNow);
+    }
   }
 
   boolean ruleIsExtra(SRule r){

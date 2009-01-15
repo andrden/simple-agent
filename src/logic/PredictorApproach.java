@@ -8,6 +8,7 @@ import mem.Hist;
 import mem.OneView;
 
 import java.util.*;
+import java.io.Serializable;
 
 import utils.Utils;
 import com.pmstation.common.utils.MinMaxFinder;
@@ -24,7 +25,7 @@ public class PredictorApproach implements Approach{
   LinkedList<Hist> lastSteps = new LinkedList<Hist>();
 
   Plan currentPlan = null;
-  class Plan{
+  class Plan implements Serializable {
     List<String> cmds;
     int pos=0;
 
