@@ -295,7 +295,9 @@ public class PredictorApproach implements Approach{
   void negateCmdSeqsStarting(String sec, OneView v){
     for( String g : goodNextCmd.keySet() ){
       if( g.startsWith(sec + " ") ){
-        goodNextCmd.get(g).add("-", v);
+        // don't call this seq. a 'resultative' despite result occurs during its
+        // execution - there is a shorter one we should use in future
+        goodNextCmd.get(g).add("+-", v);
       }
     }
   }

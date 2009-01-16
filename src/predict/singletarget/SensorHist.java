@@ -13,6 +13,7 @@ import weka.core.Instances;
 import weka.core.Instance;
 import weka.core.Attribute;
 import com.pmstation.common.utils.PrivateFieldGetter;
+import com.pmstation.common.utils.CountingMap;
 import utils.Utils;
 
 /**
@@ -34,6 +35,7 @@ public class SensorHist implements java.io.Serializable{
   Object otherRulesResult = null;
 
   Set<String> decisiveAttrs = new HashSet<String>();
+  CountingMap valsCounts = new CountingMap();
 
   public void printRules(){
     System.out.println(srules+" other="+otherRulesResult);
@@ -375,6 +377,7 @@ public class SensorHist implements java.io.Serializable{
 
   public void addAsCurrent(Object val, OneView v) {
     //@todo frequency of wrong predition here is our model completeness feeling
+    valsCounts.increment(val);
     vals.add(val);
     exampleVals.put(v, val);
     exList.add(v);
@@ -393,7 +396,8 @@ public class SensorHist implements java.io.Serializable{
    * @return
    */
   public boolean valAcceptedByRules(OneView v, Object val){
-    return val.equals( predict(v) );
+    Object pred = predict(v);
+    return val.equals(pred);
     //return val.equals( predictWithWeka(v) );
     //return vals.get(val).acceptedByRules(v)!=null;
   }

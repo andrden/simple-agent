@@ -21,6 +21,7 @@ import utils.Utils;
 public class ComparableSensors1 implements WorldGridView, Serializable {
   Color[] cells = new Color[2];
   int availableResults=0;
+  int countEq=0;
 
   public ComparableSensors1(){
     genCells();
@@ -35,6 +36,9 @@ public class ComparableSensors1 implements WorldGridView, Serializable {
     };
     for( int i=0; i<cells.length; i++ ){
       cells[i] = cc[(int)(Math.random()*cc.length)];
+    }
+    if( cells[0]==cells[1] ){
+      System.out.println("world eq count " + (++countEq) );
     }
   }
 
