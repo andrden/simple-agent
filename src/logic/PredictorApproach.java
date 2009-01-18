@@ -28,16 +28,18 @@ public class PredictorApproach implements Approach{
   class Plan implements Serializable {
     List<String> cmds;
     int pos=0;
+    String foundFrom;
 
-    Plan(List<String> cmds) {
+    Plan(List<String> cmds, String foundFrom) {
       this.cmds = cmds;
+      this.foundFrom = foundFrom;
     }
 
     CmdSet nextCmdSet(){
       String desc = cmds.toString();
       String cmd = next();
       CmdSet cs = new CmdSet(cmd);
-      cs.setFoundFrom("currentPlan "+desc);
+      cs.setFoundFrom("currentPlan "+desc+" "+foundFrom);
       return cs;
     }
 
@@ -137,29 +139,28 @@ public class PredictorApproach implements Approach{
     if( currentPlan!=null ){
       return currentPlan.nextCmdSet();
     }
-
-    List<String> bcmd = predictGoodNextCmd(next);
-    if( bcmd!=null ){
-      currentPlan = new Plan(bcmd);
-      return currentPlan.nextCmdSet();
-      /*
-      String command = bcmd.get(0);
-      CmdSet cc2 = new CmdSet(command);
-      //CmdSet cc2 = new CmdSet(bcmd.toArray(new String[0]));
-      cc2.setFoundFrom("from sequence " + bcmd);
-      return cc2;
-      */
-    }
-
     if( next==null ){
       return null;
     }
 
+    // If there is time we should try to calc. the best command
+    // using the most recent data rules. Only in time-critical situations
+    // or when no clear result can be calculated we use pre-learned command
+    // sequences.
     //Prediction system knows that Ep at YELLOW causes ORANGE long before
     //goodCmd encounters such happy event. We need to use that!
+
+    MinMaxFinder<Plan> shortestPlan = new MinMaxFinder<Plan>();
+
+    List<String> bcmd = predictGoodNextCmd(next);
+    if( bcmd!=null ){
+      shortestPlan.add(bcmd.size(), new Plan(bcmd, "direct predictGoodNextCmd"));
+    }
+
     CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 1)
             .build(next);
-    MinMaxFinder minPredicted = new MinMaxFinder();
+
+    MinMaxFinder<String> minPredicted = new MinMaxFinder<String>();
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
       int countKnown = 0;
@@ -170,20 +171,24 @@ public class PredictorApproach implements Approach{
 
         Integer rr = Hist.getResult(v.getViewAll());
         if( rr!=null && rr>0 ){
-          CmdSet cc2 = new CmdSet(c);
-          cc2.setFoundFrom("from res>0 after prediction on " + c);
-          return cc2;
+          shortestPlan.add(1, new Plan(Arrays.asList(c),"from res>0 after prediction on " + c));
         }
         
         List<String> bcmd2 = predictGoodNextCmd(v);
         if( bcmd2!=null ){
-          CmdSet cc2 = new CmdSet(c);
-          cc2.setFoundFrom("from sequence " + bcmd2 + " after prediction on " + c);
-          return cc2;
+          shortestPlan.add(1+bcmd2.size(),
+              new Plan(Arrays.asList(c), "from sequence " + bcmd2 + " after prediction on " + c));
         }
       }
       minPredicted.add(countKnown, c);
     }
+
+    if( !shortestPlan.getMinNames().isEmpty() ){
+      currentPlan = Utils.rnd(shortestPlan.getMinNames());
+      return currentPlan.nextCmdSet();
+    }
+
+    //====== random attempts below: ======
 
     List<String> minPredCmds = minPredicted.getMinNames();
     if( minPredCmds.size()!=possibleCommands.size() ){

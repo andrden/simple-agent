@@ -9,15 +9,15 @@ import java.util.ArrayList;
  * Date: 15 жовт 2008
  * Time: 14:01:09
  */
-public class MinMaxFinder {
+public class MinMaxFinder<T> {
   boolean first = true;
 
   double minVal;
   double maxVal;
-  List<String> minNames = new ArrayList<String>();
-  List<String> maxNames = new ArrayList<String>();
+  List<T> minNames = new ArrayList<T>();
+  List<T> maxNames = new ArrayList<T>();
 
-  public void add(double val, String name) {
+  public void add(double val, T name) {
     if (first || val <= minVal) {
       if( val < minVal ){
         minNames.clear();
@@ -35,11 +35,11 @@ public class MinMaxFinder {
     first = false;
   }
 
-  public List<String> getMinNames() {
+  public List<T> getMinNames() {
     return minNames;
   }
 
-  public List<String> getMaxNames() {
+  public List<T> getMaxNames() {
     return maxNames;
   }
 
@@ -52,7 +52,7 @@ public class MinMaxFinder {
   }
 
   public static void main(String[] args){
-    MinMaxFinder m = new MinMaxFinder();
+    MinMaxFinder<String> m = new MinMaxFinder<String>();
     m.add(5,"bbbbb");
     m.add(3,"abc");
     m.add(5,"ddddd");
