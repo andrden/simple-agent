@@ -135,9 +135,13 @@ public class AudioMain {
 
     public RateBytes invoke() throws UnsupportedAudioFileException, IOException {
       //File fwav = new File("c:/tmp/accessed.wav");
-      File fwav = new File("c:/tmp/precise_dial_tone.wav");  // a sine wave at 350 hertz and a sine wave at 440 hertz
+      //File fwav = new File("c:/tmp/precise_dial_tone.wav");  // a sine wave at 350 hertz and a sine wave at 440 hertz
+      File fwav = new File("C:\\proj\\cr6\\sounds\\quatre.wav");
       AudioInputStream in = AudioSystem.getAudioInputStream(fwav);
-      in = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, in);
+      //in = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, in);
+      AudioFormat fmt = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
+        in.getFormat().getSampleRate(), 8, 1, 1, in.getFormat().getFrameRate(), false  );
+      in = AudioSystem.getAudioInputStream(fmt, in);
       //int rate = 11025;
       rate = (int) in.getFormat().getFrameRate();
       //b = new byte[rate / 10];
