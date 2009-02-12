@@ -115,6 +115,20 @@ public class TestPredictor extends TestCase {
     assertEquals("0", p.predict().get("d")); // c=k => d=0
   }
 
+  public void testRefSame1() {
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p, "zAn1");
+    addMulti(p, "zAk4");
+    addMulti(p, "xAp4");
+    addMulti(p, "xAp1");
+    addMulti(p, "zAk3");
+    addMulti(p, "zBk3");
+    addMulti(p, "mCt3");
+    addMulti(p, "mCt0");
+    addMulti(p, "mCk5");
+    assertEquals("5", p.predict().get("d")); // c=k => d=d(prev)
+  }
+
   public void test9() { // test for rule auto-extension
     LinearPredictor p = new LinearPredictor();
     addMulti(p, "1Abz0");

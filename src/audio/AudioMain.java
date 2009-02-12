@@ -23,6 +23,7 @@ public class AudioMain {
   
 
   public static void main(String[] args) throws Exception{
+    System.out.println(Math.pow(0.25, 1./400));
     new AudioMain().m();
   }
 
@@ -72,7 +73,8 @@ public class AudioMain {
   void m() throws Exception{
     //wavWrite();
     //wavTransform();
-    wavVisualize();
+    //wavVisualize();
+    wavVisualizeAvg();
   }
 
   private void wavVisualize() throws Exception {
@@ -92,6 +94,43 @@ public class AudioMain {
     BufferedImage im = new BufferedImage(w, max-min+1, BufferedImage.TYPE_INT_RGB);
     for( int i=0; i<w; i++ ){
       im.setRGB(i, b[i]-min, Color.GREEN.getRGB());
+    }
+    ImageIO.write(im, "png",new File("d:/tmp/sound1.png"));
+  }
+
+  class VolumeAvg{
+    double[] avgs;
+    MinMaxFinder mmf=new MinMaxFinder();
+
+    VolumeAvg(byte[] b) {
+      // 400 points is 1/20 sec, effect should be visible, maybe 0.25,
+      double koef = Math.pow(0.25, 1./400);
+
+      avgs = new double[b.length];
+      double v=0;
+      for( int i=1; i<b.length; i++ ){
+        double delta = Math.abs( (double)b[i] - (double)b[i-1] );
+        v = v*koef + delta;
+        avgs[i]=v;
+        mmf.add(v,"");
+      }
+    }
+  }
+
+  private void wavVisualizeAvg() throws Exception {
+    RateBytes rateBytes = new RateBytes().invoke();
+    byte[] b = rateBytes.getB();
+    VolumeAvg vavg = new VolumeAvg(b);
+
+    int w = b.length;
+    if( w>4000 ){
+      w=4000;
+    }
+
+    BufferedImage im = new BufferedImage(w/10, 201, BufferedImage.TYPE_INT_RGB);
+    for( int i=0; i<w; i+=10 ){
+      int y = (int)(200*vavg.avgs[i]/vavg.mmf.getMaxVal());
+      im.setRGB(i/10, 200-y, Color.GREEN.getRGB());
     }
     ImageIO.write(im, "png",new File("d:/tmp/sound1.png"));
   }
@@ -134,9 +173,9 @@ public class AudioMain {
     }
 
     public RateBytes invoke() throws UnsupportedAudioFileException, IOException {
-      //File fwav = new File("c:/tmp/accessed.wav");
+      File fwav = new File("c:/tmp/accessed.wav");
       //File fwav = new File("c:/tmp/precise_dial_tone.wav");  // a sine wave at 350 hertz and a sine wave at 440 hertz
-      File fwav = new File("C:\\proj\\cr6\\sounds\\quatre.wav");
+      //File fwav = new File("C:\\proj\\cr6\\sounds\\quatre.wav");
       AudioInputStream in = AudioSystem.getAudioInputStream(fwav);
       //in = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, in);
       AudioFormat fmt = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
@@ -150,4 +189,5 @@ public class AudioMain {
       return this;
     }
   }
+
 }
