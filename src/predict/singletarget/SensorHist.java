@@ -94,15 +94,18 @@ public class SensorHist implements java.io.Serializable{
     return ret;
   }
 
-  SRule ruleByDecisionStump(Collection<OneView> views){
+  SRule ruleByDecisionStump(Collection<OneView> views, boolean seekForSameVal){
     DecisionStump myClassif  = new DecisionStump();
-    WekaBuilder wf = buildClassifier(myClassif, views);
-    Attribute splitAttr = wf.getInstances().attribute((Integer)PrivateFieldGetter.evalNoEx(myClassif,"m_AttIndex"));
+    WekaBuilder wf = buildClassifier(myClassif, views, seekForSameVal);
 
+    Attribute splitAttr = wf.getInstances().attribute((Integer)PrivateFieldGetter.evalNoEx(myClassif,"m_AttIndex"));
     String attName = splitAttr.name();
     decisiveAttrs.add(attName);
     Object attVal = wf.attVal(attName, ((Double)PrivateFieldGetter.evalNoEx(myClassif,"m_SplitPoint")).intValue() );
     SRule r = new SRule(attName, attVal, true);
+    if( seekForSameVal ){
+        r.resultEqPrev=true;
+    }
     return r;
   }
 
@@ -199,10 +202,16 @@ public class SensorHist implements java.io.Serializable{
       otherRulesResult=commonResAll;
       return;
     }
-    SRule r = ruleByDecisionStump( exampleVals.keySet() );
+    SRule r = ruleByDecisionStump( exampleVals.keySet(), false );
     ruleCheckAndAdd(r);
     SRule rn = r.negate();
     ruleCheckAndAdd(rn);
+
+    if( sensorName.equals("d") && exList.size()>=8 ){
+      SRule rEqPrev = ruleByDecisionStump( exampleVals.keySet(), true );
+      use this rule!
+      rEqPrev=rEqPrev;
+    }
 
     List<OneView> unex = unexplainedExamples();
     for( int j=0; j<10 && !unexplainedExamples().isEmpty(); j++ ){
@@ -253,7 +262,7 @@ public class SensorHist implements java.io.Serializable{
     if( exList.size()<2 ){
       return false;
     }
-    Object commonRes = commonResValue(exList);
+    Object commonRes = commonResValue(exList); - for rEqPrev SRule must be other check
     if( commonRes!=null ){
       r.setResult(commonRes);
       if( !ruleIsExtra(r) ){
@@ -261,7 +270,7 @@ public class SensorHist implements java.io.Serializable{
         return true;
       }
     }else{
-      SRule subR = ruleByDecisionStump(exList);
+      SRule subR = ruleByDecisionStump(exList, r.resultEqPrev);
       SRule rnew = r.andRule(subR);
       if( rnew.complexity()>r.complexity() ){
         ruleCheckAndAdd(rnew);
@@ -402,20 +411,35 @@ public class SensorHist implements java.io.Serializable{
     //return vals.get(val).acceptedByRules(v)!=null;
   }
 
-  public WekaBuilder buildClassifier(Classifier myClassif, Collection<OneView> views){
+  public WekaBuilder buildClassifier(Classifier myClassif, Collection<OneView> views,
+                                     boolean seekForSameVal){
     WekaBuilder wf = new WekaBuilder(myClassif);
     for( OneView v : views ){
       wf.collectAttrs(v, skippedViewKeys);
     }
 
-    for( Object o : vals ){
-      wf.addForRes(o);
+    if( seekForSameVal ){
+      wf.addForRes("0");
+      wf.addForRes("1");
+    }else{
+      for( Object o : vals ){
+        wf.addForRes(o);
+      }
     }
     wf.mkInstances();
 
 
     for( OneView v : views ){
-      wf.addInstance(v, exampleVals.get(v).toString());
+      String vval = exampleVals.get(v).toString();
+      if( seekForSameVal ){
+        vval = "0";
+        if( v.prev!=null && exampleVals.get(v.prev)!=null){
+          if( exampleVals.get(v.prev).equals(exampleVals.get(v)) ){
+            vval = "1";
+          }
+        }
+      }
+      wf.addInstance(v, vval);
     }
 
     Instances ins = wf.getInstances();
@@ -440,7 +464,7 @@ public class SensorHist implements java.io.Serializable{
     DecisionStump myClassif  = new DecisionStump();
     lastUsedClassifier = myClassif;
 
-    WekaBuilder wf = buildClassifier(myClassif, exampleVals.keySet());
+    WekaBuilder wf = buildClassifier(myClassif, exampleVals.keySet(), false);
 
     double d;
     try {

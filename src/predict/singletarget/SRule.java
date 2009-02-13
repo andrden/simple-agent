@@ -15,6 +15,7 @@ public class SRule implements java.io.Serializable{
   private Map<String,Object> cond = new HashMap<String,Object>();
   private Map<String,Object> negCond = new HashMap<String,Object>();
   private Object result;
+  boolean resultEqPrev=false;
 
   SRule(){
 
