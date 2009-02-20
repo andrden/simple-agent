@@ -207,11 +207,10 @@ public class SensorHist implements java.io.Serializable{
     SRule rn = r.negate();
     ruleCheckAndAdd(rn);
 
-    if( sensorName.equals("d") && exList.size()>=8 ){
-      SRule rEqPrev = ruleByDecisionStump( exampleVals.keySet(), true );
-      use this rule!
-      rEqPrev=rEqPrev;
-    }
+    SRule rEqPrev = ruleByDecisionStump( exampleVals.keySet(), true );
+    ruleCheckAndAdd(rEqPrev);
+    SRule rEqPrevN = rEqPrev.negate();
+    ruleCheckAndAdd(rEqPrevN);
 
     List<OneView> unex = unexplainedExamples();
     for( int j=0; j<10 && !unexplainedExamples().isEmpty(); j++ ){
@@ -262,9 +261,11 @@ public class SensorHist implements java.io.Serializable{
     if( exList.size()<2 ){
       return false;
     }
-    Object commonRes = commonResValue(exList); - for rEqPrev SRule must be other check
-    if( commonRes!=null ){
-      r.setResult(commonRes);
+    Object commonRes = commonResValue(r, exList);
+    if( r.resultUseful(commonRes) ){
+      if( !r.resultEqPrev ){
+        r.setResult(commonRes);
+      }
       if( !ruleIsExtra(r) ){
         srules.add(r);
         return true;
@@ -294,7 +295,7 @@ public class SensorHist implements java.io.Serializable{
     for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
       SRule sr = i.next();
       if( sr.condHolds(vprev) ){
-        if( !sr.getResult().equals(val) ){
+        if( !sr.getPredictedResult(vprev, exampleVals).equals(val) ){
           i.remove();
         }else{
           explained=true;
@@ -317,7 +318,7 @@ public class SensorHist implements java.io.Serializable{
     for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
       SRule sr = i.next();
       if( sr.condHolds(vprev) ){
-        Object resi = sr.getResult();
+        Object resi = sr.getPredictedResult(vprev, exampleVals);
         if( resi!=null && res!=null && !resi.equals(res) ){
           //throw new RuntimeException("rule conflict "+sr+" "+rres);
           System.out.println("rule conflict "+sensorName+" "+sr+" "+rres+" view="+vprev);
@@ -354,9 +355,16 @@ public class SensorHist implements java.io.Serializable{
   }
 
   Object commonResValue(Collection<OneView> exList){
+    return commonResValue(null, exList);
+  }
+
+  Object commonResValue(SRule rule, Collection<OneView> exList){
     Object com = null;
     for( OneView v : exList ){
       Object r = exampleVals.get(v);
+      if( rule!=null ){
+        r = rule.resultValue(v, exampleVals);
+      }
       if( com!=null ){
         if( !com.equals(r) ){
           return null;

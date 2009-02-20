@@ -4,6 +4,7 @@ import mem.OneView;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,6 +20,37 @@ public class SRule implements java.io.Serializable{
 
   SRule(){
 
+  }
+
+  boolean resultUseful(Object resultValue){
+    if( resultValue==null ){
+      return false;
+    }
+    if( resultEqPrev ){
+      return resultValue.equals("1");
+    }
+    return true;
+  }
+
+  Object getPredictedResult(OneView vprev, Map<OneView, Object> exampleVals){
+    if( resultEqPrev ){
+      return exampleVals.get(vprev.prev);
+    }
+    return getResult();
+  }
+
+  Object resultValue(OneView v, Map<OneView, Object> exampleVals){
+    if( resultEqPrev ){
+      String vval = "0";
+      if( v.prev!=null && exampleVals.get(v.prev)!=null){
+        if( exampleVals.get(v.prev).equals(exampleVals.get(v)) ){
+          vval = "1";
+        }
+      }
+      return vval;
+    }else{
+      return exampleVals.get(v);
+    }
   }
 
   SRule(Map<String,Object> cond){
@@ -94,6 +126,12 @@ public class SRule implements java.io.Serializable{
   }
 
   public String toString() {
-    return cond + " neg " + negCond + " => " + result;
+    String ret = cond + " neg " + negCond + " => ";
+    if( resultEqPrev ){
+      ret += "resultEqPrev";
+    }else{
+      ret += result;
+    }
+    return ret;
   }
 }
