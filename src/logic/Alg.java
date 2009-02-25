@@ -63,29 +63,37 @@ public class Alg implements AlgIntf, Serializable {
     }
   }
 
+  CmdSet nextCmdLogic(){
+    CmdSet ret;
+    Map<String, Object> view = w.view();
+    if (curCmd.finished()) {
+      ret = calcNextCmd(view, false);
+    } else {
+      CmdSet cmdStepCheck = calcNextCmd(view, true);
+      if (cmdStepCheck != null && cmdStepCheck.getTargetResult() >= curCmd.getTargetResult()
+              && cmdStepCheck.len() < curCmd.len()) {
+        ret = cmdStepCheck;
+        log("pre-calced cmd replaced with step command");
+      } else {
+        ret = curCmd;
+        log("pre-calced cmd");
+      }
+    }
+    return ret;
+  }
+
   public synchronized String nextCmd(String forcedCmd) {
     log("------------------------------------");
-    Map<String, Object> view = w.view();
     if (forcedCmd != null) {
       curCmd = new CmdSet(forcedCmd);
     } else {
-      if (curCmd.finished()) {
-        curCmd = calcNextCmd(view, false);
-      } else {
-        CmdSet cmdStepCheck = calcNextCmd(view, true);
-        if (cmdStepCheck != null && cmdStepCheck.getTargetResult() >= curCmd.getTargetResult()
-                && cmdStepCheck.len() < curCmd.len()) {
-          curCmd = cmdStepCheck;
-          log("pre-calced cmd replaced with step command");
-        } else {
-          log("pre-calced cmd");
-        }
-      }
+      curCmd = nextCmdLogic();
     }
 
     assert (!curCmd.finished());
 
     String cmd = curCmd.goNext(cmdGroups);
+    Map<String, Object> view = w.view();
     if (history.last == null) {
       history.setLastResult(0, view);
       approaches.get(0).add(history.next);
@@ -336,6 +344,7 @@ public class Alg implements AlgIntf, Serializable {
     for( Approach appr : approaches ){
       appr.printCmdPredictions(history.getNextHist(), cs);
     }
+    System.out.println( "nextCmdLogic="+nextCmdLogic() );
   }
 
   private CmdSet calcNextCmd(Map<String, Object> view, boolean stepByStepFastCheck) {

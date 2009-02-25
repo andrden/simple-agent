@@ -267,6 +267,9 @@ public class SensorHist implements java.io.Serializable{
         r.setResult(commonRes);
       }
       if( !ruleIsExtra(r) ){
+        if( r.resultEqPrev ){
+          r=r; // adding new 'resultEqPrev'-type rule
+        }
         srules.add(r);
         return true;
       }
@@ -321,7 +324,7 @@ public class SensorHist implements java.io.Serializable{
         Object resi = sr.getPredictedResult(vprev, exampleVals);
         if( resi!=null && res!=null && !resi.equals(res) ){
           //throw new RuntimeException("rule conflict "+sr+" "+rres);
-          System.out.println("rule conflict "+sensorName+" "+sr+" "+rres+" view="+vprev);
+          System.out.println("rule conflict "+sensorName+" "+sr+"    "+rres+"    view="+vprev);
           return null;
         }
         res = resi;

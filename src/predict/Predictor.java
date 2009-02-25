@@ -28,6 +28,12 @@ public class Predictor implements PredictorIntf {
     }
   }
 
+  public void printRuleStats() {
+    for( PredictorIntf i : algs ){
+      i.printRuleStats();
+    }
+  }
+
   public void appendValsToLastView(Map<String, Object> sensors) {
     for (PredictorIntf i : algs) {
       i.appendValsToLastView(sensors);

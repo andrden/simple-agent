@@ -133,6 +133,7 @@ public class PredictorApproach implements Approach{
       OneView v = tree.viewOnCommand(c);
       System.out.println("On "+c+": "+v.getViewAll().size()+" "+v);
     }
+    predictor.printRuleStats();
   }
 
   public CmdSet suggestCmd(Hist next, List<String> possibleCommands) {

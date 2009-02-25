@@ -19,4 +19,6 @@ public interface PredictorIntf extends Serializable {
   OneView predictNext(OneView v);
 
   void printRules(String elem);
+
+  void printRuleStats();
 }
