@@ -270,6 +270,22 @@ public class SensorHist implements java.io.Serializable{
         if( r.resultEqPrev ){
           r=r; // adding new 'resultEqPrev'-type rule
         }
+
+        must add all common condition singletons to the SRule
+        ибо это чушь:
+
+this = {predict.singletarget.SensorHist@1136}"f {YELLOW,BLACK}"
+r = {predict.singletarget.SRule@1584}"{} neg {!=L} => BLACK"
+exList = {java.util.ArrayList@1585} size = 7
+[0] = {mem.Hist@1619}"#7 {f=BLACK, !=A2B, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+[1] = {mem.Hist@1620}"#6 {f=BLACK, !=B2, fl=WHITE, r=BLUE, ff=YELLOW, $=-1, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+[2] = {mem.Hist@1621}"#5 {f=BLACK, !=Fb, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+[3] = {mem.Hist@1622}"#4 {f=BLACK, !=B1, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+[4] = {mem.Hist@1623}"#3 {f=BLACK, !=A1, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+[5] = {mem.Hist@1624}"#2 {f=BLACK, !=N, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+[6] = {mem.Hist@1625}"#1 {f=YELLOW, !=R, fl=WHITE, r=BLUE, ff=BLACK, $=0, ffr=BLACK, frr=WHITE, rr=BLACK, fr=YELLOW, l=YELLOW}"
+
+
         srules.add(r);
         return true;
       }
