@@ -171,6 +171,7 @@ public class SensorHist implements java.io.Serializable{
     for( OneView ve : exampleVals.keySet() ){
       if( ve!=vprev ){
         Map<String, Object> m = Utils.intersection(ve.getViewAll(), vprev.getViewAll());
+        filterSkippedKeys(m);
         comm.add(m);
       }
     }
@@ -253,6 +254,14 @@ public class SensorHist implements java.io.Serializable{
     return r;
   }
 
+  void filterSkippedKeys(Map<String,Object> m){
+    if( skippedViewKeys!=null ){
+      for( String k : skippedViewKeys ){
+        m.remove(k);
+      }
+    }
+  }
+
   private boolean ruleCheckAndAdd(SRule r) {
     if( r.complexity()>2 ){
       return false;
@@ -269,11 +278,7 @@ public class SensorHist implements java.io.Serializable{
         r.setResult(commonRes);
       }
       Map<String,Object> inters =Utils.interstectingVals(exList);
-      if( skippedViewKeys!=null ){
-        for( String k : skippedViewKeys ){
-          inters.remove(k);
-        }
-      }
+      filterSkippedKeys(inters);
       r.addToCondition(inters);
       if( !ruleIsExtra(r) ){
 //        if( r.resultEqPrev ){
