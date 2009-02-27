@@ -13,48 +13,33 @@ import java.util.Map;
  * Time: 17:59:55
  */
 public class Predictor implements PredictorIntf {
-  List<PredictorIntf> algs;
+  predict.singletarget.Pred alg = new predict.singletarget.Pred();
 
   public Predictor() {
-    algs = Arrays . <PredictorIntf> asList(
-            new predict.singletarget.Pred() /*,
-            new predict.singlesensor.Pred()   */
-    );
   }
 
   public void printRules(String elem) {
-    for( PredictorIntf i : algs ){
-      i.printRules(elem);
-    }
+    alg.printRules(elem);
   }
 
   public void printRuleStats() {
-    for( PredictorIntf i : algs ){
-      i.printRuleStats();
-    }
+    alg.printRuleStats();
   }
 
   public void appendValsToLastView(Map<String, Object> sensors) {
-    for (PredictorIntf i : algs) {
-      i.appendValsToLastView(sensors);
-    }
+    alg.appendValsToLastView(sensors);
   }
 
   public void add(OneView v) {
-    for (PredictorIntf i : algs) {
-      i.add(v);
-    }
+    alg.add(v);
   }
 
   public OneView predictNext(OneView v) {
     OneView vnext = new OneView();
     vnext.prev = v;
-    for (PredictorIntf i : algs) {
-      OneView vi = i.predictNext(v);
-      vnext.mergeByAddNew(vi);
-    }
+    OneView vi = alg.predictNext(v);
+    vnext.mergeByAddNew(vi);
     return vnext;
   }
-
 
 }
