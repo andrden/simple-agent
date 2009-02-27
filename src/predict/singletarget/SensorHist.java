@@ -188,7 +188,7 @@ public class SensorHist implements java.io.Serializable{
         if( commonRes!=null ){
           r.setResult(commonRes);
           if( !ruleIsExtra(r) ){
-            srules.add(r);
+            srulesAdd(r);
             break;
           }
         }
@@ -232,9 +232,11 @@ public class SensorHist implements java.io.Serializable{
   boolean singleAttrRuleHunting(OneView vprev){
     Map<String, Object> m = vprev.getViewAll();
     for( String s : m.keySet() ){
-      SRule r = new SRule(s, m.get(s), true);
-      if( ruleCheckAndAdd(r) ){
-        //must try to find beautiful solution - return true;
+      if( skippedViewKeys==null || !skippedViewKeys.contains(s) ){
+        SRule r = new SRule(s, m.get(s), true);
+        if( ruleCheckAndAdd(r) ){
+          //must try to find beautiful solution - return true;
+        }
       }
     }
     return false;
@@ -266,27 +268,34 @@ public class SensorHist implements java.io.Serializable{
       if( !r.resultEqPrev ){
         r.setResult(commonRes);
       }
-      if( !ruleIsExtra(r) ){
-        if( r.resultEqPrev ){
-          r=r; // adding new 'resultEqPrev'-type rule
+      Map<String,Object> inters =Utils.interstectingVals(exList);
+      if( skippedViewKeys!=null ){
+        for( String k : skippedViewKeys ){
+          inters.remove(k);
         }
+      }
+      r.addToCondition(inters);
+      if( !ruleIsExtra(r) ){
+//        if( r.resultEqPrev ){
+//          r=r; // adding new 'resultEqPrev'-type rule
+//        }
 
-        must add all common condition singletons to the SRule
-        ибо это чушь:
+//        must add all common condition singletons to the SRule
+//        ибо это чушь:
+//
+//this = {predict.singletarget.SensorHist@1136}"f {YELLOW,BLACK}"
+//r = {predict.singletarget.SRule@1584}"{} neg {!=L} => BLACK"
+//exList = {java.util.ArrayList@1585} size = 7
+//[0] = {mem.Hist@1619}"#7 {f=BLACK, !=A2B, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+//[1] = {mem.Hist@1620}"#6 {f=BLACK, !=B2, fl=WHITE, r=BLUE, ff=YELLOW, $=-1, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+//[2] = {mem.Hist@1621}"#5 {f=BLACK, !=Fb, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+//[3] = {mem.Hist@1622}"#4 {f=BLACK, !=B1, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+//[4] = {mem.Hist@1623}"#3 {f=BLACK, !=A1, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+//[5] = {mem.Hist@1624}"#2 {f=BLACK, !=N, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
+//[6] = {mem.Hist@1625}"#1 {f=YELLOW, !=R, fl=WHITE, r=BLUE, ff=BLACK, $=0, ffr=BLACK, frr=WHITE, rr=BLACK, fr=YELLOW, l=YELLOW}"
 
-this = {predict.singletarget.SensorHist@1136}"f {YELLOW,BLACK}"
-r = {predict.singletarget.SRule@1584}"{} neg {!=L} => BLACK"
-exList = {java.util.ArrayList@1585} size = 7
-[0] = {mem.Hist@1619}"#7 {f=BLACK, !=A2B, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
-[1] = {mem.Hist@1620}"#6 {f=BLACK, !=B2, fl=WHITE, r=BLUE, ff=YELLOW, $=-1, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
-[2] = {mem.Hist@1621}"#5 {f=BLACK, !=Fb, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
-[3] = {mem.Hist@1622}"#4 {f=BLACK, !=B1, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
-[4] = {mem.Hist@1623}"#3 {f=BLACK, !=A1, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
-[5] = {mem.Hist@1624}"#2 {f=BLACK, !=N, fl=WHITE, r=BLUE, ff=YELLOW, $=0, ffr=WHITE, frr=WHITE, rr=WHITE, fr=WHITE, l=YELLOW}"
-[6] = {mem.Hist@1625}"#1 {f=YELLOW, !=R, fl=WHITE, r=BLUE, ff=BLACK, $=0, ffr=BLACK, frr=WHITE, rr=BLACK, fr=YELLOW, l=YELLOW}"
 
-
-        srules.add(r);
+        srulesAdd(r);
         return true;
       }
     }else{
@@ -307,6 +316,11 @@ exList = {java.util.ArrayList@1585} size = 7
 //      }
     }
     return false;
+  }
+
+  void srulesAdd(SRule r){
+    r.disallowConditions(skippedViewKeys);
+    srules.add(r);
   }
 
   private boolean verifyRules(Object val, OneView vprev) {

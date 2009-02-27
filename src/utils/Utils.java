@@ -1,5 +1,7 @@
 package utils;
 
+import mem.OneView;
+
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -111,6 +113,23 @@ public class Utils {
       sb.append(buf,0,len);
     }
     return sb.toString();
+  }
+
+  public static Map<String,Object> interstectingVals(List<OneView> exList){
+    Map<String, Object> m = null;
+    for( OneView v : exList ){
+      if( m==null ){
+        m = v.getViewAll();
+      }else{
+        for( Iterator<String> i = m.keySet().iterator(); i.hasNext(); ){
+          String k = i.next();
+          if( !m.get(k).equals(v.get(k)) ){
+            i.remove();
+          }
+        }
+      }
+    }
+    return m;
   }
   
 }

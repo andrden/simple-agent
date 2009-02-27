@@ -5,6 +5,7 @@ import mem.OneView;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,6 +21,26 @@ public class SRule implements java.io.Serializable{
 
   SRule(){
 
+  }
+
+  void disallowConditions(Set<String> skippedViewKeys){
+    if( skippedViewKeys==null ){
+      return;
+    }
+    for( String k : cond.keySet() ){
+      if( skippedViewKeys.contains(k) ){
+        throw new IllegalArgumentException(k);
+      }
+    }
+    for( String k : negCond.keySet() ){
+      if( skippedViewKeys.contains(k) ){
+        throw new IllegalArgumentException(k);
+      }
+    }
+  }
+
+  void addToCondition(Map<String,Object> inters){
+    cond.putAll(inters);
   }
 
   boolean resultUseful(Object resultValue){

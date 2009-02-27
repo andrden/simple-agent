@@ -23,7 +23,7 @@ import predict.PredictionTreeBuilder;
 public class Alg implements AlgIntf, Serializable {
   World w;
   History history = new History();
-  List<Approach> approaches = (List)Arrays.asList(new PredictorApproach());
+  PredictorApproach predictor = new PredictorApproach();
   CmdSet curCmd = CmdSet.EMPTY;
 
   Map<String, List<String>> cmdGroups = new HashMap<String, List<String>>();
@@ -96,10 +96,10 @@ public class Alg implements AlgIntf, Serializable {
     Map<String, Object> view = w.view();
     if (history.last == null) {
       history.setLastResult(0, view);
-      approaches.get(0).add(history.next);
+      predictor.add(history.next);
     }
     history.nextCmd(cmd);
-    approaches.get(0).appendValsToLastView(Collections.singletonMap(Hist.CMD_KEY, (Object)cmd));
+    predictor.appendValsToLastView(Collections.singletonMap(Hist.CMD_KEY, (Object)cmd));
     log("====" + cmd + " foundFrom=" + curCmd.getFoundFrom());
 
 //    log("====PRED "+approaches.get(0).predictionInfo(history.last));
@@ -118,7 +118,7 @@ public class Alg implements AlgIntf, Serializable {
 //    if( cause1use ){
 //      new CmdCompletionAnalyzer(this).resultAnalyse(result, view);
 //    }
-    approaches.get(0).add(history.next);
+    predictor.add(history.next);
   }
 
   PredictionTree buildPredictionTreeOld(Hist last, Map<String, Object> view) {
@@ -341,10 +341,9 @@ public class Alg implements AlgIntf, Serializable {
 
   public void printCmdPredictions(){
     List<String> cs = allCommands();
-    for( Approach appr : approaches ){
-      appr.printCmdPredictions(history.getNextHist(), cs);
-    }
-    System.out.println( "nextCmdLogic="+nextCmdLogic() );
+    predictor.printCmdPredictions(history.getNextHist(), cs);
+    CmdSet nextCmd = nextCmdLogic();
+    System.out.println( "nextCmdLogic="+ nextCmd + " foundFrom=" + nextCmd.getFoundFrom());
   }
 
   private CmdSet calcNextCmd(Map<String, Object> view, boolean stepByStepFastCheck) {
@@ -352,16 +351,10 @@ public class Alg implements AlgIntf, Serializable {
 
     CmdSet cc = null;
 
-    for( Approach appr : approaches ){
-      /*@todo maybe Collections.shuffle and let other approaches preview the cmd -
-        Rnd can this way sometimes make it's reasonable attempts */
-
-      //@todo maybe introduce to History - approach which suggested Cmd - to see in dynamics which is better
-      CmdSet c = appr.suggestCmd(history.getNextHist(), cs);
-      if( c!=null ){
-        return c;
+      CmdSet cp = predictor.suggestCmd(history.getNextHist(), cs);
+      if( cp!=null ){
+        return cp;
       }
-    }
 
 
 //      if( cause1use ){
@@ -384,6 +377,16 @@ public class Alg implements AlgIntf, Serializable {
 
     if (cc != null) {
       return cc;
+    }
+
+    if( history.last!=null &&
+        Utils.intersection(history.last.getViewAll(), history.next.getViewAll()).size()
+            == history.next.getViewAll().size() ){
+      OneView vp = predictor.predictor.predictNext(history.last);
+      if( history.next.getViewAll().size()!=vp.getViewAll().size() ){
+        CmdSet cm = new CmdSet(history.last.getCommand());
+        return cm;
+      }
     }
 
     // if there is step which smacks of result according to causes, do it
@@ -438,12 +441,10 @@ public class Alg implements AlgIntf, Serializable {
     rpt:
     for( int rpt=0; rpt<5; rpt++ ){
       nextCmd = attempts.randomWithIntent(cs, view);
-      for( Approach a : approaches ){
-        if( !a.assessCmd(history.getNextHist(), nextCmd.getCommand()) ){
+        if( !predictor.assessCmd(history.getNextHist(), nextCmd.getCommand()) ){
           log(nextCmd+" - not good");
           continue rpt;
         }
-      }
     }
 
     // out of rpt attempts
