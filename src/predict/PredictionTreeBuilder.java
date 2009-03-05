@@ -5,6 +5,8 @@ import mem.OneView;
 
 import java.util.*;
 
+import predict.singletarget.PredictionResult;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -78,11 +80,17 @@ public class PredictionTreeBuilder {
   private void expandPrediction(CmdPredictionTree pti, String c, List<CmdPredictionTree> notesToExplore) {
     OneView v = pti.start.cloneBranch();
     v.pt(Hist.CMD_KEY, c);
-    OneView next = predictor.predictNext(v);
+
+    OneView next = new OneView();
+    next.prev = v;
+    PredictionResult pr = predictor.predictNextState(v);
+    next.mergeByAddNew(pr.view());
+
+    //OneView next = predictor.predictNext(v);
 
     if (!next.isEmpty()) {
       Map vall = next.getViewAll();
-      CmdPredictionTree node = pti.addChild(c, next);
+      CmdPredictionTree node = pti.addChild(c, next, pr.isWithRuleConflicts());
       boolean val = vall.get(Hist.RES_KEY) != null && resultNotZero(vall.get(Hist.RES_KEY));
       if (!val) { // if result of this branch not yet known
         notesToExplore.add(node);

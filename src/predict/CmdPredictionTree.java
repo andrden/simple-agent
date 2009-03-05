@@ -18,10 +18,24 @@ import utils.Utils;
  */
 public class CmdPredictionTree {
   OneView start;
+  boolean conflictingPrediction=false;
   Map<String, CmdPredictionTree> onCommand = new HashMap<String, CmdPredictionTree>();
 
   public CmdPredictionTree(OneView start) {
     this.start = start;
+  }
+
+  public CmdPredictionTree(OneView start, boolean conflictingPrediction) {
+    this.start = start;
+    this.conflictingPrediction = conflictingPrediction;
+  }
+
+  public boolean conflictingPredictionOnCommand(String cmd){
+    CmdPredictionTree t = onCommand.get(cmd);
+    if( t!=null ){
+      return t.isConflictingPrediction();
+    }
+    return false;
   }
 
   public OneView viewOnCommand(String cmd){
@@ -32,8 +46,9 @@ public class CmdPredictionTree {
     return null;
   }
 
-  public CmdPredictionTree addChild(String command, OneView nextStart) {
-    CmdPredictionTree predictionTree = new CmdPredictionTree(nextStart);
+  public CmdPredictionTree addChild(String command, OneView nextStart,
+                                    boolean conflictingPrediction) {
+    CmdPredictionTree predictionTree = new CmdPredictionTree(nextStart, conflictingPrediction);
     onCommand.put(command, predictionTree);
     return predictionTree;
   }
@@ -148,5 +163,9 @@ public class CmdPredictionTree {
       System.out.print(Utils.spaces(level + 2) + c + " -> ");
       onCommand.get(c).print(level + 2);
     }
+  }
+
+  public boolean isConflictingPrediction() {
+    return conflictingPrediction;
   }
 }

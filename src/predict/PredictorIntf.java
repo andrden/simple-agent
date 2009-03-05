@@ -5,6 +5,8 @@ import mem.OneView;
 import java.util.Map;
 import java.io.Serializable;
 
+import predict.singletarget.PredictionResult;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -21,4 +23,6 @@ public interface PredictorIntf extends Serializable {
   void printRules(String elem);
 
   void printRuleStats();
+
+  PredictionResult predictNextState(OneView v);
 }

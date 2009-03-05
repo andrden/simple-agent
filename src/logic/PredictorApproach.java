@@ -131,7 +131,16 @@ public class PredictorApproach implements Approach{
             .build(next);
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
-      System.out.println("On "+c+": "+v.getViewAll().size()+" "+v);
+
+      Map<String, Object> m = next.getViewAll();
+      m.remove(Hist.CMD_KEY);
+      String vstr;
+      if( m.toString().equals(v.getViewAll().toString()) ){
+        vstr = "noop";
+      }else{
+        vstr = v.toString();
+      }
+      System.out.println("On "+c+": "+v.getViewAll().size()+" "+vstr);
     }
     predictor.printRuleStats();
   }
@@ -163,6 +172,9 @@ public class PredictorApproach implements Approach{
 
     MinMaxFinder<String> minPredicted = new MinMaxFinder<String>();
     for( String c : possibleCommands ){
+      if( tree.conflictingPredictionOnCommand(c) ){
+        prefer this command!
+      }
       OneView v = tree.viewOnCommand(c);
       int countKnown = 0;
       if( v != null ){

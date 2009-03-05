@@ -145,7 +145,8 @@ public class SensorHist implements java.io.Serializable{
 
     //
     //if( !val.equals(predict(vprev)) && exampleVals.size()>3 ){
-    if( !val.equals(predictWithDecisionStumpBasedRules(vprev)) && exampleVals.size()>3 ){
+    if( !val.equals(predictWithDecisionStumpBasedRules(vprev).val(sensorName))
+        && exampleVals.size()>3 ){
       analyzeVerySimilar(vprev);
     }
   }
@@ -350,7 +351,7 @@ public class SensorHist implements java.io.Serializable{
     return explained;
   }
 
-  Object predictWithDecisionStumpBasedRulesNoOther(OneView vprev){
+  PredictionResult predictWithDecisionStumpBasedRulesNoOther(OneView vprev){
     Object res=null;
     SRule rres=null;
     for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
@@ -360,18 +361,20 @@ public class SensorHist implements java.io.Serializable{
         if( resi!=null && res!=null && !resi.equals(res) ){
           //throw new RuntimeException("rule conflict "+sr+" "+rres);
           System.out.println("rule conflict "+sensorName+" "+sr+"    "+rres+"    view="+vprev);
-          return null;
+          PredictionResult pt = new PredictionResult();
+          pt.setWithRuleConflicts(true);
+          return pt;
         }
         res = resi;
         rres = sr;
       }
     }
-    return res;
+    return new PredictionResult(sensorName, res);
   }
 
-  Object predictWithDecisionStumpBasedRules(OneView vprev){
-    Object res = predictWithDecisionStumpBasedRulesNoOther(vprev);
-    if( res!=null ){
+  PredictionResult predictWithDecisionStumpBasedRules(OneView vprev){
+    PredictionResult res = predictWithDecisionStumpBasedRulesNoOther(vprev);
+    if( !res.isNull() ){
       return res;
     }
 
@@ -389,7 +392,8 @@ public class SensorHist implements java.io.Serializable{
     }
 */
 
-    return otherRulesResult; // can be null if no global 'other' rule exists
+    return new PredictionResult(sensorName, otherRulesResult);
+    // - can be null if no global 'other' rule exists
   }
 
   Object commonResValue(Collection<OneView> exList){
@@ -545,11 +549,16 @@ public class SensorHist implements java.io.Serializable{
     }
   }
 
-  public Object predict(OneView v) {
-    Object pred = predictWithDecisionStumpBasedRules(v);
+  public PredictionResult predictState(OneView v) {
+    PredictionResult pred = predictWithDecisionStumpBasedRules(v);
     return pred;
     //return predictWithWeka(v);
     //return predictSimpleWay(v);
+  }
+
+  public Object predict(OneView v) {
+    PredictionResult pred = predictState(v);
+    return pred.val(sensorName);
   }
 
 

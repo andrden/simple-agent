@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import predict.singletarget.PredictionResult;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -16,6 +18,10 @@ public class Predictor implements PredictorIntf {
   predict.singletarget.Pred alg = new predict.singletarget.Pred();
 
   public Predictor() {
+  }
+
+  public PredictionResult predictNextState(OneView v) {
+    return alg.predictNextState(v);
   }
 
   public void printRules(String elem) {
