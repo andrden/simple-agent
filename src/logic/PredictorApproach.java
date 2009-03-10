@@ -171,9 +171,10 @@ public class PredictorApproach implements Approach{
             .build(next);
 
     MinMaxFinder<String> minPredicted = new MinMaxFinder<String>();
+    List<String> conflictingPredictionCommands = new ArrayList<String>();
     for( String c : possibleCommands ){
       if( tree.conflictingPredictionOnCommand(c) ){
-        prefer this command!
+        conflictingPredictionCommands.add(c);
       }
       OneView v = tree.viewOnCommand(c);
       int countKnown = 0;
@@ -202,6 +203,14 @@ public class PredictorApproach implements Approach{
     }
 
     //====== random attempts below: ======
+
+    if( !conflictingPredictionCommands.isEmpty() &&
+        conflictingPredictionCommands.size()!=possibleCommands.size() ){
+      String rndCmd = Utils.rnd(conflictingPredictionCommands);
+      CmdSet cs = new CmdSet(rndCmd);
+      cs.setFoundFrom("conflictingPredictionCommands - rnd of "+conflictingPredictionCommands);
+      return cs;
+    }
 
     List<String> minPredCmds = minPredicted.getMinNames();
     if( minPredCmds.size()!=possibleCommands.size() ){
