@@ -99,32 +99,30 @@ public class PredictorApproach implements Approach{
     return bestSec;
   }
 
-  /**
-   * Returns true if no objections
-   * @param next
-   * @param cmd
-   * @return
-   */
-  public boolean assessCmd(Hist next, String cmd) {
-    if( next==null ){
-      return true;
+  public List<String> filterSenselessCmds(Hist next, List<String> possibleCommands){
+    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 1)
+            .build(next);
+    List<String> ret = new ArrayList<String>();
+    for( String c : possibleCommands ){
+      OneView v = tree.viewOnCommand(c);
+
+      Map<String, Object> m = next.getViewAll();
+      m.remove(Hist.CMD_KEY);
+      if( m.toString().equals(v.getViewAll().toString()) ){
+        // noop of first order - direct
+        continue;
+      }
+
+      Integer res = (Integer) v.get(Hist.RES_KEY);
+      if( res!=null && res<0 ){
+        continue;
+      }
+
+      ret.add(c);
     }
-
-    OneView v = next.cloneBranch();
-    v.pt(Hist.CMD_KEY, cmd);
-    OneView pred = predictor.predictNext(v);
-
-    Integer res = (Integer) pred.get(Hist.RES_KEY);
-    if( res!=null && res<0 ){
-      return false;
-    }
-
-    if( pred.viewMatch(next.getViewAll(), Collections.singleton(Hist.CMD_KEY)) ){
-      return false; // noop depth 1
-    }
-
-    return true;
+    return ret;
   }
+
 
   public void printCmdPredictions(Hist next, List<String> possibleCommands){
     CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 1)

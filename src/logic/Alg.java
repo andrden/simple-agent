@@ -356,17 +356,6 @@ public class Alg implements AlgIntf, Serializable {
         return cp;
       }
 
-
-//      if( cause1use ){
-//        PredictionTree pt = buildPredictionTreeOld(history.last, view);
-//        PredictionTree.PositiveResultOrSmack smackRes = pt.findPositiveResultOrSmacks();
-//        if (smackRes != null && smackRes.cmd != null) {
-//          cc = new CmdSet(smackRes.cmd);
-//          cc.setFoundFrom("using pred tree smacks " + smackRes.description);
-//        }
-//      }
-
-
     double emotionCoef = cc == null ? experimentLevel : experimentLevelIfSmacks;
     CmdSet nextCmd;
     if (!stepByStepFastCheck && !byCausesOnly && Math.random() < emotionCoef) {
@@ -407,49 +396,13 @@ public class Alg implements AlgIntf, Serializable {
       return attempts.randomWithIntent(new ArrayList<String>(smacksCmds), view);
     }
 
-//    Map<String,MaxStruct> predictedMinResults2Cmds = predictMinResults2Cmds(view);
-//    nextCmd = findMaxCmdPair(predictedMinResults2Cmds);
-//    if( nextCmd!=null ){
-//      log("predicted positive result with 2 commands ("+nextCmd+"), get it!");
-//      return nextCmd;
-//    }
-
-//    for( Hist hinter : unexplainedInterestingEvents() ){
-//          Map<String,Object> com = Utils.intersection( hinter.prev.getViewAll(), view );
-//          if( !com.isEmpty() ){
-//            nextCmd = new CmdSet(hinter.prev.getCommand());
-//            nextCmd.setFoundFrom("interesting event prev "+hinter.prev + " com="+com);
-//            return nextCmd;
-//          }
-//    }
-
     if (stepByStepFastCheck) {
       return null;
     }
 
-//    List<String> cset = new ArrayList<String>(cs);
+    List<String> csFiltered = predictor.filterSenselessCmds(history.getNextHist(), cs);
 
-//    filterNoopCmds(view, cset);
-//    if (cset.size() == 0) {
-//      // 0.1 - emotional koef.
-//      // Low if we are before difficult controlled situation.
-//      // High if we are in panic.
-//      nextCmd = attempts.randomWithIntent(cs, view);
-//    } else {
-//      nextCmd = attempts.randomWithIntent(cset, view);
-//    }
-
-    rpt:
-    for( int rpt=0; rpt<5; rpt++ ){
-      nextCmd = attempts.randomWithIntent(cs, view);
-        if( !predictor.assessCmd(history.getNextHist(), nextCmd.getCommand()) ){
-          log(nextCmd+" - not good");
-          continue rpt;
-        }
-    }
-
-    // out of rpt attempts
-    nextCmd = attempts.randomWithIntent(cs, view);
+    nextCmd = attempts.randomWithIntent(csFiltered, view);
 
     return nextCmd;
   }
