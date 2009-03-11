@@ -401,6 +401,9 @@ public class Alg implements AlgIntf, Serializable {
     }
 
     List<String> csFiltered = predictor.filterSenselessCmds(history.getNextHist(), cs);
+    if( csFiltered.isEmpty() ){
+      csFiltered = cs;
+    }
 
     nextCmd = attempts.randomWithIntent(csFiltered, view);
 

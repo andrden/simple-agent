@@ -100,22 +100,26 @@ public class PredictorApproach implements Approach{
   }
 
   public List<String> filterSenselessCmds(Hist next, List<String> possibleCommands){
+    if( next==null ){
+      return possibleCommands;
+    }
     CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 1)
             .build(next);
     List<String> ret = new ArrayList<String>();
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
+      if( v!=null ){
+        Map<String, Object> m = next.getViewAll();
+        m.remove(Hist.CMD_KEY);
+        if( m.toString().equals(v.getViewAll().toString()) ){
+          // noop of first order - direct
+          continue;
+        }
 
-      Map<String, Object> m = next.getViewAll();
-      m.remove(Hist.CMD_KEY);
-      if( m.toString().equals(v.getViewAll().toString()) ){
-        // noop of first order - direct
-        continue;
-      }
-
-      Integer res = (Integer) v.get(Hist.RES_KEY);
-      if( res!=null && res<0 ){
-        continue;
+        Integer res = (Integer) v.get(Hist.RES_KEY);
+        if( res!=null && res<0 ){
+          continue;
+        }
       }
 
       ret.add(c);

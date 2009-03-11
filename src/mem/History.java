@@ -39,7 +39,22 @@ public class History implements Serializable {
       last.next = h;
       h.prev = last;
     }
+    h.viewId = findViewId(h);
     //last=h;
+  }
+
+  long findViewId(Hist h){
+    Hist cmp = h.prev;
+    for( int i=0; i<50; i++ ){
+      if( cmp==null ){
+        break;
+      }
+      if( cmp.viewMatch(h, false) ){
+        return cmp.viewId;
+      }
+      cmp = cmp.prev;
+    }
+    return h.order;
   }
 
   public void setLastResult(int result, Map<String, Object> view) {

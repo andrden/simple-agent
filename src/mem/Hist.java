@@ -16,6 +16,7 @@ public class Hist extends OneView<Hist> {
   //public Hist next;
   //public Hist prev;
   long order;
+  long viewId;
 
   public Hist() {
 
@@ -35,7 +36,7 @@ public class Hist extends OneView<Hist> {
 
 
   public String toString() {
-    return "#" + order + " " + view;
+    return "#" + order + " v" + viewId + " " + view;
   }
 
   public static Integer getResult(Map<String, Object> fullView) {
