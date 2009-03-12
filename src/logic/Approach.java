@@ -14,7 +14,6 @@ import java.io.Serializable;
  * Time: 18:00:40
  */
 public interface Approach extends Serializable {
-  CmdSet suggestCmd(Hist next, List<String> possibleCommands);
 
   /**
    *

@@ -99,12 +99,11 @@ public class PredictorApproach implements Approach{
     return bestSec;
   }
 
-  public List<String> filterSenselessCmds(Hist next, List<String> possibleCommands){
+  List<String> filterSenselessCmds(CmdPredictionTree tree,
+                                   Hist next, List<String> possibleCommands){
     if( next==null ){
       return possibleCommands;
     }
-    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 1)
-            .build(next);
     List<String> ret = new ArrayList<String>();
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
@@ -147,12 +146,15 @@ public class PredictorApproach implements Approach{
     predictor.printRuleStats();
   }
 
-  public CmdSet suggestCmd(Hist next, List<String> possibleCommands) {
+  public SuggestionResult suggestCmd(final Hist next, final List<String> possibleCommands) {
+    SuggestionResult sugg = new SuggestionResult();
     if( currentPlan!=null ){
-      return currentPlan.nextCmdSet();
+      sugg.cmdSet = currentPlan.nextCmdSet();
+      return sugg;
     }
     if( next==null ){
-      return null;
+      sugg.csFiltered = possibleCommands;
+      return sugg;
     }
 
     // If there is time we should try to calc. the best command
@@ -201,7 +203,8 @@ public class PredictorApproach implements Approach{
 
     if( !shortestPlan.getMinNames().isEmpty() ){
       currentPlan = Utils.rnd(shortestPlan.getMinNames());
-      return currentPlan.nextCmdSet();
+      sugg.cmdSet = currentPlan.nextCmdSet();
+      return sugg;
     }
 
     //====== random attempts below: ======
@@ -211,7 +214,8 @@ public class PredictorApproach implements Approach{
       String rndCmd = Utils.rnd(conflictingPredictionCommands);
       CmdSet cs = new CmdSet(rndCmd);
       cs.setFoundFrom("conflictingPredictionCommands - rnd of "+conflictingPredictionCommands);
-      return cs;
+      sugg.cmdSet = cs;
+      return sugg;
     }
 
     List<String> minPredCmds = minPredicted.getMinNames();
@@ -219,22 +223,12 @@ public class PredictorApproach implements Approach{
       String rndCmd = Utils.rnd(minPredCmds);
       CmdSet cs = new CmdSet(rndCmd);
       cs.setFoundFrom("min predicted - rnd "+minPredCmds+" view="+tree.viewOnCommand(rndCmd));
-      return cs;
+      sugg.cmdSet = cs;
+      return sugg;
     }
 
-
-//    CmdPredictionTree.PositiveResultOrSmack positiveRes = null;
-//    if( next!=null ){
-//      CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands)
-//              .build(next);
-//      positiveRes = tree.findPositiveResultOrSmacks();
-//    }
-//    if( positiveRes!=null && positiveRes.getCmd()!=null ){
-//      CmdSet cc2 = new CmdSet(positiveRes.getCmd());
-//      cc2.setFoundFrom("using CmdPredictionTree smacks " /*+ smackRes2.description*/);
-//      return cc2;
-//    }
-    return null;
+    sugg.csFiltered = filterSenselessCmds(tree, next, possibleCommands);
+    return sugg;
   }
 
     public String predictionInfo(Hist curr) {
