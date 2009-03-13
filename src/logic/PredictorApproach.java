@@ -108,10 +108,7 @@ public class PredictorApproach implements Approach{
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
       if( v!=null ){
-        Map<String, Object> m = next.getViewAll();
-        m.remove(Hist.CMD_KEY);
-        if( m.toString().equals(v.getViewAll().toString()) ){
-          // noop of first order - direct
+        if( tree.branchOnCommand(c).noopDetected() ){
           continue;
         }
 
@@ -132,11 +129,9 @@ public class PredictorApproach implements Approach{
             .build(next);
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
-
-      Map<String, Object> m = next.getViewAll();
-      m.remove(Hist.CMD_KEY);
+      CmdPredictionTree branch = tree.branchOnCommand(c);
       String vstr;
-      if( m.toString().equals(v.getViewAll().toString()) ){
+      if( branch.noopDetected() ){
         vstr = "noop";
       }else{
         vstr = v.toString();

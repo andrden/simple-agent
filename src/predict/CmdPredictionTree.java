@@ -19,6 +19,7 @@ import utils.Utils;
 public class CmdPredictionTree {
   OneView start;
   boolean conflictingPrediction=false;
+  int noop = 0;
   Map<String, CmdPredictionTree> onCommand = new HashMap<String, CmdPredictionTree>();
 
   public CmdPredictionTree(OneView start) {
@@ -38,6 +39,10 @@ public class CmdPredictionTree {
     return false;
   }
 
+  public CmdPredictionTree branchOnCommand(String cmd){
+    return onCommand.get(cmd);
+  }
+
   public OneView viewOnCommand(String cmd){
     CmdPredictionTree t = onCommand.get(cmd);
     if( t!=null ){
@@ -48,9 +53,17 @@ public class CmdPredictionTree {
 
   public CmdPredictionTree addChild(String command, OneView nextStart,
                                     boolean conflictingPrediction) {
-    CmdPredictionTree predictionTree = new CmdPredictionTree(nextStart, conflictingPrediction);
-    onCommand.put(command, predictionTree);
-    return predictionTree;
+    CmdPredictionTree branch = new CmdPredictionTree(nextStart, conflictingPrediction);
+    onCommand.put(command, branch);
+
+    Map<String, Object> m = start.getViewAll();
+    m.remove(Hist.CMD_KEY);
+    if( m.toString().equals(branch.start.getViewAll().toString()) ){
+      // noop of first order - direct
+      branch.noop=1; 
+    }
+
+    return branch;
   }
 
   public static class PositiveResultOrSmack {
@@ -167,5 +180,9 @@ public class CmdPredictionTree {
 
   public boolean isConflictingPrediction() {
     return conflictingPrediction;
+  }
+
+  public boolean noopDetected(){
+    return noop>0;
   }
 }
