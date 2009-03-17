@@ -125,7 +125,7 @@ public class PredictorApproach implements Approach{
 
 
   public void printCmdPredictions(Hist next, List<String> possibleCommands){
-    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 1)
+    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 3)
             .build(next);
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
@@ -166,7 +166,7 @@ public class PredictorApproach implements Approach{
       shortestPlan.add(bcmd.size(), new Plan(bcmd, "direct predictGoodNextCmd"));
     }
 
-    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 1)
+    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 3)
             .build(next);
 
     MinMaxFinder<String> minPredicted = new MinMaxFinder<String>();

@@ -34,6 +34,9 @@ public class PredictionTreeBuilder {
         for (String c : allCommands) {
           expandPrediction(pti, c, notesToExplore);
         }
+
+        if for all commands some kind of noop detected, mark this as loop,
+        proceed to parent, maybe it's a loop too
       }
       readyNodes = notesToExplore;
     }
@@ -52,17 +55,13 @@ public class PredictionTreeBuilder {
     //OneView next = predictor.predictNext(v);
 
     if (!next.isEmpty()) {
-      Map vall = next.getViewAll();
+      //Map vall = next.getViewAll();
       CmdPredictionTree node = pti.addChild(c, next, pr.isWithRuleConflicts());
-      boolean val = vall.get(Hist.RES_KEY) != null && resultNotZero(vall.get(Hist.RES_KEY));
-      if (!val) { // if result of this branch not yet known
+      if (!node.resultNotZero() && !node.noopDetected()) { // if result of this branch not yet known
         notesToExplore.add(node);
       }
     }
   }
 
-  boolean resultNotZero(Object res){
-    return  !"0".equals(""+res);
-  }
 
 }

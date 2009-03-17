@@ -17,6 +17,7 @@ import utils.Utils;
  * Time: 18:48:30
  */
 public class CmdPredictionTree {
+  CmdPredictionTree parent;
   OneView start;
   boolean conflictingPrediction=false;
   int noop = 0;
@@ -54,16 +55,33 @@ public class CmdPredictionTree {
   public CmdPredictionTree addChild(String command, OneView nextStart,
                                     boolean conflictingPrediction) {
     CmdPredictionTree branch = new CmdPredictionTree(nextStart, conflictingPrediction);
+    branch.parent = this;
     onCommand.put(command, branch);
 
-    Map<String, Object> m = start.getViewAll();
-    m.remove(Hist.CMD_KEY);
-    if( m.toString().equals(branch.start.getViewAll().toString()) ){
-      // noop of first order - direct
-      branch.noop=1; 
-    }
+    detectNoop(branch);
 
     return branch;
+  }
+
+  private void detectNoop(CmdPredictionTree branch) {
+    CmdPredictionTree p = this;
+    int depth=1; // noop of first order - direct
+    for(;;){
+      Map<String, Object> m = p.start.getViewAll();
+      m.remove(Hist.CMD_KEY);
+      Map mBranch = branch.start.getViewAll();
+      mBranch.remove(Hist.CMD_KEY);
+      if( m.toString().equals(mBranch.toString()) ){
+        branch.noop=depth;
+        break;
+      }
+
+      depth++;
+      p=p.parent;
+      if( p==null ){
+        break;
+      }
+    }
   }
 
   public static class PositiveResultOrSmack {
@@ -184,5 +202,26 @@ public class CmdPredictionTree {
 
   public boolean noopDetected(){
     return noop>0;
+  }
+
+  boolean resultNotZero(){
+    return start.get(Hist.RES_KEY) != null && resultNotZero(start.get(Hist.RES_KEY));
+  }
+
+  boolean resultNotZero(Object res){
+    return  !"0".equals(""+res);
+  }
+
+  @Override
+  public String toString() {
+    String s = "";
+    if( noopDetected() ){
+      s += "noop="+noop;
+    }
+    if( resultNotZero() ){
+      s += " res="+start.get(Hist.RES_KEY);
+    }
+    s += " viewSize="+start.getViewAll().size();
+    return s;
   }
 }
