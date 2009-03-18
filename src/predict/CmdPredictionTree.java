@@ -21,6 +21,7 @@ public class CmdPredictionTree {
   OneView start;
   boolean conflictingPrediction=false;
   int noop = 0;
+  boolean loop=false;
   Map<String, CmdPredictionTree> onCommand = new HashMap<String, CmdPredictionTree>();
 
   public CmdPredictionTree(OneView start) {
@@ -30,6 +31,26 @@ public class CmdPredictionTree {
   public CmdPredictionTree(OneView start, boolean conflictingPrediction) {
     this.start = start;
     this.conflictingPrediction = conflictingPrediction;
+  }
+
+  public void loopDetect(List<String> allCommands){
+    boolean notAllNoop=false;
+    for (String c : allCommands) {
+      CmdPredictionTree br = branchOnCommand(c);
+      if( br==null || !br.noopDetected() ){
+        notAllNoop=true;
+      }
+    }
+    if( !notAllNoop ){
+//          if for all commands some kind of noop detected, mark this as loop,
+//          proceed to parent, maybe it's a loop too
+      loop=true;
+      if( parent!=null ){
+        parent.loopDetect(allCommands);
+      }
+    }
+
+
   }
 
   public boolean conflictingPredictionOnCommand(String cmd){
@@ -201,7 +222,7 @@ public class CmdPredictionTree {
   }
 
   public boolean noopDetected(){
-    return noop>0;
+    return noop>0 || loop;
   }
 
   boolean resultNotZero(){
@@ -217,6 +238,9 @@ public class CmdPredictionTree {
     String s = "";
     if( noopDetected() ){
       s += "noop="+noop;
+    }
+    if( loop ){
+      s += " loop";
     }
     if( resultNotZero() ){
       s += " res="+start.get(Hist.RES_KEY);

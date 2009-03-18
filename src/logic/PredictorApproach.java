@@ -166,7 +166,7 @@ public class PredictorApproach implements Approach{
       shortestPlan.add(bcmd.size(), new Plan(bcmd, "direct predictGoodNextCmd"));
     }
 
-    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 3)
+    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 4)
             .build(next);
 
     MinMaxFinder<String> minPredicted = new MinMaxFinder<String>();

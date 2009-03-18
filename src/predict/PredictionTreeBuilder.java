@@ -34,16 +34,14 @@ public class PredictionTreeBuilder {
         for (String c : allCommands) {
           expandPrediction(pti, c, notesToExplore);
         }
-
-        if for all commands some kind of noop detected, mark this as loop,
-        proceed to parent, maybe it's a loop too
+        pti.loopDetect(allCommands);
       }
       readyNodes = notesToExplore;
     }
     return predictionTree;
   }
 
-  private void expandPrediction(CmdPredictionTree pti, String c, List<CmdPredictionTree> notesToExplore) {
+  private CmdPredictionTree expandPrediction(CmdPredictionTree pti, String c, List<CmdPredictionTree> notesToExplore) {
     OneView v = pti.start.cloneBranch();
     v.pt(Hist.CMD_KEY, c);
 
@@ -60,7 +58,9 @@ public class PredictionTreeBuilder {
       if (!node.resultNotZero() && !node.noopDetected()) { // if result of this branch not yet known
         notesToExplore.add(node);
       }
+      return node;
     }
+    return null;
   }
 
 
