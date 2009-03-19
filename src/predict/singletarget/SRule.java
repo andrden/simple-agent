@@ -53,9 +53,9 @@ public class SRule implements java.io.Serializable{
     return true;
   }
 
-  Object getPredictedResult(OneView vprev, Map<OneView, Object> exampleVals){
+  Object getPredictedResult(OneView vprev, OneViewToVal v2v){
     if( resultEqPrev ){
-      return exampleVals.get(vprev.prev);
+      return v2v.val(vprev.prev);
     }
     return getResult();
   }

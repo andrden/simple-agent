@@ -70,7 +70,7 @@ public class Attempts implements Serializable {
 
   CmdSet randomWithIntent(List<String> cs, Map<String, Object> view) {
     if (cs.size() == 1) {
-      return CmdSet.createWithSrc(cs.get(0), "randomWithIntent");
+      return CmdSet.createWithSrc(cs.get(0), "randomWithIntent single choice");
     }
 
     cs = new ArrayList<String>(cs);

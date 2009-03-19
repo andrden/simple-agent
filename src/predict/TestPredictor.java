@@ -254,6 +254,13 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testRulesFor2Categories");
   }
 
+  public void testResultEqPrevNull() throws Exception{
+    SensorHist sensor = new SensorHist("f");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.CMD_KEY));
+    examplesForSensorHist(sensor, "testResultEqPrevNull");
+  }
+
+
   public void testReorderedOverDecisionStump() throws Exception{
     SensorHist sensor = new SensorHist("$");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));

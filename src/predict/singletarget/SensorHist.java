@@ -36,6 +36,11 @@ public class SensorHist implements java.io.Serializable{
 
   Set<String> decisiveAttrs = new HashSet<String>();
   CountingMap valsCounts = new CountingMap();
+  OneViewToVal viewToValStatic = new OneViewToVal(){
+    public Object val(OneView v) {
+      return exampleVals.get(v);
+    }
+  };
 
   public void printRules(){
     System.out.println(srules+" other="+otherRulesResult);
@@ -334,7 +339,7 @@ public class SensorHist implements java.io.Serializable{
     for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
       SRule sr = i.next();
       if( sr.condHolds(vprev) ){
-        if( !sr.getPredictedResult(vprev, exampleVals).equals(val) ){
+        if( !sr.getPredictedResult(vprev, viewToValStatic).equals(val) ){
           i.remove();
         }else{
           explained=true;
@@ -357,7 +362,7 @@ public class SensorHist implements java.io.Serializable{
     for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
       SRule sr = i.next();
       if( sr.condHolds(vprev) ){
-        Object resi = sr.getPredictedResult(vprev, exampleVals);
+        Object resi = sr.getPredictedResult(vprev, view to val needed!);
         if( resi!=null && res!=null && !resi.equals(res) ){
           //throw new RuntimeException("rule conflict "+sr+" "+rres);
           System.out.println("rule conflict "+sensorName+" "+sr+"    "+rres+"    view="+vprev);
