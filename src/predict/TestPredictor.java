@@ -5,13 +5,18 @@ import mem.OneView;
 import mem.Hist;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
 import java.io.InputStreamReader;
+import java.io.IOException;
 
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 import predict.singletarget.SensorHist;
+import predict.singletarget.PredictionResult;
+import predict.singletarget.OneViewToVal;
 import utils.Utils;
 
 /**
@@ -118,14 +123,37 @@ public class TestPredictor extends TestCase {
   public void testRefSame1() {
     LinearPredictor p = new LinearPredictor();
     addMulti(p, "zAn1");
-    addMulti(p, "zAk4");
+    addMulti(p, "zAk4"); // zAk, z.k
     addMulti(p, "xAp4");
     addMulti(p, "xAp1");
-    addMulti(p, "zAk3");
-    addMulti(p, "zBk3");
+    addMulti(p, "zAk3"); // zAk, z.k
+    addMulti(p, "zBk3"); //      z.k
     addMulti(p, "mCt3");
     addMulti(p, "mCt0");
-    addMulti(p, "mCk5");
+    addMulti(p, "mCk5"); //      m.k --- ???
+    assertEquals("5", p.predict().get("d")); // c=k => d=d(prev)
+
+    // now this test fails but is it correct??
+    // we really only had the opportunity to suggest "z.k => d=d(prev)",
+    // not "m.k"
+    // So our predictor is strict now.
+    //
+    // BUT! maybe there should also be method to suggest possible
+    // (likely) predictions based on current rules - to choose
+    // next steps as likely good or likely bringing new rules.
+  }
+
+  public void testRefSame2() {
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p, "zAn1");
+    addMulti(p, "zAk4"); // zAk, z.k
+    addMulti(p, "xAp4");
+    addMulti(p, "xAp1");
+    addMulti(p, "rAk3"); // rAk, r.k
+    addMulti(p, "zBk3"); //      z.k
+    addMulti(p, "mCt3");
+    addMulti(p, "mCt0");
+    addMulti(p, "mCk5"); //      m.k --- ???
     assertEquals("5", p.predict().get("d")); // c=k => d=d(prev)
   }
 
@@ -209,17 +237,7 @@ public class TestPredictor extends TestCase {
   }
 
   public void testTooManyRules1() throws Exception{
-    LinearPredictor p = new LinearPredictor();
-    Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
-            getClass().getResourceAsStream("data.xml"));
-    String txt = d.getElementsByTagName("testTooManyRules1").item(0).getTextContent();
-    for( String s : txt.split("\n") ){
-      s = s.trim();
-      if( s.length()==0 ){
-        continue;
-      }
-      addMultiMap(p, s);
-    }
+    buildPredictor("testTooManyRules1");
   }
 
   public void testFastLearn2(){
@@ -260,12 +278,42 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testResultEqPrevNull");
   }
 
+  public void testResultEqPrevNullTree() throws Exception{
+    LinearPredictor p = buildPredictor("testResultEqPrevNullTree");
+    CmdPredictionTree tree = new PredictionTreeBuilder(p.p,
+        Arrays.asList("L", "R", "N", "Fb", "A1","A2F","A2B","B1","B2"), 4)
+            .build(p.last);
+    assertTrue( tree.branchOnCommand("N").noopDetected() );
+  }
+
+  private LinearPredictor buildPredictor(String tag) throws SAXException, IOException, ParserConfigurationException {
+    LinearPredictor p = new LinearPredictor();
+    Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+            getClass().getResourceAsStream("data.xml"));
+    String txt = d.getElementsByTagName(tag).item(0).getTextContent();
+    for( String s : txt.split("\n") ){
+      s = s.trim();
+      if( s.length()==0 ){
+        continue;
+      }
+      addMultiMap(p, s);
+    }
+    return p;
+  }
+
 
   public void testReorderedOverDecisionStump() throws Exception{
     SensorHist sensor = new SensorHist("$");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
     examplesForSensorHist(sensor, "testReorderedOverDecisionStump");
   }
+
+  public void testFrScatteredRules() throws Exception{
+    SensorHist sensor = new SensorHist("fr");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
+    examplesForSensorHist(sensor, "testFrScatteredRules");
+  }
+
 
   public void testSimple2atrr() throws Exception{
     SensorHist sensor = new SensorHist("$");
@@ -339,7 +387,16 @@ public class TestPredictor extends TestCase {
       if( quest ){
         boolean acc = sensor.valAcceptedByRules(v, key);
         Object wekaKey = sensor.predictWithWeka(v);
-        Object pred = sensor.predict(v);
+
+//        OneViewToVal v2v = new OneViewToVal(){
+//          public Object val(OneView v) {
+//            return v.get("fr");
+//          }
+//        };
+
+
+        PredictionResult pred1 = sensor.predictState(v, sensor.getViewToValStatic());
+        Object pred = pred1.val(sensor.getSensorName());
         assertTrue( "key="+key+" wekaKey="+wekaKey+" pred="+pred, acc);
       }else{
         //sensor.predict(v); //......

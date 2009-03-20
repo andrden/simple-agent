@@ -20,6 +20,7 @@ import com.pmstation.common.utils.MinMaxFinder;
  * Time: 18:04:22
  */
 public class PredictorApproach implements Approach{
+  static final int TREE_CALC_DEPTH=4;
   Predictor predictor = new Predictor();
   Map<String,SensorHist> goodNextCmd = new HashMap<String,SensorHist>();
   LinkedList<Hist> lastSteps = new LinkedList<Hist>();
@@ -125,14 +126,14 @@ public class PredictorApproach implements Approach{
 
 
   public void printCmdPredictions(Hist next, List<String> possibleCommands){
-    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 3)
+    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, TREE_CALC_DEPTH)
             .build(next);
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
       CmdPredictionTree branch = tree.branchOnCommand(c);
       String vstr;
       if( branch.noopDetected() ){
-        vstr = "noop";
+        vstr = branch.toString(); // "noop";
       }else{
         vstr = v.toString();
       }
@@ -166,7 +167,7 @@ public class PredictorApproach implements Approach{
       shortestPlan.add(bcmd.size(), new Plan(bcmd, "direct predictGoodNextCmd"));
     }
 
-    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, 4)
+    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, TREE_CALC_DEPTH)
             .build(next);
 
     MinMaxFinder<String> minPredicted = new MinMaxFinder<String>();

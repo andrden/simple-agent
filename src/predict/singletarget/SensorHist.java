@@ -5,9 +5,6 @@ import mem.OneView;
 import java.util.*;
 
 import weka.classifiers.Classifier;
-import weka.classifiers.trees.J48;
-import weka.classifiers.trees.ADTree;
-import weka.classifiers.trees.BFTree;
 import weka.classifiers.trees.DecisionStump;
 import weka.core.Instances;
 import weka.core.Instance;
@@ -67,7 +64,8 @@ public class SensorHist implements java.io.Serializable{
     addAsCurrent(val, v.prev);
 
     // auto-check
-    Object predictedNow = predict(v.prev);
+    PredictionResult pred = predictState(v.prev, viewToValStatic);
+    Object predictedNow = pred.val(getSensorName());
     if( predictedNow!=null && !val.equals(predictedNow) ){
       throw new RuntimeException(  "just added "+val+" auto-check predicted "+predictedNow);
     }
@@ -150,7 +148,7 @@ public class SensorHist implements java.io.Serializable{
 
     //
     //if( !val.equals(predict(vprev)) && exampleVals.size()>3 ){
-    if( !val.equals(predictWithDecisionStumpBasedRules(vprev).val(sensorName))
+    if( !val.equals(predictWithDecisionStumpBasedRules(vprev, viewToValStatic).val(sensorName))
         && exampleVals.size()>3 ){
       analyzeVerySimilar(vprev);
     }
@@ -356,13 +354,13 @@ public class SensorHist implements java.io.Serializable{
     return explained;
   }
 
-  PredictionResult predictWithDecisionStumpBasedRulesNoOther(OneView vprev){
+  PredictionResult predictWithDecisionStumpBasedRulesNoOther(OneView vprev, OneViewToVal v2v){
     Object res=null;
     SRule rres=null;
     for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
       SRule sr = i.next();
       if( sr.condHolds(vprev) ){
-        Object resi = sr.getPredictedResult(vprev, view to val needed!);
+        Object resi = sr.getPredictedResult(vprev, v2v);
         if( resi!=null && res!=null && !resi.equals(res) ){
           //throw new RuntimeException("rule conflict "+sr+" "+rres);
           System.out.println("rule conflict "+sensorName+" "+sr+"    "+rres+"    view="+vprev);
@@ -377,8 +375,8 @@ public class SensorHist implements java.io.Serializable{
     return new PredictionResult(sensorName, res);
   }
 
-  PredictionResult predictWithDecisionStumpBasedRules(OneView vprev){
-    PredictionResult res = predictWithDecisionStumpBasedRulesNoOther(vprev);
+  PredictionResult predictWithDecisionStumpBasedRules(OneView vprev, OneViewToVal v2v){
+    PredictionResult res = predictWithDecisionStumpBasedRulesNoOther(vprev, v2v);
     if( !res.isNull() ){
       return res;
     }
@@ -460,7 +458,8 @@ public class SensorHist implements java.io.Serializable{
    * @return
    */
   public boolean valAcceptedByRules(OneView v, Object val){
-    Object pred = predict(v);
+    PredictionResult pred1 = predictState(v, viewToValStatic);
+    Object pred = pred1.val(getSensorName());
     return val.equals(pred);
     //return val.equals( predictWithWeka(v) );
     //return vals.get(val).acceptedByRules(v)!=null;
@@ -554,16 +553,15 @@ public class SensorHist implements java.io.Serializable{
     }
   }
 
-  public PredictionResult predictState(OneView v) {
-    PredictionResult pred = predictWithDecisionStumpBasedRules(v);
+  public OneViewToVal getViewToValStatic() {
+    return viewToValStatic;
+  }
+
+  public PredictionResult predictState(OneView v, OneViewToVal v2v) {
+    PredictionResult pred = predictWithDecisionStumpBasedRules(v, v2v);
     return pred;
     //return predictWithWeka(v);
     //return predictSimpleWay(v);
-  }
-
-  public Object predict(OneView v) {
-    PredictionResult pred = predictState(v);
-    return pred.val(sensorName);
   }
 
 
