@@ -29,6 +29,8 @@ public class SensorHist implements java.io.Serializable{
   List<OneView> exList = new ArrayList<OneView>();
 
   List<SRule> srules = new ArrayList<SRule>();
+  Map<String,SRule> srulesArchive = new HashMap<String,SRule>();
+  Map<String,SRule> shadowSrules = new HashMap<String,SRule>(); - tmp hidden
   Object otherRulesResult = null;
 
   Set<String> decisiveAttrs = new HashSet<String>();
@@ -41,6 +43,10 @@ public class SensorHist implements java.io.Serializable{
 
   public void printRules(){
     System.out.println(srules+" other="+otherRulesResult);
+  }
+
+  void archive(SRule r){
+    srulesArchive.put(r.toString(), r);
   }
 
   public SensorHist(String sensorName) {
@@ -330,6 +336,7 @@ public class SensorHist implements java.io.Serializable{
   void srulesAdd(SRule r){
     r.disallowConditions(skippedViewKeys);
     srules.add(r);
+    srulesArchive.remove(r.toString());
   }
 
   private boolean verifyRules(Object val, OneView vprev) {
@@ -338,6 +345,7 @@ public class SensorHist implements java.io.Serializable{
       SRule sr = i.next();
       if( sr.condHolds(vprev) ){
         if( !sr.getPredictedResult(vprev, viewToValStatic).equals(val) ){
+          archive(sr);
           i.remove();
         }else{
           explained=true;
