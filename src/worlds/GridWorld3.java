@@ -12,7 +12,7 @@ import java.util.List;
  * 2x2 creature, 2 arms added
  */
 public class GridWorld3 implements WorldGridView, Serializable {
-  int availableResults = 5;
+  int availableResults = 0;
   String[] FIELD_INIT = {
           "bbbbbbbbb",
           "b yy   bb",

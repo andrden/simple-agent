@@ -5,6 +5,7 @@ import com.pmstation.common.utils.MinMaxFinder;
 import worlds.Rubic2x2World;
 import worlds.ComparableSensors1;
 import worlds.GridWorld3;
+import worlds.Line1;
 import worlds.intf.WorldGridView;
 
 import javax.swing.*;
@@ -29,7 +30,9 @@ import java.util.HashMap;
 public class Main extends JFrame {
   //WorldGridView world = new GridWorld1();
   //WorldGridView world = new GridWorld2();
-  WorldGridView world = new GridWorld3();
+  //WorldGridView world = new GridWorld3();
+  WorldGridView world = new Line1();
+
   //WorldGridView world = new Rubic2x2World();
   //WorldGridView world = new ComparableSensors1();
 

@@ -30,7 +30,7 @@ public class SensorHist implements java.io.Serializable{
 
   List<SRule> srules = new ArrayList<SRule>();
   Map<String,SRule> srulesArchive = new HashMap<String,SRule>();
-  Map<String,SRule> shadowSrules = new HashMap<String,SRule>(); - tmp hidden
+  Map<String,SRule> shadowSrules = new HashMap<String,SRule>(); // tmp hidden
   Object otherRulesResult = null;
 
   Set<String> decisiveAttrs = new HashSet<String>();
@@ -335,6 +335,16 @@ public class SensorHist implements java.io.Serializable{
 
   void srulesAdd(SRule r){
     r.disallowConditions(skippedViewKeys);
+
+    // shadow more narrow rules:
+    for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
+      SRule ri = i.next();
+      if( ri.condWiderIn(r) ){
+        i.remove();
+        shadowSrules.put(ri.toString(), ri);
+      }
+    }
+
     srules.add(r);
     srulesArchive.remove(r.toString());
   }
@@ -357,6 +367,34 @@ public class SensorHist implements java.io.Serializable{
         otherRulesResult=null;
       }else{
         explained=true;
+      }
+    }
+
+    for( Iterator<SRule> i = srulesArchive.values().iterator(); i.hasNext(); ){
+      SRule sr = i.next();
+      if( sr.condHolds(vprev) ){
+        if( sr.getPredictedResult(vprev, viewToValStatic).equals(val) ){
+          i.remove();
+          if( !ruleIsExtra(sr) ){
+            srules.add(sr);
+            explained=true;
+          }
+        }
+      }
+    }
+
+    for( Iterator<SRule> i = shadowSrules.values().iterator(); i.hasNext(); ){
+      SRule sr = i.next();
+      if( sr.condHolds(vprev) ){
+        if( !sr.getPredictedResult(vprev, viewToValStatic).equals(val) ){
+          archive(sr);
+          i.remove();
+        }else{
+          if( !ruleIsExtra(sr) ){
+            //srules.add(sr);
+            //explained=true;
+          }
+        }
       }
     }
     return explained;
