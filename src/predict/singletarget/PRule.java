@@ -7,29 +7,40 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+import com.pmstation.common.utils.CountingMap;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
  * Date: 22 жовт 2008
  * Time: 16:53:28
  */
-public class SRule implements java.io.Serializable{
+public class PRule implements java.io.Serializable{
   private Map<String,Object> cond = new HashMap<String,Object>();
   private Map<String,Object> negCond = new HashMap<String,Object>();
+  private CountingMap resultCounts = new CountingMap();
+
   private Object result;
   boolean resultEqPrev=false;
 
-  SRule(){
+  PRule(){
 
   }
 
-  public Map<String, Object> getCond() {
-    return cond;
+  Map<Object,Double> normalizedResCounts(){
+    double tot = resultCounts.syncTotalCount();
+    Map<Object,Double> ret = new HashMap<Object,Double>();
+    for( Object v : resultCounts.keySet() ){
+      ret.put(v, resultCounts.getValOr0(v)/tot);
+    }
+    return ret;
   }
 
-  public Map<String, Object> getNegCond() {
-    return negCond;
+  void recordResult(Object val){
+    resultCounts.increment(val);
   }
+
+
 
   void disallowConditions(Set<String> skippedViewKeys){
     if( skippedViewKeys==null ){
@@ -82,15 +93,16 @@ public class SRule implements java.io.Serializable{
     }
   }
 
-  SRule(Map<String,Object> cond){
+  PRule(Map<String,Object> cond, Map<String,Object> negCond){
     this.cond=cond;
+    this.negCond=negCond;
   }
 
   int complexity(){
     return cond.size() + negCond.size();
   }
 
-  SRule(String attr, Object val, boolean positive){
+  PRule(String attr, Object val, boolean positive){
     if( positive ){
       cond.put(attr, val);
     }else{
@@ -98,16 +110,16 @@ public class SRule implements java.io.Serializable{
     }
   }
 
-  SRule negate(){
-    SRule n = new SRule();
+  PRule negate(){
+    PRule n = new PRule();
     n.cond.putAll(negCond);
     n.negCond.putAll(cond);
     n.result=result;
     return n;
   }
 
-  SRule andRule(SRule r){
-    SRule n = new SRule();
+  PRule andRule(PRule r){
+    PRule n = new PRule();
 
     n.cond.putAll(cond);
     n.cond.putAll(r.cond);
@@ -118,7 +130,7 @@ public class SRule implements java.io.Serializable{
     return n;
   }
 
-  boolean condWiderIn(SRule other){
+  boolean condWiderIn(PRule other){
     for( String s : other.cond.keySet() ){
       if( !other.cond.get(s).equals(cond.get(s)) ){
         return false; // we don't have a condition from 'other'
@@ -156,11 +168,12 @@ public class SRule implements java.io.Serializable{
 
   public String toString() {
     String ret = cond + " neg " + negCond + " => ";
-    if( resultEqPrev ){
-      ret += "resultEqPrev";
-    }else{
-      ret += result;
-    }
+//    if( resultEqPrev ){
+//      ret += "resultEqPrev";
+//    }else{
+//      ret += result;
+//    }
+    ret += resultCounts.mapSortedDesc();
     return ret;
   }
 }

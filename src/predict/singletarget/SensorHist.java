@@ -28,6 +28,7 @@ public class SensorHist implements java.io.Serializable{
   LinkedHashMap<OneView, Object> exampleVals = new LinkedHashMap<OneView, Object>();
   List<OneView> exList = new ArrayList<OneView>();
 
+  List<PRule> prules = new ArrayList<PRule>();
   List<SRule> srules = new ArrayList<SRule>();
   Map<String,SRule> srulesArchive = new HashMap<String,SRule>();
   Map<String,SRule> shadowSrules = new HashMap<String,SRule>(); // tmp hidden
@@ -347,9 +348,25 @@ public class SensorHist implements java.io.Serializable{
 
     srules.add(r);
     srulesArchive.remove(r.toString());
+
+    PRule pr = new PRule(r.getCond(), r.getNegCond());
+    prules.add(pr);
+    for( OneView v : exampleVals.keySet() ){
+      Object val = exampleVals.get(v);
+      if( pr.condHolds(v) ){
+        pr.recordResult(val);
+      }
+    }
   }
 
   private boolean verifyRules(Object val, OneView vprev) {
+    for( Iterator<PRule> i = prules.iterator(); i.hasNext(); ){
+      PRule pr = i.next();
+      if( pr.condHolds(vprev) ){
+        pr.recordResult(val);
+      }
+    }
+
     boolean explained=false;
     for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
       SRule sr = i.next();
@@ -370,18 +387,18 @@ public class SensorHist implements java.io.Serializable{
       }
     }
 
-    for( Iterator<SRule> i = srulesArchive.values().iterator(); i.hasNext(); ){
-      SRule sr = i.next();
-      if( sr.condHolds(vprev) ){
-        if( sr.getPredictedResult(vprev, viewToValStatic).equals(val) ){
-          i.remove();
-          if( !ruleIsExtra(sr) ){
-            srules.add(sr);
-            explained=true;
-          }
-        }
-      }
-    }
+//    for( Iterator<SRule> i = srulesArchive.values().iterator(); i.hasNext(); ){
+//      SRule sr = i.next();
+//      if( sr.condHolds(vprev) ){
+//        if( sr.getPredictedResult(vprev, viewToValStatic).equals(val) ){
+//          i.remove();
+//          if( !ruleIsExtra(sr) ){
+//            srules.add(sr);
+//            explained=true;
+//          }
+//        }
+//      }
+//    }
 
     for( Iterator<SRule> i = shadowSrules.values().iterator(); i.hasNext(); ){
       SRule sr = i.next();
@@ -401,6 +418,11 @@ public class SensorHist implements java.io.Serializable{
   }
 
   PredictionResult predictWithDecisionStumpBasedRulesNoOther(OneView vprev, OneViewToVal v2v){
+    Object ppred = predictWithPrules(vprev);
+    if( ppred!=null ){
+      return new PredictionResult(sensorName, ppred);
+    }
+
     Object res=null;
     SRule rres=null;
     for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
@@ -419,6 +441,31 @@ public class SensorHist implements java.io.Serializable{
       }
     }
     return new PredictionResult(sensorName, res);
+  }
+
+  private Object predictWithPrules(OneView vprev) {
+    List<PRule> matchingPrules = new ArrayList<PRule>();
+    Map<Object,Double> allCounts = new HashMap<Object,Double>();
+    for( Iterator<PRule> i = prules.iterator(); i.hasNext(); ){
+      PRule pr = i.next();
+      if( pr.condHolds(vprev) ){
+        matchingPrules.add(pr);
+        Map<Object,Double> n = pr.normalizedResCounts();
+        for( Object o : n.keySet() ){
+          Double ov = allCounts.get(o);
+          if( ov==null ){
+            ov = n.get(o);
+          }else{
+            ov += n.get(o);
+          }
+          allCounts.put(o, ov);
+        }
+      }
+    }
+    if( allCounts.size()==1 ){
+      return allCounts.keySet().iterator().next();
+    }
+    return null;
   }
 
   PredictionResult predictWithDecisionStumpBasedRules(OneView vprev, OneViewToVal v2v){

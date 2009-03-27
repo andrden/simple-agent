@@ -166,7 +166,7 @@ public class TestPredictor extends TestCase {
     addMulti(p, "1Nhq1");
     addMulti(p, "2Yhp0");
     addMulti(p, "1Nbp0");
-    addMulti(p, "2Avk0");    - this test is now broken because of using tests from archive 
+    addMulti(p, "2Avk0");   // - this test is now broken because of using tests from archive
 
     // J48 chooses 'c' as best describing attribute here, why???
     // DecisionStump is correct here!
