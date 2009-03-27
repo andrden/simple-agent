@@ -157,7 +157,7 @@ public class TestPredictor extends TestCase {
     assertEquals("5", p.predict().get("d")); // c=k => d=d(prev)
   }
 
-  public void test9() { // test for rule auto-extension
+  public void testDoubtExtraWidening9() { // test for rule auto-extension
     LinearPredictor p = new LinearPredictor();
     addMulti(p, "1Abz0");
     addMulti(p, "2Njq1");
@@ -172,7 +172,7 @@ public class TestPredictor extends TestCase {
     // DecisionStump is correct here!
 
     Object pred = p.predict().get("e");
-    assertEquals("1", pred); // b=A => e=1 (don't require Ab)
+    assertEquals("1", pred); // b=A => e=1 (don't require Ab) -??? but why don't
   }
 
   public void testFastLearn1(){

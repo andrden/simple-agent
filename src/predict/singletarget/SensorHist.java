@@ -52,6 +52,7 @@ public class SensorHist implements java.io.Serializable{
 
   public SensorHist(String sensorName) {
     this.sensorName = sensorName;
+    prules.add(new PRule(Collections.EMPTY_MAP, Collections.EMPTY_MAP));
   }
 
   public void setSkippedViewKeys(Set<String> skippedViewKeys) {
@@ -120,6 +121,8 @@ public class SensorHist implements java.io.Serializable{
   }
 
   void analyzeNewExample(Object val, OneView vprev){
+    prulesNewView(val, vprev);
+    
     if( exampleVals.size()<2 ){
       return;
     }
@@ -209,11 +212,11 @@ public class SensorHist implements java.io.Serializable{
   }
 
   private void makeNewRules() {
-    Object commonResAll = commonResValue(exampleVals.keySet());
-    if( commonResAll!=null ){
-      otherRulesResult=commonResAll;
-      return;
-    }
+//    Object commonResAll = commonResValue(exampleVals.keySet());
+//    if( commonResAll!=null ){
+//      otherRulesResult=commonResAll;
+//      return;
+//    }
     SRule r = ruleByDecisionStump( exampleVals.keySet(), false );
     ruleCheckAndAdd(r);
     SRule rn = r.negate();
@@ -235,10 +238,10 @@ public class SensorHist implements java.io.Serializable{
       unex = unexplainedExamples();
     }
 
-    Object commonResUnex = commonResValue(unex);
-    if( commonResUnex!=null ){
-      otherRulesResult=commonResUnex;
-    }
+//    Object commonResUnex = commonResValue(unex);
+//    if( commonResUnex!=null ){
+//      otherRulesResult=commonResUnex;
+//    }
   }
 
   boolean singleAttrRuleHunting(OneView vprev){
@@ -360,13 +363,6 @@ public class SensorHist implements java.io.Serializable{
   }
 
   private boolean verifyRules(Object val, OneView vprev) {
-    for( Iterator<PRule> i = prules.iterator(); i.hasNext(); ){
-      PRule pr = i.next();
-      if( pr.condHolds(vprev) ){
-        pr.recordResult(val);
-      }
-    }
-
     boolean explained=false;
     for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
       SRule sr = i.next();
@@ -417,30 +413,40 @@ public class SensorHist implements java.io.Serializable{
     return explained;
   }
 
+  private void prulesNewView(Object val, OneView vprev) {
+    for( Iterator<PRule> i = prules.iterator(); i.hasNext(); ){
+      PRule pr = i.next();
+      if( pr.condHolds(vprev) ){
+        pr.recordResult(val);
+      }
+    }
+  }
+
   PredictionResult predictWithDecisionStumpBasedRulesNoOther(OneView vprev, OneViewToVal v2v){
     Object ppred = predictWithPrules(vprev);
     if( ppred!=null ){
       return new PredictionResult(sensorName, ppred);
     }
+    return new PredictionResult(sensorName, null);
 
-    Object res=null;
-    SRule rres=null;
-    for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
-      SRule sr = i.next();
-      if( sr.condHolds(vprev) ){
-        Object resi = sr.getPredictedResult(vprev, v2v);
-        if( resi!=null && res!=null && !resi.equals(res) ){
-          //throw new RuntimeException("rule conflict "+sr+" "+rres);
-          System.out.println("rule conflict "+sensorName+" "+sr+"    "+rres+"    view="+vprev);
-          PredictionResult pt = new PredictionResult();
-          pt.setWithRuleConflicts(true);
-          return pt;
-        }
-        res = resi;
-        rres = sr;
-      }
-    }
-    return new PredictionResult(sensorName, res);
+//    Object res=null;
+//    SRule rres=null;
+//    for( Iterator<SRule> i = srules.iterator(); i.hasNext(); ){
+//      SRule sr = i.next();
+//      if( sr.condHolds(vprev) ){
+//        Object resi = sr.getPredictedResult(vprev, v2v);
+//        if( resi!=null && res!=null && !resi.equals(res) ){
+//          //throw new RuntimeException("rule conflict "+sr+" "+rres);
+//          System.out.println("rule conflict "+sensorName+" "+sr+"    "+rres+"    view="+vprev);
+//          PredictionResult pt = new PredictionResult();
+//          pt.setWithRuleConflicts(true);
+//          return pt;
+//        }
+//        res = resi;
+//        rres = sr;
+//      }
+//    }
+//    return new PredictionResult(sensorName, res);
   }
 
   private Object predictWithPrules(OneView vprev) {
@@ -450,16 +456,21 @@ public class SensorHist implements java.io.Serializable{
       PRule pr = i.next();
       if( pr.condHolds(vprev) ){
         matchingPrules.add(pr);
-        Map<Object,Double> n = pr.normalizedResCounts();
-        for( Object o : n.keySet() ){
-          Double ov = allCounts.get(o);
-          if( ov==null ){
-            ov = n.get(o);
-          }else{
-            ov += n.get(o);
-          }
-          allCounts.put(o, ov);
+      }
+    }
+
+    !!! if there is outstanding clear rule among matching, omit others
+
+    for( PRule pr : matchingPrules ){
+      Map<Object,Double> n = pr.normalizedResCounts();
+      for( Object o : n.keySet() ){
+        Double ov = allCounts.get(o);
+        if( ov==null ){
+          ov = n.get(o)/matchingPrules.size();
+        }else{
+          ov += n.get(o)/matchingPrules.size();
         }
+        allCounts.put(o, ov);
       }
     }
     if( allCounts.size()==1 ){
