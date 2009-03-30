@@ -27,7 +27,7 @@ public class Pred implements PredictorIntf {
   public void printRuleStats(){
     System.out.print("RuleStats:");
     for( SensorHist sh : singles.values() ){
-      System.out.print(" "+sh.sensorName+"="+sh.srules.size());
+      System.out.print(" "+sh.sensorName+"="+sh.prules.size());
     }
     System.out.println();
   }

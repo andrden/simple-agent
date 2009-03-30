@@ -15,16 +15,23 @@ import com.pmstation.common.utils.CountingMap;
  * Date: 22 жовт 2008
  * Time: 16:53:28
  */
-public class PRule implements java.io.Serializable{
-  private Map<String,Object> cond = new HashMap<String,Object>();
-  private Map<String,Object> negCond = new HashMap<String,Object>();
+public class PRule extends RuleCond implements java.io.Serializable{
   private CountingMap resultCounts = new CountingMap();
+  private CountingMap<Boolean> resultCountsEqPrev = new CountingMap<Boolean>();
 
   private Object result;
   boolean resultEqPrev=false;
 
   PRule(){
+  }
 
+  PRule(RuleCond c){
+    cond = new HashMap<String, Object>(c.cond);
+    negCond = new HashMap<String, Object>(c.negCond);
+  }
+
+  boolean convergent(){
+    return resultCounts.size()==1 || resultCountsEqPrev.getValOr0(Boolean.FALSE)==0;
   }
 
   Map<Object,Double> normalizedResCounts(){
@@ -36,31 +43,13 @@ public class PRule implements java.io.Serializable{
     return ret;
   }
 
-  void recordResult(Object val){
+  void recordResult(Object val, OneView vprev, OneViewToVal v2v){
     resultCounts.increment(val);
+    resultCountsEqPrev.increment( val.equals(v2v.val(vprev) ) );
   }
 
 
 
-  void disallowConditions(Set<String> skippedViewKeys){
-    if( skippedViewKeys==null ){
-      return;
-    }
-    for( String k : cond.keySet() ){
-      if( skippedViewKeys.contains(k) ){
-        throw new IllegalArgumentException(k);
-      }
-    }
-    for( String k : negCond.keySet() ){
-      if( skippedViewKeys.contains(k) ){
-        throw new IllegalArgumentException(k);
-      }
-    }
-  }
-
-  void addToCondition(Map<String,Object> inters){
-    cond.putAll(inters);
-  }
 
   boolean resultUseful(Object resultValue){
     if( resultValue==null ){
@@ -96,10 +85,6 @@ public class PRule implements java.io.Serializable{
   PRule(Map<String,Object> cond, Map<String,Object> negCond){
     this.cond=cond;
     this.negCond=negCond;
-  }
-
-  int complexity(){
-    return cond.size() + negCond.size();
   }
 
   PRule(String attr, Object val, boolean positive){
@@ -144,19 +129,6 @@ public class PRule implements java.io.Serializable{
     return true; // all conditions from 'other' are present in 'this'
   }
 
-  boolean condHolds(OneView v){
-    for( String s : cond.keySet() ){
-      if( !cond.get(s).equals(v.get(s)) ){
-        return false;
-      }
-    }
-    for( String s : negCond.keySet() ){
-      if( negCond.get(s).equals(v.get(s)) ){
-        return false;
-      }
-    }
-    return true;
-  }
 
   public void setResult(Object result) {
     this.result = result;

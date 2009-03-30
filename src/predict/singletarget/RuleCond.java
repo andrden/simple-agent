@@ -13,13 +13,11 @@ import java.util.Set;
  * Date: 22 жовт 2008
  * Time: 16:53:28
  */
-public class SRule implements java.io.Serializable{
-  private Map<String,Object> cond = new HashMap<String,Object>();
-  private Map<String,Object> negCond = new HashMap<String,Object>();
-  private Object result;
-  boolean resultEqPrev=false;
+public class RuleCond implements java.io.Serializable{
+  Map<String,Object> cond = new HashMap<String,Object>();
+  Map<String,Object> negCond = new HashMap<String,Object>();
 
-  SRule(){
+  RuleCond(){
 
   }
 
@@ -51,38 +49,8 @@ public class SRule implements java.io.Serializable{
     cond.putAll(inters);
   }
 
-  boolean resultUseful(Object resultValue){
-    if( resultValue==null ){
-      return false;
-    }
-    if( resultEqPrev ){
-      return resultValue.equals("1");
-    }
-    return true;
-  }
 
-  Object getPredictedResult(OneView vprev, OneViewToVal v2v){
-    if( resultEqPrev ){
-      return v2v.val(vprev/*.prev*/);
-    }
-    return getResult();
-  }
-
-  Object resultValue(OneView v, Map<OneView, Object> exampleVals){
-    if( resultEqPrev ){
-      String vval = "0";
-      if( v.prev!=null && exampleVals.get(v.prev)!=null){
-        if( exampleVals.get(v.prev).equals(exampleVals.get(v)) ){
-          vval = "1";
-        }
-      }
-      return vval;
-    }else{
-      return exampleVals.get(v);
-    }
-  }
-
-  SRule(Map<String,Object> cond){
+  RuleCond(Map<String,Object> cond){
     this.cond=cond;
   }
 
@@ -90,7 +58,7 @@ public class SRule implements java.io.Serializable{
     return cond.size() + negCond.size();
   }
 
-  SRule(String attr, Object val, boolean positive){
+  RuleCond(String attr, Object val, boolean positive){
     if( positive ){
       cond.put(attr, val);
     }else{
@@ -98,16 +66,15 @@ public class SRule implements java.io.Serializable{
     }
   }
 
-  SRule negate(){
-    SRule n = new SRule();
+  RuleCond negate(){
+    RuleCond n = new RuleCond();
     n.cond.putAll(negCond);
     n.negCond.putAll(cond);
-    n.result=result;
     return n;
   }
 
-  SRule andRule(SRule r){
-    SRule n = new SRule();
+  RuleCond andRule(RuleCond r){
+    RuleCond n = new RuleCond();
 
     n.cond.putAll(cond);
     n.cond.putAll(r.cond);
@@ -118,7 +85,7 @@ public class SRule implements java.io.Serializable{
     return n;
   }
 
-  boolean condWiderIn(SRule other){
+  boolean condWiderIn(RuleCond other){
     for( String s : other.cond.keySet() ){
       if( !other.cond.get(s).equals(cond.get(s)) ){
         return false; // we don't have a condition from 'other'
@@ -146,21 +113,10 @@ public class SRule implements java.io.Serializable{
     return true;
   }
 
-  public void setResult(Object result) {
-    this.result = result;
-  }
-
-  public Object getResult() {
-    return result;
-  }
-
   public String toString() {
-    String ret = cond + " neg " + negCond + " => ";
-    if( resultEqPrev ){
-      ret += "resultEqPrev";
-    }else{
-      ret += result;
-    }
+    String ret = cond + " neg " + negCond;
     return ret;
   }
+
+
 }

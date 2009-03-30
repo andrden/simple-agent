@@ -14,9 +14,7 @@ import java.io.IOException;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import predict.singletarget.SensorHist;
-import predict.singletarget.PredictionResult;
-import predict.singletarget.OneViewToVal;
+import predict.singletarget.*;
 import utils.Utils;
 
 /**
@@ -70,6 +68,39 @@ public class TestPredictor extends TestCase {
     // to see difference in situation
     String task = "0 101 22 101 00 10>1 00 10>1 10>1 11111 10>1 11";
     plainSeqProc(task);
+  }
+
+  public void test6Suggest() {
+    HistSuggest sg = new HistSuggest();
+    OneView v1 = addMulti(null, "A0", sg, "2");
+    OneView v2 = addMulti(null, "B2", sg, "3");
+    OneView v3 = addMulti(null, "A3", sg, "2");
+    OneView v4 = addMulti(null, "B2", sg, "4");
+    OneView v5 = addMulti(null, "C4", sg, "1");
+    OneView v6 = addMulti(null, "A2", sg, "2");
+
+    RuleCond r = sg.ruleByDecisionStump(Arrays.asList(v1,v2,v3,v4,v5,v6), false);
+    assertEquals(r.toString(),"{a=A} neg {}");
+  }
+
+  public void test6b() {
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p, "A0");p.printRules("b");  //2
+    addMulti(p, "B2");p.printRules("b");  //3
+    addMulti(p, "A3");p.printRules("b");  //2
+    addMulti(p, "B2");p.printRules("b");  //4
+    addMulti(p, "C4");p.printRules("b");  //4
+    addMulti(p, "A4");p.printRules("b");  //2
+    addMulti(p, "C2");p.printRules("b");  //1
+    addMulti(p, "A1");p.printRules("b");  //?
+    assertEquals("2", p.predict().get("b"));  // a=A => b=2
+//@data
+//2,B,3
+//0,A,2
+//3,A,2
+//4,C,1
+//2,B,4
+
   }
 
   public void test6() {
@@ -434,6 +465,16 @@ public class TestPredictor extends TestCase {
       v.pt("" + (char) ('a' + i), "" + new Character(view.charAt(i)));
     }
     p.add(v);
+  }
+
+  OneView addMulti(OneView prev, String view, HistSuggest analyzer, Object res) {
+    OneView v = new OneView();
+    for (int i = 0; i < view.length(); i++) {
+      v.pt("" + (char) ('a' + i), "" + new Character(view.charAt(i)));
+    }
+    v.chain(prev);
+    analyzer.addAsCurrent(res, v);
+    return v;
   }
 
   private void plainSeqProc(String task) {

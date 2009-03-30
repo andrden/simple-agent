@@ -25,6 +25,13 @@ public class OneView<T extends OneView> implements Serializable {
     return view.get(key);
   }
 
+  public void chain(T prev){
+    this.prev=prev;
+    if( prev!=null ){
+      prev.next=this;
+    }
+  }
+
   /**
    * Make a clone at the same level and same prev. view
    * @return
