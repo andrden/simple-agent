@@ -104,6 +104,12 @@ public class TestPredictor extends TestCase {
   }
 
   public void test6() {
+//@todo - 1) don't add same cut (PRule) 2) add simpler if possible (b!=2 is really extra)    
+
+//[0] = {predict.singletarget.PRule@652}"{} neg {} => {2=2, 3=1, 1=1, 4=1}"
+//[1] = {predict.singletarget.PRule@653}"{a=A} neg {b=2} => {2=2}"
+//[2] = {predict.singletarget.PRule@654}"{a=A} neg {b=2} => {2=2}"
+
     LinearPredictor p = new LinearPredictor();
     addMulti(p, "A0");p.printRules("b");  //2
     addMulti(p, "B2");p.printRules("b");  //3
@@ -141,15 +147,18 @@ public class TestPredictor extends TestCase {
 
   public void test8() {
     LinearPredictor p = new LinearPredictor();
-    addMulti(p, "zAn1");
-    addMulti(p, "zAk1");
-    addMulti(p, "xAp0");
-    addMulti(p, "xAp1");
-    addMulti(p, "zAk1");
-    addMulti(p, "zBk0");
+    addMulti(p, "zAn1"); //1
+    addMulti(p, "zAk1"); //0
+    addMulti(p, "xAp0"); //1
+    addMulti(p, "xAp1"); //1
+    addMulti(p, "zAk1"); //0
+    addMulti(p, "zBk0"); //0
     addMulti(p, "xAk0");
     assertEquals("0", p.predict().get("d")); // c=k => d=0
+    // conflict with Xa => 1, test not quite clean
   }
+
+  public void test8() { - rewrite - add disambiguation 
 
   public void testRefSame1() {
     LinearPredictor p = new LinearPredictor();

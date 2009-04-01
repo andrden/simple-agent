@@ -148,4 +148,8 @@ public class PRule extends RuleCond implements java.io.Serializable{
     ret += resultCounts.mapSortedDesc();
     return ret;
   }
+
+  public String condToString(){
+    return super.toString();
+  }
 }

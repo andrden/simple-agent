@@ -4,13 +4,8 @@ import mem.OneView;
 
 import java.util.*;
 
-import weka.classifiers.Classifier;
 import weka.classifiers.trees.DecisionStump;
-import weka.core.Instances;
 import weka.core.Instance;
-import weka.core.Attribute;
-import com.pmstation.common.utils.PrivateFieldGetter;
-import com.pmstation.common.utils.CountingMap;
 import com.pmstation.common.utils.MinMaxFinder;
 import utils.Utils;
 
@@ -64,7 +59,10 @@ public class SensorHist extends HistSuggest{
 
   boolean ruleIsExtra(RuleCond r){
     for( PRule s : prules ){
-      if( r.condWiderIn(s) ){
+//      if( r.condWiderIn(s) ){
+//        return true;
+//      }
+      if( s.condToString().equals(r.toString()) ){
         return true;
       }
     }
@@ -148,10 +146,10 @@ public class SensorHist extends HistSuggest{
       if( exList.size()>2 ){
         Object commonRes = commonResValue(exList);
         if( commonRes!=null ){
-          //if( !ruleIsExtra(r) ){
-            srulesAdd(r);
+          if( !ruleIsExtra(r) ){
+            prulesAdd(r);
             break;
-          //}
+          }
         }
       }
     }
@@ -222,6 +220,19 @@ public class SensorHist extends HistSuggest{
     }
   }
 
+  boolean ruleConvergent(RuleCond r){
+    List<OneView> exList = examplesCondHolds(recentExamples(), r);
+    if( exList.size()<2 ){
+      return false;
+    }
+    PRule pr = new PRule(r);
+    for( OneView v : exList ){
+      Object val = exampleVals.get(v);
+      pr.recordResult(val, v.prev, viewToValStatic);
+    }
+    return pr.convergent();
+  }
+
   private boolean ruleCheckAndAdd(RuleCond r, boolean testResultEqPrev) {
     if( r.complexity()>2 ){
       return false;
@@ -242,10 +253,20 @@ public class SensorHist extends HistSuggest{
       Map<String,Object> inters = Utils.interstectingVals(exList);
       filterSkippedKeys(inters);
       r.addToCondition(inters);
-      //if( !ruleIsExtra(r) ){
-        srulesAdd(r);
+      List<RuleCond> wider = r.widerConds();
+      for( RuleCond w : wider ){
+        if( ruleConvergent(w)
+          @todo only if examples are versatile enough to exclude extra parm sensibly  ){
+          if( !ruleIsExtra(w) ){
+            prulesAdd(w);
+            return true;
+          }
+        }
+      }
+      if( !ruleIsExtra(r) ){
+        prulesAdd(r);
         return true;
-      //}
+      }
     }else{
       RuleCond subR = ruleByDecisionStump(exList, testResultEqPrev);
       RuleCond rnew = r.andRule(subR);
@@ -260,7 +281,7 @@ public class SensorHist extends HistSuggest{
     return false;
   }
 
-  void srulesAdd(RuleCond r){
+  void prulesAdd(RuleCond r){
     r.disallowConditions(skippedViewKeys);
 
     PRule pr = new PRule(r.getCond(), r.getNegCond());

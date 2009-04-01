@@ -2,10 +2,7 @@ package predict.singletarget;
 
 import mem.OneView;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -47,6 +44,25 @@ public class RuleCond implements java.io.Serializable{
 
   void addToCondition(Map<String,Object> inters){
     cond.putAll(inters);
+  }
+
+  List<RuleCond> widerConds(){
+    List<RuleCond> ret = new ArrayList<RuleCond>();
+    for( String c : cond.keySet() ){
+      RuleCond w = new RuleCond();
+      w.cond = new HashMap<String,Object>(cond);
+      w.negCond = new HashMap<String,Object>(negCond);
+      w.cond.remove(c);
+      ret.add(w);
+    }
+    for( String c : negCond.keySet() ){
+      RuleCond w = new RuleCond();
+      w.cond = new HashMap<String,Object>(cond);
+      w.negCond = new HashMap<String,Object>(negCond);
+      w.negCond.remove(c);
+      ret.add(w);
+    }
+    return ret;
   }
 
 
