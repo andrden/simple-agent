@@ -220,17 +220,50 @@ public class SensorHist extends HistSuggest{
     }
   }
 
-  boolean ruleConvergent(RuleCond r){
-    List<OneView> exList = examplesCondHolds(recentExamples(), r);
-    if( exList.size()<2 ){
-      return false;
+  class RuleImpression{
+    List<OneView> rexList;
+    boolean convergent=false;
+
+    RuleImpression(RuleCond r){
+      //List<OneView> rexList = examplesCondHolds(exampleVals.keySet(), r);
+      rexList = examplesCondHolds(recentExamples(), r);
+      if( rexList.size()<2 ){
+        return;
+      }
+
+      PRule pr = new PRule(r);
+      for( OneView v : rexList){
+        Object val = exampleVals.get(v);
+        pr.recordResult(val, v.prev, viewToValStatic);
+      }
+
+      convergent = pr.convergent();
     }
-    PRule pr = new PRule(r);
-    for( OneView v : exList ){
-      Object val = exampleVals.get(v);
-      pr.recordResult(val, v.prev, viewToValStatic);
+  }
+
+  boolean addRuleOrWider(RuleCond r){
+    RuleImpression masterImpr = new RuleImpression(r);
+    List<RuleCond> wider = r.widerConds();
+    boolean widerAdded=false;
+    for( RuleCond w : wider ){
+      RuleImpression wi = new RuleImpression(r);
+      if( wi.convergent && wi.rexList.size()>masterImpr.rexList.size()){
+        // only if examples are versatile enough to exclude extra parm sensibly
+        if( !ruleIsExtra(w) ){
+          widerAdded=true;
+          //prulesAdd(w);
+          addRuleOrWider(w);
+        }
+      }
     }
-    return pr.convergent();
+    if( widerAdded ){
+      return true;
+    }
+    if( !ruleIsExtra(r) ){
+      prulesAdd(r);
+      return true;
+    }
+    return false;
   }
 
   private boolean ruleCheckAndAdd(RuleCond r, boolean testResultEqPrev) {
@@ -238,37 +271,21 @@ public class SensorHist extends HistSuggest{
       return false;
     }
 
-    //List<OneView> exList = examplesCondHolds(exampleVals.keySet(), r);
-    List<OneView> exList = examplesCondHolds(recentExamples(), r);
-    if( exList.size()<2 ){
+    RuleImpression ri = new RuleImpression(r);
+    if( ri.rexList.size()<2 ){
       return false;
     }
-    PRule pr = new PRule(r);
-    for( OneView v : exList ){
-      Object val = exampleVals.get(v);
-      pr.recordResult(val, v.prev, viewToValStatic);
-    }
 
-    if( pr.convergent() ){
-      Map<String,Object> inters = Utils.interstectingVals(exList);
+
+    if( ri.convergent ){
+      Map<String,Object> inters = Utils.interstectingVals(ri.rexList);
       filterSkippedKeys(inters);
       r.addToCondition(inters);
-      List<RuleCond> wider = r.widerConds();
-      for( RuleCond w : wider ){
-        if( ruleConvergent(w)
-          @todo only if examples are versatile enough to exclude extra parm sensibly  ){
-          if( !ruleIsExtra(w) ){
-            prulesAdd(w);
-            return true;
-          }
-        }
-      }
-      if( !ruleIsExtra(r) ){
-        prulesAdd(r);
+      if( addRuleOrWider(r) ){
         return true;
       }
     }else{
-      RuleCond subR = ruleByDecisionStump(exList, testResultEqPrev);
+      RuleCond subR = ruleByDecisionStump(ri.rexList, testResultEqPrev);
       RuleCond rnew = r.andRule(subR);
       if( rnew.complexity()>r.complexity() ){
         ruleCheckAndAdd(rnew, testResultEqPrev);

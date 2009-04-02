@@ -154,11 +154,44 @@ public class TestPredictor extends TestCase {
     addMulti(p, "zAk1"); //0
     addMulti(p, "zBk0"); //0
     addMulti(p, "xAk0");
-    assertEquals("0", p.predict().get("d")); // c=k => d=0
-    // conflict with Xa => 1, test not quite clean
+    assertEquals(null, p.predict().get("d")); // must be unbiased
+    // c=k => d=0
+    // conflict with xA => 1
+    addMulti(p, "xBk0");
+    assertEquals("0", p.predict().get("d"));
+    addMulti(p, "xAv0");
+    assertEquals("1", p.predict().get("d"));
   }
 
-  public void test8() { - rewrite - add disambiguation 
+  public void test8disambig() { // disambiguation
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p, "zAn1"); //1
+    addMulti(p, "zAk1"); //0
+    addMulti(p, "yAp0"); //1
+    addMulti(p, "xAp1"); //1
+    addMulti(p, "zAk1"); //0
+    addMulti(p, "zBk0"); //0
+    addMulti(p, "xAk0");
+    assertEquals("0", p.predict().get("d")); // must be unbiased
+    // c=k => d=0
+
+    disambiguate test wrong: z.k - z is in all k examples!
+  }
+
+  public void test8WrongWideOnAdd() { // disambiguation
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p, "zAn1q"); //1
+    addMulti(p, "zAk1q"); //0
+    addMulti(p, "yAp0q"); //1
+    addMulti(p, "xAp1q"); //1
+    addMulti(p, "vAk1q"); //0
+    addMulti(p, "pBk0q"); //0
+    addMulti(p, "xAk0q");
+    assertEquals("0", p.predict().get("d"));
+    // c=k,e=q => d=0
+    addMulti(p, "xAk0s");
+    assertEquals(null, p.predict().get("d")); // mustn't make too wide assumptions
+  }
 
   public void testRefSame1() {
     LinearPredictor p = new LinearPredictor();
