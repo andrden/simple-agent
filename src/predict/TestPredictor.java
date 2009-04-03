@@ -172,10 +172,21 @@ public class TestPredictor extends TestCase {
     addMulti(p, "zAk1"); //0
     addMulti(p, "zBk0"); //0
     addMulti(p, "xAk0");
-    assertEquals("0", p.predict().get("d")); // must be unbiased
-    // c=k => d=0
+    assertEquals(null, p.predict().get("d")); // must be unbiased
+    // c=k => d=0 , no! z.k - z is in all k examples!
+  }
 
-    disambiguate test wrong: z.k - z is in all k examples!
+  public void test8disambig2() { // disambiguation
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p, "zAn1"); //1
+    addMulti(p, "zAk1"); //0
+    addMulti(p, "yAp0"); //1
+    addMulti(p, "xAp1"); //1
+    addMulti(p, "mAk1"); //0
+    addMulti(p, "zBk0"); //0
+    addMulti(p, "xAk0");
+    assertEquals("0", p.predict().get("d")); // must be unbiased
+    // c=k => d=0 , no! z.k - z is in all k examples!
   }
 
   public void test8WrongWideOnAdd() { // disambiguation
@@ -204,9 +215,7 @@ public class TestPredictor extends TestCase {
     addMulti(p, "mCt3");
     addMulti(p, "mCt0");
     addMulti(p, "mCk5"); //      m.k --- ???
-    assertEquals("5", p.predict().get("d")); // c=k => d=d(prev)
-
-    // now this test fails but is it correct??
+    assertEquals(null, p.predict().get("d")); // c=k => d=d(prev)
     // we really only had the opportunity to suggest "z.k => d=d(prev)",
     // not "m.k"
     // So our predictor is strict now.
@@ -214,6 +223,20 @@ public class TestPredictor extends TestCase {
     // BUT! maybe there should also be method to suggest possible
     // (likely) predictions based on current rules - to choose
     // next steps as likely good or likely bringing new rules.
+  }
+
+  public void testRefSame1b() {
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p, "zAn1");
+    addMulti(p, "zAk4"); // zAk, z.k
+    addMulti(p, "xAp4");
+    addMulti(p, "xAp1");
+    addMulti(p, "yAk3"); // yAk, y.k
+    addMulti(p, "zBk3"); //      z.k
+    addMulti(p, "mCt3");
+    addMulti(p, "mCt0");
+    addMulti(p, "mCk5"); //      k --- ???
+    assertEquals("5", p.predict().get("d")); // c=k => d=d(prev)
   }
 
   public void testRefSame2() {
