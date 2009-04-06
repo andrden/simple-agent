@@ -15,12 +15,12 @@ import java.util.*;
 public class Attempts implements Serializable {
   Alg alg;
 
-  Causes causes;
+  //Causes causes;
   History history;
 
   public Attempts(Alg alg) {
     this.alg = alg;
-    causes = alg.causes;
+    //causes = alg.causes;
     history = alg.history;
   }
 
@@ -76,15 +76,15 @@ public class Attempts implements Serializable {
     cs = new ArrayList<String>(cs);
     Collections.shuffle(cs); // no prejudice to commands
 
-    Set<ViewDepthElem> usedCauseElemts = causes.usedCauseElems();
-    usedCauseElemts = viewOnly(usedCauseElemts);
-    if (!usedCauseElemts.isEmpty()) {
-      // first try already usable elems - they are the first candidates to cover new situation
-      CmdSet cset1 = findNotEverTried(ViewDepthGenerator.createWithViewElelms(usedCauseElemts), cs, view);
-      if (cset1 != null) {
-        return cset1;
-      }
-    }
+//    Set<ViewDepthElem> usedCauseElemts = causes.usedCauseElems();
+//    usedCauseElemts = viewOnly(usedCauseElemts);
+//    if (!usedCauseElemts.isEmpty()) {
+//      // first try already usable elems - they are the first candidates to cover new situation
+//      CmdSet cset1 = findNotEverTried(ViewDepthGenerator.createWithViewElelms(usedCauseElemts), cs, view);
+//      if (cset1 != null) {
+//        return cset1;
+//      }
+//    }
 
     //@todo try hot view keys first - those with high rating to be useful - last changed for example 
 
@@ -110,11 +110,11 @@ public class Attempts implements Serializable {
     }
 
     // random to verify causes
-    if (Math.random() < 0.7) { // always leave some attempts as truly random
-      for (Cause c : causes.validCauses()) {
-        //....
-      }
-    }
+//    if (Math.random() < 0.7) { // always leave some attempts as truly random
+//      for (Cause c : causes.validCauses()) {
+//        //....
+//      }
+//    }
 
     String nextCmd;
     nextCmd = cs.get((int) (Math.random() * cs.size()));

@@ -2,9 +2,6 @@ import intf.AlgIntf;
 import intf.World;
 import logic.Alg;
 import com.pmstation.common.utils.MinMaxFinder;
-import worlds.Rubic2x2World;
-import worlds.ComparableSensors1;
-import worlds.GridWorld3;
 import worlds.Line1;
 import worlds.intf.WorldGridView;
 

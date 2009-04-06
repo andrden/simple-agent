@@ -9,10 +9,6 @@ import utils.Utils;
 import java.io.Serializable;
 import java.util.*;
 
-import predict.Predictor;
-import predict.CmdPredictionTree;
-import predict.PredictionTreeBuilder;
-
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -28,7 +24,7 @@ public class Alg implements AlgIntf, Serializable {
 
   Map<String, List<String>> cmdGroups = new HashMap<String, List<String>>();
 
-  Causes causes = new Causes();
+  //Causes causes = new Causes();
   //Causes2 causes2 = new Causes2();
   List<Hist> interestingEvents = new ArrayList<Hist>(); //- copy to Cause2
 
@@ -58,9 +54,9 @@ public class Alg implements AlgIntf, Serializable {
   }
 
   public void printRelavantCauses() {
-    for (Cause c : causes.applicableCauses(history.getNextHist())) {
-      log("c  " + c);
-    }
+//    for (Cause c : causes.applicableCauses(history.getNextHist())) {
+//      log("c  " + c);
+//    }
   }
 
   CmdSet nextCmdLogic(){
@@ -121,71 +117,6 @@ public class Alg implements AlgIntf, Serializable {
     predictor.add(history.next);
   }
 
-  PredictionTree buildPredictionTreeOld(Hist last, Map<String, Object> view) {
-    PredictionTree predictionTree = new PredictionTree(last, view);
-    predictionTree.smacks = causes.smacksOfResult(predictionTree.histNew());
-
-    List<Hist> unexplainedInterestingEvents = unexplainedInterestingEvents();
-    List<PredictionTree> readyNotes = Arrays.asList(predictionTree);
-    for (int i = 0; i < 5 && readyNotes.size() > 0; i++) {
-      List<PredictionTree> notesToExplore = new ArrayList<PredictionTree>();
-      for (PredictionTree pti : readyNotes) {
-        if (pti.noop) {
-          continue;
-        }
-        for (String c : allCommands()) {
-          expandPredictionOld(pti, c, notesToExplore);
-        }
-        for (String c : allCommands()) {
-          Hist h = new Hist(pti.histOld, pti.viewNext, c);
-          if (causes.predictsNoop(h)) {
-            PredictionTree child = pti.onCommand.get(c);
-            if (child == null) {
-              child = pti.addChild(h, c, null);
-            }
-            child.noop = true;
-          }
-        }
-
-        for (Hist hinter : unexplainedInterestingEvents) {
-          Map<String, Object> com = Utils.intersection(hinter.prev.getViewAll(), view);
-          if (!com.isEmpty()) {
-            String cmd = hinter.prev.getCommand();
-            PredictionTree child = pti.onCommand.get(cmd);
-            if (child == null) {
-              Hist h = new Hist(pti.histOld, pti.viewNext, cmd);
-              child = pti.addChild(h, cmd, null);
-            }
-            child.smacksEvent = hinter;
-          }
-        }
-      }
-      readyNotes = notesToExplore;
-    }
-    return predictionTree;
-  }
-
-  private void expandPredictionOld(PredictionTree pti, String c, List<PredictionTree> notesToExplore) {
-    Hist h = new Hist(pti.histOld, pti.viewNext, c);
-    Causes.PredictionBy prediction = causes.predictAllViewByCausesWithBy(h);
-    if (prediction != null) {
-      Map<String, Object> test = new HashMap<String, Object>(prediction.view);
-      test.remove(Hist.NOOP_KEY);
-      if ("0".equals("" + test.get(Hist.RES_KEY))) {
-        test.remove(Hist.RES_KEY);
-      }
-      if (test.size() > 0) { // if has smth. meaningful
-        PredictionTree node = pti.addChild(h, c, prediction);
-        node.smacks = causes.smacksOfResult(node.histNew());
-        boolean val = prediction.view.get(Hist.RES_KEY) != null && ((Integer) prediction.view.get(Hist.RES_KEY)).intValue() != 0;
-        if (!val) { // if result of this branch not yet known
-          notesToExplore.add(node);
-        }
-      }
-    }
-  }
-
-
 
 
   List<String> allCommands() {
@@ -236,21 +167,21 @@ public class Alg implements AlgIntf, Serializable {
     }
 
     // if there is step which smacks of result according to causes, do it
-    Set<String> smacksCmds = new HashSet<String>();
-    for (String c : cs) {
-      Hist ifCmdC = new Hist(history.last, view, c);
-      Map<String, Object> next = causes.predictAllViewByCauses(ifCmdC);
-      Hist nextHist = new Hist(ifCmdC, next, null);
-      Causes.SmacksOfResult smacks = causes.smacksOfResult(nextHist);
-      if (smacks != null && smacks.ds.hasElemsOtherThan(new ViewDepthElem(0, Hist.CMD_KEY))
-              && smacks.ds.hasElemsAtDepth(0)
-              && smacks.cause.getResult() > 0) {
-        smacksCmds.add(c);
-      }
-    }
-    if (!smacksCmds.isEmpty() && smacksCmds.size() < cs.size()) {
-      return attempts.randomWithIntent(new ArrayList<String>(smacksCmds), view);
-    }
+//    Set<String> smacksCmds = new HashSet<String>();
+//    for (String c : cs) {
+//      Hist ifCmdC = new Hist(history.last, view, c);
+//      Map<String, Object> next = causes.predictAllViewByCauses(ifCmdC);
+//      Hist nextHist = new Hist(ifCmdC, next, null);
+//      Causes.SmacksOfResult smacks = causes.smacksOfResult(nextHist);
+//      if (smacks != null && smacks.ds.hasElemsOtherThan(new ViewDepthElem(0, Hist.CMD_KEY))
+//              && smacks.ds.hasElemsAtDepth(0)
+//              && smacks.cause.getResult() > 0) {
+//        smacksCmds.add(c);
+//      }
+//    }
+//    if (!smacksCmds.isEmpty() && smacksCmds.size() < cs.size()) {
+//      return attempts.randomWithIntent(new ArrayList<String>(smacksCmds), view);
+//    }
 
     if (stepByStepFastCheck) {
       return null;
@@ -266,71 +197,71 @@ public class Alg implements AlgIntf, Serializable {
     return nextCmd;
   }
 
-  List<Hist> unexplainedInterestingEvents() {
-    List<Hist> ret = new ArrayList<Hist>();
-    for (Hist hinter : interestingEvents) {
-      if (hinter == history.next) {
-        continue; // skip current event
-      }
-      int res = hinter.prev.getResultFromNext();
-      if (res > 0) {
-        Map<String, Object> prediction = causes.predictAllViewByCauses(hinter.prev);
-        if (prediction == null) {
-          prediction = new HashMap<String, Object>();
-        }
-        if (!("" + res).equals("" + prediction.get(Hist.RES_KEY))) {
-          // there is not predicted result
-          ret.add(hinter);
-        }
-      }
-    }
-    return ret;
-  }
+//  List<Hist> unexplainedInterestingEvents() {
+//    List<Hist> ret = new ArrayList<Hist>();
+//    for (Hist hinter : interestingEvents) {
+//      if (hinter == history.next) {
+//        continue; // skip current event
+//      }
+//      int res = hinter.prev.getResultFromNext();
+//      if (res > 0) {
+//        Map<String, Object> prediction = causes.predictAllViewByCauses(hinter.prev);
+//        if (prediction == null) {
+//          prediction = new HashMap<String, Object>();
+//        }
+//        if (!("" + res).equals("" + prediction.get(Hist.RES_KEY))) {
+//          // there is not predicted result
+//          ret.add(hinter);
+//        }
+//      }
+//    }
+//    return ret;
+//  }
 
-  Map<String, CauseMaxStruct> predictByCauses(Map<String, Object> view) {
-    Map<String, CauseMaxStruct> ret = new HashMap<String, CauseMaxStruct>();
-    List<String> cs = allCommands();
-    for (String c : cs) {
-      Hist ifCmdC = new Hist(history.last, view, c);
-      CauseMaxStruct m = causePredict(ifCmdC);
-      if (m.active.size() > 0) {
-        ret.put(c, m);
-      }
-    }
-    return ret;
-  }
+//  Map<String, CauseMaxStruct> predictByCauses(Map<String, Object> view) {
+//    Map<String, CauseMaxStruct> ret = new HashMap<String, CauseMaxStruct>();
+//    List<String> cs = allCommands();
+//    for (String c : cs) {
+//      Hist ifCmdC = new Hist(history.last, view, c);
+//      CauseMaxStruct m = causePredict(ifCmdC);
+//      if (m.active.size() > 0) {
+//        ret.put(c, m);
+//      }
+//    }
+//    return ret;
+//  }
 
-  CauseMaxStruct causePredict(Hist ifCmdC) {
-    CauseMaxStruct m = new CauseMaxStruct();
-    for (Cause cause : causes.list) {
-      if (cause.canPredict(ifCmdC) && cause.valid()) {
-        m.active.add(cause);
-      }
-    }
-    return m;
-  }
+//  CauseMaxStruct causePredict(Hist ifCmdC) {
+//    CauseMaxStruct m = new CauseMaxStruct();
+//    for (Cause cause : causes.list) {
+//      if (cause.canPredict(ifCmdC) && cause.valid()) {
+//        m.active.add(cause);
+//      }
+//    }
+//    return m;
+//  }
 
-  boolean zeroForAllCmds(Map<String, CauseMaxStruct> m) {
-    List<String> cs = allCommands();
-    for (String c : cs) {
-      if (!m.containsKey(c)) {
-        return false;
-      }
-      if (m.get(c).promisedMax() != 0) {
-        return false;
-      }
-    }
-    return true;
-  }
+//  boolean zeroForAllCmds(Map<String, CauseMaxStruct> m) {
+//    List<String> cs = allCommands();
+//    for (String c : cs) {
+//      if (!m.containsKey(c)) {
+//        return false;
+//      }
+//      if (m.get(c).promisedMax() != 0) {
+//        return false;
+//      }
+//    }
+//    return true;
+//  }
 
-  boolean explains(Cause newc, List<Cause> existsing) {
-    for (Cause c : existsing) {
-      if (c.explains(newc)) {
-        return true;
-      }
-    }
-    return false;
-  }
+//  boolean explains(Cause newc, List<Cause> existsing) {
+//    for (Cause c : existsing) {
+//      if (c.explains(newc)) {
+//        return true;
+//      }
+//    }
+//    return false;
+//  }
 
   void printFound(List<Hist> found, int depth) {
     for (Hist h : found) {
