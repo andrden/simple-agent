@@ -34,11 +34,17 @@ public class PRule extends RuleCond implements java.io.Serializable{
     return resultCounts.size()==1 || resultCountsEqPrev.getValOr0(Boolean.FALSE)==0;
   }
 
-  Map<Object,Double> normalizedResCounts(){
-    double tot = resultCounts.syncTotalCount();
+  Map<Object,Double> normalizedResCounts(OneView vprev, OneViewToVal v2v){
+    CountingMap resC = resultCounts;
+    if( resultCounts.size()>1 &&
+        resultCountsEqPrev.size()==1 && resultCountsEqPrev.get(Boolean.FALSE)==null ){
+      resC = new CountingMap();
+      resC.increment( v2v.val(vprev), resultCountsEqPrev.get(Boolean.TRUE) );
+    }
+    double tot = resC.syncTotalCount();
     Map<Object,Double> ret = new HashMap<Object,Double>();
-    for( Object v : resultCounts.keySet() ){
-      ret.put(v, resultCounts.getValOr0(v)/tot);
+    for( Object v : resC.keySet() ){
+      ret.put(v, resC.getValOr0(v)/tot);
     }
     return ret;
   }

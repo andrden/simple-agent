@@ -255,20 +255,38 @@ public class TestPredictor extends TestCase {
 
   public void testDoubtExtraWidening9() { // test for rule auto-extension
     LinearPredictor p = new LinearPredictor();
-    addMulti(p, "1Abz0");
-    addMulti(p, "2Njq1");
-    addMulti(p, "1Mjq0");
-    addMulti(p, "2Abw0");
-    addMulti(p, "1Nhq1");
-    addMulti(p, "2Yhp0");
-    addMulti(p, "1Nbp0");
-    addMulti(p, "2Avk0");   // - this test is now broken because of using tests from archive
+    addMulti(p, "1Abz0"); //1
+    addMulti(p, "2Njq1"); //0
+    addMulti(p, "1Mjq0"); //0
+    addMulti(p, "2Abw0"); //1
+    addMulti(p, "1Nhq1"); //0
+    addMulti(p, "2Yhp0"); //0
+    addMulti(p, "1Nbp0"); //0
+    addMulti(p, "2Avk0");
 
     // J48 chooses 'c' as best describing attribute here, why???
     // DecisionStump is correct here!
 
     Object pred = p.predict().get("e");
-    assertEquals("1", pred); // b=A => e=1 (don't require Ab) -??? but why don't
+    assertEquals(null, pred); // b=A => e=1 (require Ab)
+  }
+
+  public void testDoubtExtraWidening9b() { // test for rule auto-extension
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p, "1Abz0"); //1
+    addMulti(p, "2Njq1"); //0
+    addMulti(p, "1Mjq0"); //0
+    addMulti(p, "2Abw0"); //1
+    addMulti(p, "1Nhq1"); //0
+    addMulti(p, "2Yhp0"); //0
+    addMulti(p, "1Nbp0"); //0
+    addMulti(p, "2Abk0");
+
+    // J48 chooses 'c' as best describing attribute here, why???
+    // DecisionStump is correct here!
+
+    Object pred = p.predict().get("e");
+    assertEquals("1", pred); // b=A => e=1 (require Ab)
   }
 
   public void testFastLearn1(){
@@ -294,7 +312,28 @@ public class TestPredictor extends TestCase {
     addMultiMap(p, "{f=YELLOW, !=Ep, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}");
     addMultiMap(p, "{f=ORANGE, !=E, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}");
 
+    assertEquals("0", p.predict().get("$")); // f=ORANGE, !=E is the cause
+    // [1] = {predict.singletarget.PRule@717}"{fl=BLACK, $=0, fr=BLACK} neg {} => {0=2}"
+  }
+  public void test10b(){
+    LinearPredictor p = new LinearPredictor();
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=ORANGE, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=WHITE, !=R, fl=GRAY, r=YELLOW, ff=BLACK, $=1, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=WHITE}");
+    addMultiMap(p, "{f=ORANGE, !=E, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=WHITE}");
+
+    addMultiMap(p, "{f=WHITE, !=Fb, fl=WHITE, r=BLACK, ff=BLACK, $=1, fr=YELLOW, l=WHITE}");
+    addMultiMap(p, "{f=BLACK, !=R, fl=BLACK, r=YELLOW, ff=BLACK, $=0, fr=BLACK, l=WHITE}");
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}");
+    addMultiMap(p, "{f=ORANGE, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=BLACK, l=BLACK}");
+
     assertEquals("1", p.predict().get("$")); // f=ORANGE, !=E is the cause
+
+    [1] = {predict.singletarget.PRule@672}"{f=ORANGE, !=E, ff=BLACK, $=0} neg {} => {1=2}"
+        vs
+    [2] = {predict.singletarget.PRule@673}"{fl=BLACK, $=0, fr=BLACK} neg {} => {0=2}"
+    maybe assess by probability?
   }
 
   public void testTree1(){

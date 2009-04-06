@@ -360,7 +360,7 @@ public class SensorHist extends HistSuggest{
 
     MinMaxFinder<PRule> mmf = new MinMaxFinder<PRule>();
     for( PRule pr : matchingPrules ){
-      Map<Object,Double> n = pr.normalizedResCounts();
+      Map<Object,Double> n = pr.normalizedResCounts(vprev, v2v);
       mmf.add(n.size(), pr);
     }
     if( mmf.getMinVal()==1 && mmf.getMaxVal()!=1 ){
@@ -370,7 +370,7 @@ public class SensorHist extends HistSuggest{
 
 
     for( PRule pr : matchingPrules ){
-      Map<Object,Double> n = pr.normalizedResCounts();
+      Map<Object,Double> n = pr.normalizedResCounts(vprev, v2v);
       for( Object o : n.keySet() ){
         Double ov = allCounts.get(o);
         if( ov==null ){
