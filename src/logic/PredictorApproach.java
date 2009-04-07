@@ -137,7 +137,7 @@ public class PredictorApproach implements Approach{
       }else{
         vstr = v.toString();
       }
-      System.out.println("On "+c+": "+v.getViewAll().size()+" "+vstr);
+      System.out.println("On "+c+": "+v.getViewAll().size()+ " "+vstr+" "+v.toString());
     }
     predictor.printRuleStats();
   }

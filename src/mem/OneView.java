@@ -25,6 +25,10 @@ public class OneView<T extends OneView> implements Serializable {
     return view.get(key);
   }
 
+  public void remove(String key){
+    view.remove(key);
+  }
+
   public void chain(T prev){
     this.prev=prev;
     if( prev!=null ){

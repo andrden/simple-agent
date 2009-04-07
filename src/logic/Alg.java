@@ -159,6 +159,7 @@ public class Alg implements AlgIntf, Serializable {
         Utils.intersection(history.last.getViewAll(), history.next.getViewAll()).size()
             == history.next.getViewAll().size() ){
       OneView vp = predictor.predictor.predictNext(history.last);
+      vp.remove(Hist.CMD_KEY);
       if( history.next.getViewAll().size()!=vp.getViewAll().size() ){
         CmdSet cm = new CmdSet(history.last.getCommand());
         cm.setFoundFrom("repeat noop ensure");

@@ -328,12 +328,46 @@ public class TestPredictor extends TestCase {
     addMultiMap(p, "{f=YELLOW, !=Ep, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}");
     addMultiMap(p, "{f=ORANGE, !=E, fl=BLACK, r=WHITE, ff=BLACK, $=0, fr=BLACK, l=BLACK}");
 
-    assertEquals("1", p.predict().get("$")); // f=ORANGE, !=E is the cause
+    assertEquals(null, p.predict().get("$")); // f=ORANGE, !=E is the cause
 
-    [1] = {predict.singletarget.PRule@672}"{f=ORANGE, !=E, ff=BLACK, $=0} neg {} => {1=2}"
-        vs
-    [2] = {predict.singletarget.PRule@673}"{fl=BLACK, $=0, fr=BLACK} neg {} => {0=2}"
-    maybe assess by probability?
+//    [1] = {predict.singletarget.PRule@672}"{f=ORANGE, !=E, ff=BLACK, $=0} neg {} => {1=2}"
+//        vs
+//    [2] = {predict.singletarget.PRule@673}"{fl=BLACK, $=0, fr=BLACK} neg {} => {0=2}"
+//    maybe assess by probability?
+  }
+  public void test10c(){
+    LinearPredictor p = new LinearPredictor();
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=ORANGE, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=WHITE, !=R, fl=GRAY, r=YELLOW, ff=BLACK, $=1, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=WHITE}");
+    addMultiMap(p, "{f=ORANGE, !=E, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=WHITE}");
+
+    addMultiMap(p, "{f=WHITE, !=Fb, fl=WHITE, r=BLACK, ff=BLACK, $=1, fr=YELLOW, l=WHITE}");
+    addMultiMap(p, "{f=BLACK, !=R, fl=BLACK, r=YELLOW, ff=BLACK, $=0, fr=BLACK, l=WHITE}");
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}");
+    addMultiMap(p, "{f=ORANGE, !=E, fl=WHITE, r=WHITE, ff=BLACK, $=0, fr=BLACK, l=BLACK}");
+
+    assertEquals("1", p.predict().get("$")); // f=ORANGE, !=E is the cause
+  }
+
+  public void testTree1a(){
+    LinearPredictor p = new LinearPredictor();
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=ORANGE, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=WHITE, !=R, fl=GRAY, r=YELLOW, ff=BLACK, $=1, fr=WHITE, l=GRAY}");
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=WHITE}");
+    addMultiMap(p, "{f=ORANGE, !=E, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=WHITE}");
+
+    addMultiMap(p, "{f=WHITE, !=Fb, fl=WHITE, r=BLACK, ff=BLACK, $=1, fr=YELLOW, l=WHITE}");
+    addMultiMap(p, "{f=BLACK, !=R, fl=BLACK, r=YELLOW, ff=BLACK, $=0, fr=BLACK, l=WHITE}");
+    addMultiMap(p, "{f=YELLOW, !=Ep, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}");
+    addMultiMap(p, "{f=ORANGE, fl=WHITE, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}");
+
+    // !=E is reasonable here
+    List<String> cmds = Arrays.asList("L", "R", "N", "Fa", "Fb", "E", "Ep");
+    CmdPredictionTree tree = new PredictionTreeBuilder(p.getPredictor(), cmds, 2).build(p.getLast());
+    assertNull( tree.findPositiveResultOrSmacks() );
   }
 
   public void testTree1(){
@@ -347,7 +381,7 @@ public class TestPredictor extends TestCase {
     addMultiMap(p, "{f=WHITE, !=Fb, fl=WHITE, r=BLACK, ff=BLACK, $=1, fr=YELLOW, l=WHITE}");
     addMultiMap(p, "{f=BLACK, !=R, fl=BLACK, r=YELLOW, ff=BLACK, $=0, fr=BLACK, l=WHITE}");
     addMultiMap(p, "{f=YELLOW, !=Ep, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}");
-    addMultiMap(p, "{f=ORANGE, fl=BLACK, r=WHITE, ff=WHITE, $=0, fr=BLACK, l=BLACK}");
+    addMultiMap(p, "{f=ORANGE, fl=WHITE, r=WHITE, ff=BLACK, $=0, fr=BLACK, l=BLACK}");
 
     // !=E is reasonable here
     List<String> cmds = Arrays.asList("L", "R", "N", "Fa", "Fb", "E", "Ep");
@@ -366,7 +400,7 @@ public class TestPredictor extends TestCase {
     addMultiMap(p, "{f=WHITE, !=Fb, fl=WHITE, r=BLACK, ff=BLACK, $=0, fr=YELLOW, l=WHITE}");
     addMultiMap(p, "{f=BLACK, !=R, fl=BLACK, r=YELLOW, ff=BLACK, $=1, fr=BLACK, l=WHITE}");
     addMultiMap(p, "{f=YELLOW, !=Ep, fl=BLACK, r=WHITE, ff=WHITE, $=1, fr=BLACK, l=BLACK}");
-    addMultiMap(p, "{f=ORANGE, !=E, fl=BLACK, r=WHITE, ff=WHITE, $=1, fr=BLACK, l=BLACK}");
+    addMultiMap(p, "{f=ORANGE, !=E, fl=WHITE, r=WHITE, ff=BLACK, $=1, fr=BLACK, l=BLACK}");
 
     assertEquals("0", p.predict().get("$")); // f=ORANGE, !=E is the cause
   }
@@ -402,6 +436,7 @@ public class TestPredictor extends TestCase {
   }
 
   public void testRulesFor2Categories() throws Exception{
+    //@todo what is the right condition in this test?
     SensorHist sensor = new SensorHist("$");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.CMD_KEY));
     examplesForSensorHist(sensor, "testRulesFor2Categories");
