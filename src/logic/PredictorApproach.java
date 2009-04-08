@@ -132,12 +132,18 @@ public class PredictorApproach implements Approach{
       OneView v = tree.viewOnCommand(c);
       CmdPredictionTree branch = tree.branchOnCommand(c);
       String vstr;
-      if( branch.noopDetected() ){
-        vstr = branch.toString(); // "noop";
+      String cmdDescr = "On " + c + ": ";
+      if( branch==null ){
+        cmdDescr += " ? ";
       }else{
-        vstr = v.toString();
+        if( branch.noopDetected() ){
+          vstr = branch.toString(); // "noop";
+        }else{
+          vstr = v.toString();
+        }
+        cmdDescr +=  + v.getViewAll().size() + " " + vstr + " " + v.toString();
       }
-      System.out.println("On "+c+": "+v.getViewAll().size()+ " "+vstr+" "+v.toString());
+      System.out.println(cmdDescr);
     }
     predictor.printRuleStats();
   }
