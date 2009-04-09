@@ -16,11 +16,14 @@ import utils.Utils;
  * Time: 17:37:58
  */
 public class SensorHist extends HistSuggest{
+  static final int RECENT_EXAMPLES_VAL_COUNT = 10;
   final String sensorName;
 
   List<OneView> exList = new ArrayList<OneView>();
+  LinkedList<OneView> recentExamples = new LinkedList<OneView>();
 
   List<PRule> prules = new ArrayList<PRule>();
+  List<PRule> usefulPrules = new ArrayList<PRule>();
 
   OneViewToVal viewToValStatic = new OneViewToVal(){
     public Object val(OneView v) {
@@ -202,14 +205,15 @@ public class SensorHist extends HistSuggest{
   }
 
   Collection<OneView> recentExamples(){
-    List<OneView> r = new ArrayList<OneView>();
-    for( int i=exList.size()-1; i>=0; i-- ){
-      if( r.size()>=10 ){
-        break;
-      }
-      r.add(exList.get(i));
-    }
-    return r;
+    return recentExamples;
+//    List<OneView> r = new ArrayList<OneView>();
+//    for( int i=exList.size()-1; i>=0; i-- ){
+//      if( r.size()>=10 ){
+//        break;
+//      }
+//      r.add(exList.get(i));
+//    }
+//    return r;
   }
 
   void filterSkippedKeys(Map<String,Object> m){
@@ -313,10 +317,14 @@ public class SensorHist extends HistSuggest{
 
 
   private void prulesRecordNewView(Object val, OneView vprev) {
+    usefulPrules.clear();
     for( Iterator<PRule> i = prules.iterator(); i.hasNext(); ){
       PRule pr = i.next();
       if( pr.condHolds(vprev) ){
         pr.recordResult(val, vprev.prev, viewToValStatic);
+      }
+      if( pr.useful() ){
+        usefulPrules.add(pr);
       }
     }
   }
@@ -446,8 +454,24 @@ public class SensorHist extends HistSuggest{
     //@todo frequency of wrong predition here is our model completeness feeling
     super.addAsCurrent(val, v);
     exList.add(v);
+    recentExamplesAdd(val, v);
 
     analyzeNewExample(val, v);
+  }
+
+  void recentExamplesAdd(Object val, OneView v){
+    recentExamples.addLast(v);
+    int count=0;
+    for( Iterator<OneView> i = recentExamples.descendingIterator(); i.hasNext(); ){
+      OneView vi = i.next();
+      Object ival = exampleVals.get(vi);
+      if( val.equals(ival) ){
+        count++;
+        if( count>RECENT_EXAMPLES_VAL_COUNT ){
+          i.remove();
+        }
+      }
+    }
   }
 
   public int valsSize(){

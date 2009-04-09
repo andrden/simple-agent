@@ -289,6 +289,23 @@ public class TestPredictor extends TestCase {
     assertEquals("1", pred); // b=A => e=1 (require Ab)
   }
 
+  public void testLongTime() { // test for rule auto-extension
+    LinearPredictor p = new LinearPredictor();
+    addMulti(p, "1Abz0"); //1
+    addMulti(p, "2Njq1"); //0
+    for( int i=0; i<100; i++ ){
+      addMulti(p, "1Mjq0"); //0
+    }
+    addMulti(p, "2Abw0"); //1
+    addMulti(p, "1Nhq1"); //0
+    addMulti(p, "2Yhp0"); //0
+    addMulti(p, "1Nbp0"); //0
+    addMulti(p, "2Abk0");
+
+    Object pred = p.predict().get("e");
+    assertEquals("1", pred); // b=A, c=b => e=1 (require Ab)
+  }
+
   public void testFastLearn1(){
     LinearPredictor p = new LinearPredictor();
     addMultiMap(p, "{f=YELLOW, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}");
@@ -513,6 +530,12 @@ public class TestPredictor extends TestCase {
     SensorHist sensor = new SensorHist("f");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
     examplesForSensorHistFile(sensor, "testRecencySpread.properties");
+  }
+
+  public void testNmisPred_fl() throws Exception{
+    SensorHist sensor = new SensorHist("fl");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
+    examplesForSensorHistFile(sensor, "testNmisPred_fl.properties");
   }
 
   private void examplesForSensorHist(SensorHist sensor, String xmlElem) throws Exception {

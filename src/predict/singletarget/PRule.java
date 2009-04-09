@@ -49,6 +49,11 @@ public class PRule extends RuleCond implements java.io.Serializable{
     return ret;
   }
 
+  boolean useful(){
+    return resultCounts.size()==1 ||
+        resultCountsEqPrev.size()==1 && resultCountsEqPrev.get(Boolean.FALSE)==null;
+  }
+
   void recordResult(Object val, OneView vprev, OneViewToVal v2v){
     resultCounts.increment(val);
     resultCountsEqPrev.increment( val.equals(v2v.val(vprev) ) );
@@ -152,6 +157,9 @@ public class PRule extends RuleCond implements java.io.Serializable{
 //      ret += result;
 //    }
     ret += resultCounts.mapSortedDesc();
+    if( resultCountsEqPrev.size()==1 && resultCountsEqPrev.get(Boolean.FALSE)==null ){
+      ret += " eqPrev";
+    }
     return ret;
   }
 

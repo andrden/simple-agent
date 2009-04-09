@@ -29,8 +29,8 @@ import java.util.HashMap;
 public class Main extends JFrame {
   //WorldGridView world = new GridWorld1();
   //WorldGridView world = new GridWorld2();
-  //WorldGridView world = new GridWorld3();
-  WorldGridView world = new GridRadialWorld1();
+  WorldGridView world = new GridWorld3();
+  //WorldGridView world = new GridRadialWorld1();
   //WorldGridView world = new Line1();
 
   //WorldGridView world = new Rubic2x2World();

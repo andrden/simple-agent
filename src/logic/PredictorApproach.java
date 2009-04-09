@@ -19,7 +19,7 @@ import com.pmstation.common.utils.MinMaxFinder;
  * Date: 25/8/2008
  * Time: 18:04:22
  */
-public class PredictorApproach implements Approach{
+public class PredictorApproach{
   static final int TREE_CALC_DEPTH=4;
   Predictor predictor = new Predictor();
   Map<String,SensorHist> goodNextCmd = new HashMap<String,SensorHist>();
@@ -269,7 +269,9 @@ public class PredictorApproach implements Approach{
     }
 
     public void add(Hist next) {
-        predictor.add(next);
+      logMispredictions(next);
+
+      predictor.add(next);
 
         if( next.prev!=null ){
 
@@ -316,6 +318,23 @@ public class PredictorApproach implements Approach{
 
         }
     }
+
+  private void logMispredictions(Hist next) {
+    if( next.prev!=null ){
+      OneView vpred = predictor.predictNext(next.prev);
+      String cmd = next.prev.getCommand();
+      StringBuilder s = new StringBuilder();
+      int mis=0;
+      for( String k : next.getViewAll().keySet() ){
+        if( vpred==null || !next.get(k).equals(vpred.get(k)) ){
+          s.append(k+" ");
+          mis++;
+        }
+      }
+      s.insert(0, cmd+" misPred "+mis+": ");
+      System.out.println(s);
+    }
+  }
 
   void negateCmdSeqsStarting(String sec, OneView v){
     for( String g : goodNextCmd.keySet() ){
