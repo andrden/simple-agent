@@ -76,13 +76,14 @@ public class Pred implements PredictorIntf {
     return predictNextState(v).view();
   }
 
-  public PredictionResult predictNextState(OneView v) {
+  public PredictionResult predictNextState(final OneView v) {
     PredictionResult pr = new PredictionResult();
     for (final String t : singles.keySet()) {
       SensorHist th = singles.get(t);
       OneViewToVal v2v = new OneViewToVal(){
-        public Object val(OneView v) {
-          return v.get(t);
+        public Object val(OneView vv) {
+          OneView vnext = (vv==v.prev ? v : vv.next);
+          return vnext.get(t);
         }
       };
       PredictionResult prt = th.predictState(v, v2v);

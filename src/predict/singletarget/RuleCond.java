@@ -18,6 +18,26 @@ public class RuleCond implements java.io.Serializable{
 
   }
 
+  public RuleCond intersect(OneView v){
+    RuleCond c = new RuleCond();
+    for( String s : cond.keySet() ){
+      Object sv = cond.get(s);
+      if( sv.equals(v.get(s)) ){
+        c.cond.put(s,sv);
+      }
+    }
+    for( String s : negCond.keySet() ){
+      Object sv = negCond.get(s);
+      if( !sv.equals(v.get(s)) ){
+        c.negCond.put(s,sv);
+      }
+    }
+    if( c.cond.isEmpty() && c.negCond.isEmpty() ){
+      return null;
+    }
+    return c;
+  }
+
   public Map<String, Object> getCond() {
     return cond;
   }

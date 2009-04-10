@@ -45,9 +45,9 @@ public class PredictionTreeBuilder {
     OneView v = pti.start.cloneBranch();
     v.pt(Hist.CMD_KEY, c);
 
+    PredictionResult pr = predictor.predictNextState(v);
     OneView next = new OneView();
     next.prev = v;
-    PredictionResult pr = predictor.predictNextState(v);
     next.mergeByAddNew(pr.view());
 
     //OneView next = predictor.predictNext(v);

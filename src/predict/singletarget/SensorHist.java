@@ -23,6 +23,7 @@ public class SensorHist extends HistSuggest{
   LinkedList<OneView> recentExamples = new LinkedList<OneView>();
 
   List<PRule> prules = new ArrayList<PRule>();
+  Set<String> prulesConds = new HashSet<String>();
   List<PRule> usefulPrules = new ArrayList<PRule>();
 
   OneViewToVal viewToValStatic = new OneViewToVal(){
@@ -37,7 +38,7 @@ public class SensorHist extends HistSuggest{
 
   public SensorHist(String sensorName) {
     this.sensorName = sensorName;
-    prules.add(new PRule(Collections.EMPTY_MAP, Collections.EMPTY_MAP));
+    prulesAdd(new PRule(Collections.EMPTY_MAP, Collections.EMPTY_MAP));
   }
 
   /**
@@ -61,15 +62,17 @@ public class SensorHist extends HistSuggest{
   }
 
   boolean ruleIsExtra(RuleCond r){
-    for( PRule s : prules ){
+    String rToStr = r.toString();
+    return prulesConds.contains(rToStr);
+    //for( PRule s : prules ){
 //      if( r.condWiderIn(s) ){
 //        return true;
 //      }
-      if( s.condToString().equals(r.toString()) ){
-        return true;
-      }
-    }
-    return false;
+      //if( s.condToString().equals(rToStr) ){
+//        return true;
+//      }
+//    }
+//    return false;
   }
 
   List<OneView> unexplainedExamples(){
@@ -91,13 +94,26 @@ public class SensorHist extends HistSuggest{
 
 
   void analyzeNewExample(Object val, OneView vprev){
+    Object ppred = predictWithPrules(vprev, viewToValStatic);
+
     prulesRecordNewView(val, vprev);
-    
+
+    for( PRule up : usefulPrules ){
+      RuleCond c = up.intersect(vprev);
+      if( c!=null ){
+        RuleImpression ri = new RuleImpression(c);
+        if( ri.convergent ){
+          //addRuleOrWider(c);
+          if( !ruleIsExtra(c) ){
+            prulesAdd(c);
+          }
+        }
+      }
+    }
+
     if( exampleVals.size()<2 ){
       return;
     }
-
-    Object ppred = predictWithPrules(vprev, viewToValStatic);
     if( ppred!=null && val.equals(ppred) ){
       return;
     }
@@ -307,6 +323,7 @@ public class SensorHist extends HistSuggest{
 
     PRule pr = new PRule(r.getCond(), r.getNegCond());
     prules.add(pr);
+    prulesConds.add(pr.condToString());
     for( OneView v : exampleVals.keySet() ){
       Object val = exampleVals.get(v);
       if( pr.condHolds(v) ){

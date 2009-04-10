@@ -538,6 +538,16 @@ public class TestPredictor extends TestCase {
     examplesForSensorHistFile(sensor, "testNmisPred_fl.properties");
   }
 
+  public void testNmisPred_rr() throws Exception{
+    // N command after 120 steps must be able to predict rr=rr(prev)
+    SensorHist sensor = new SensorHist("rr");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
+    examplesForSensorHistFile(sensor, "testNmisPred_rr.properties");
+    again it can't generalize conditions!
+    maybe too few examples are in 'recent' test list? - no, checked!
+  }
+
+
   private void examplesForSensorHist(SensorHist sensor, String xmlElem) throws Exception {
     //LinearPredictor p = new LinearPredictor();
     Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
@@ -553,6 +563,7 @@ public class TestPredictor extends TestCase {
 
 
   private void examplesForSensorHistStr(SensorHist sensor, String txt) {
+    OneView vprev=null;
     for( String s : txt.split("\n") ){
       s = s.trim();
       if( s.length()==0 ){
@@ -571,12 +582,12 @@ public class TestPredictor extends TestCase {
         key = s.substring(0,posBr);
         s = s.substring(posBr);
       }
-//      if( s.startsWith("+") || s.startsWith("0") ){
-//        key = s.substring(0,1);
-//        s = s.substring(1);
-//      }
-      //addMultiMap(p, s);
       OneView v = mkOneView(s);
+      v.prev=vprev;
+      vprev=v;
+//      if( "N".equals(v.get("!")) && !key.equals(v.get("fl")) ){
+//        Utils.breakPoint();
+//      }
       if( quest ){
         boolean acc = sensor.valAcceptedByRules(v, key);
         Object wekaKey = sensor.predictWithWeka(v);

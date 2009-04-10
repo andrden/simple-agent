@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import com.pmstation.common.utils.CountingMap;
+import utils.Utils;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,7 +40,7 @@ public class PRule extends RuleCond implements java.io.Serializable{
     if( resultCounts.size()>1 &&
         resultCountsEqPrev.size()==1 && resultCountsEqPrev.get(Boolean.FALSE)==null ){
       resC = new CountingMap();
-      resC.increment( v2v.val(vprev), resultCountsEqPrev.get(Boolean.TRUE) );
+      resC.increment( v2v.val(vprev.prev), resultCountsEqPrev.get(Boolean.TRUE) );
     }
     double tot = resC.syncTotalCount();
     Map<Object,Double> ret = new HashMap<Object,Double>();
@@ -55,8 +56,12 @@ public class PRule extends RuleCond implements java.io.Serializable{
   }
 
   void recordResult(Object val, OneView vprev, OneViewToVal v2v){
+    boolean eqPrev = val.equals(v2v.val(vprev));
+//    if( "N".equals(cond.get("!")) && !eqPrev ){
+//      Utils.breakPoint();
+//    }
     resultCounts.increment(val);
-    resultCountsEqPrev.increment( val.equals(v2v.val(vprev) ) );
+    resultCountsEqPrev.increment(eqPrev);
   }
 
 
