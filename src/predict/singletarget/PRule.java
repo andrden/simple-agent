@@ -155,12 +155,7 @@ public class PRule extends RuleCond implements java.io.Serializable{
   }
 
   public String toString() {
-    String ret = cond + " neg " + negCond + " => ";
-//    if( resultEqPrev ){
-//      ret += "resultEqPrev";
-//    }else{
-//      ret += result;
-//    }
+    String ret = super.toString() + " => ";
     ret += resultCounts.mapSortedDesc();
     if( resultCountsEqPrev.size()==1 && resultCountsEqPrev.get(Boolean.FALSE)==null ){
       ret += " eqPrev";

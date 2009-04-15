@@ -540,11 +540,14 @@ public class TestPredictor extends TestCase {
 
   public void testNmisPred_rr() throws Exception{
     // N command after 120 steps must be able to predict rr=rr(prev)
+
+    // step 300 - rule [86] = {predict.singletarget.PRule@1763}"{!=N, $=0, r=BLUE} neg {} => {WHITE=7, BLACK=5, YELLOW=2} eqPrev"
+    // is observed so in fact this is kind of 'fast learn' 
     SensorHist sensor = new SensorHist("rr");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
     examplesForSensorHistFile(sensor, "testNmisPred_rr.properties");
-    again it can't generalize conditions!
-    maybe too few examples are in 'recent' test list? - no, checked!
+    //again it can't generalize conditions!
+    //maybe too few examples are in 'recent' test list? - no, checked!
   }
 
 

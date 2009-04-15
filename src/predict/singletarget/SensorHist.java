@@ -322,14 +322,42 @@ public class SensorHist extends HistSuggest{
     r.disallowConditions(skippedViewKeys);
 
     PRule pr = new PRule(r.getCond(), r.getNegCond());
-    prules.add(pr);
-    prulesConds.add(pr.condToString());
+    prulesInsertSorted(pr);
     for( OneView v : exampleVals.keySet() ){
       Object val = exampleVals.get(v);
       if( pr.condHolds(v) ){
         pr.recordResult(val, v.prev, viewToValStatic);
       }
     }
+    prulesConds.add(pr.condToString());
+  }
+
+  public void usefulPrulesCompactDupl(){
+    List<PRule> comp = new ArrayList<PRule>();
+    for( PRule p : usefulPrules ){
+      boolean extra=false;
+      for( PRule i : comp ){
+        if( p.condWiderIn(i) ){
+          extra=true;
+          break;
+        }
+      }
+      if( !extra ){
+        comp.add(p);
+      }
+    }
+    usefulPrules = comp;
+  }
+
+  private void prulesInsertSorted(PRule pr) {
+    // list always sorted - generic rules first
+    for( int i=0; i<=prules.size(); i++ ){
+      if( i==prules.size() || prules.get(i).complexity()>pr.complexity() ){
+        prules.add(i, pr);
+        return;
+      }
+    }
+    //prules.add(pr);
   }
 
 

@@ -150,7 +150,10 @@ public class RuleCond implements java.io.Serializable{
   }
 
   public String toString() {
-    String ret = cond + " neg " + negCond;
+    // this is used to check for condition equality, so sorting to avoid duplicates
+    TreeMap<String,Object> sortedCond = new TreeMap<String,Object>(cond);
+    TreeMap<String,Object> sortedNegCond = new TreeMap<String,Object>(negCond);
+    String ret = sortedCond + " neg " + sortedNegCond;
     return ret;
   }
 
