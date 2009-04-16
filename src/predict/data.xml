@@ -1,6 +1,14 @@
 <?xml version='1.0'?>
 <data>
 
+<testMoveRef>
+r{a=1, b=BIG, !=C}
+BIG{a=1, b=BIG, !=M}
+v{a=2, b=MS, !=A}
+MS{a=2, b=MS, !=M}
+?Q{a=2, b=Q, !=M}
+</testMoveRef>
+
 <testTooManyRules1>
   {f=YELLOW, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
   {f=YELLOW, !=R, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}

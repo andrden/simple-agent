@@ -79,7 +79,7 @@ public class TestPredictor extends TestCase {
     OneView v5 = addMulti(null, "C4", sg, "1");
     OneView v6 = addMulti(null, "A2", sg, "2");
 
-    RuleCond r = sg.ruleByDecisionStump(Arrays.asList(v1,v2,v3,v4,v5,v6), false);
+    RuleCond r = sg.ruleByDecisionStump(Arrays.asList(v1,v2,v3,v4,v5,v6), null);
     assertEquals(r.toString(),"{a=A} neg {}");
   }
 
@@ -501,6 +501,13 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testFrScatteredRules");
   }
 
+  public void testMoveRef() throws Exception{
+    //need test for moves - references to prev row
+    SensorHist sensor = new SensorHist("mmm");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
+    examplesForSensorHist(sensor, "testMoveRef");
+  }
+  
 
   public void testSimple2atrr() throws Exception{
     SensorHist sensor = new SensorHist("$");
@@ -537,6 +544,7 @@ public class TestPredictor extends TestCase {
     sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
     examplesForSensorHistFile(sensor, "testNmisPred_fl.properties");
   }
+
 
   public void testNmisPred_rr() throws Exception{
     // N command after 120 steps must be able to predict rr=rr(prev)

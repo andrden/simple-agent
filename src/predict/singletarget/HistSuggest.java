@@ -41,9 +41,9 @@ public class HistSuggest implements java.io.Serializable{
     exampleVals.put(v, val);
   }
 
-  public RuleCond ruleByDecisionStump(Collection<OneView> views, boolean seekForSameVal){
+  public RuleCond ruleByDecisionStump(Collection<OneView> views, OneViewToVal backRef){
     DecisionStump myClassif  = new DecisionStump();
-    WekaBuilder wf = buildClassifier(myClassif, views, seekForSameVal);
+    WekaBuilder wf = buildClassifier(myClassif, views, backRef);
 
     Attribute splitAttr = wf.getInstances().attribute((Integer) PrivateFieldGetter.evalNoEx(myClassif,"m_AttIndex"));
     String attName = splitAttr.name();
@@ -54,13 +54,13 @@ public class HistSuggest implements java.io.Serializable{
   }
 
   public WekaBuilder buildClassifier(Classifier myClassif, Collection<OneView> views,
-                                     boolean seekForSameVal){
+                                     OneViewToVal backRef){
     WekaBuilder wf = new WekaBuilder(myClassif);
     for( OneView v : views ){
       wf.collectAttrs(v, skippedViewKeys);
     }
 
-    if( seekForSameVal ){
+    if( backRef!=null ){
       wf.addForRes("0");
       wf.addForRes("1");
     }else{
@@ -73,10 +73,12 @@ public class HistSuggest implements java.io.Serializable{
 
     for( OneView v : views ){
       String vval = exampleVals.get(v).toString();
-      if( seekForSameVal ){
+      if( backRef!=null ){
         vval = "0";
-        if( v.prev!=null && exampleVals.get(v.prev)!=null){
-          if( exampleVals.get(v.prev).equals(exampleVals.get(v)) ){
+        if( v.prev!=null /*&& exampleVals.get(v.prev)!=null*/){
+          Object backRefVal = backRef.val(v);
+          //if( exampleVals.get(v.prev).equals(exampleVals.get(v)) ){
+          if( backRefVal.equals(exampleVals.get(v)) ){
             vval = "1";
           }
         }

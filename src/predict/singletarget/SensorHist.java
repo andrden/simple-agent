@@ -31,6 +31,11 @@ public class SensorHist extends HistSuggest{
       return exampleVals.get(v);
     }
   };
+  OneViewToVal viewToValPrev = new OneViewToVal(){
+    public Object val(OneView v) {
+      return exampleVals.get(v.prev);
+    }
+  };
 
   public void printRules(){
     //System.out.println(srules+" other="+otherRulesResult);
@@ -118,12 +123,15 @@ public class SensorHist extends HistSuggest{
       return;
     }
 
-    makeNewRules();
+    makeNewRules(null);
+    makeNewRules(viewToValPrev);
+    makeNewSingleAttrRules();
 
     //
     //if( !val.equals(predict(vprev)) && exampleVals.size()>3 ){
     if( !val.equals(predictWithDecisionStumpBasedRules(vprev, viewToValStatic).val(sensorName))
         && exampleVals.size()>3 ){
+      //@todo this op consumes a lot of time!
       analyzeVerySimilar(vprev);
     }
   }
@@ -174,22 +182,14 @@ public class SensorHist extends HistSuggest{
     }
   }
 
-  private void makeNewRules() {
-//    Object commonResAll = commonResValue(exampleVals.keySet());
-//    if( commonResAll!=null ){
-//      otherRulesResult=commonResAll;
-//      return;
-//    }
-    RuleCond r = ruleByDecisionStump( exampleVals.keySet(), false );
-    ruleCheckAndAdd(r, false);
+  private void makeNewRules(OneViewToVal backRef) {
+    RuleCond r = ruleByDecisionStump( exampleVals.keySet(), backRef );
+    ruleCheckAndAdd(r, backRef);
     RuleCond rn = r.negate();
-    ruleCheckAndAdd(rn, false);
+    ruleCheckAndAdd(rn, backRef);
+  }
 
-    RuleCond rEqPrev = ruleByDecisionStump( exampleVals.keySet(), true );
-    ruleCheckAndAdd(rEqPrev, true);
-    RuleCond rEqPrevN = rEqPrev.negate();
-    ruleCheckAndAdd(rEqPrevN, true);
-
+  private void makeNewSingleAttrRules() {
     List<OneView> unex = unexplainedExamples();
     for( int j=0; j<10 && !unexplainedExamples().isEmpty(); j++ ){
       for( int i=unex.size()-1; i>=0; i-- ){
@@ -200,11 +200,6 @@ public class SensorHist extends HistSuggest{
       }
       unex = unexplainedExamples();
     }
-
-//    Object commonResUnex = commonResValue(unex);
-//    if( commonResUnex!=null ){
-//      otherRulesResult=commonResUnex;
-//    }
   }
 
   boolean singleAttrRuleHunting(OneView vprev){
@@ -212,7 +207,7 @@ public class SensorHist extends HistSuggest{
     for( String s : m.keySet() ){
       if( skippedViewKeys==null || !skippedViewKeys.contains(s) ){
         RuleCond r = new RuleCond(s, m.get(s), true);
-        if( ruleCheckAndAdd(r, false) ){
+        if( ruleCheckAndAdd(r, null) ){
           //must try to find beautiful solution - return true;
         }
       }
@@ -286,7 +281,7 @@ public class SensorHist extends HistSuggest{
     return false;
   }
 
-  private boolean ruleCheckAndAdd(RuleCond r, boolean testResultEqPrev) {
+  private boolean ruleCheckAndAdd(RuleCond r, OneViewToVal backRef) {
     if( r.complexity()>2 ){
       return false;
     }
@@ -305,14 +300,14 @@ public class SensorHist extends HistSuggest{
         return true;
       }
     }else{
-      RuleCond subR = ruleByDecisionStump(ri.rexList, testResultEqPrev);
+      RuleCond subR = ruleByDecisionStump(ri.rexList, backRef);
       RuleCond rnew = r.andRule(subR);
       if( rnew.complexity()>r.complexity() ){
-        ruleCheckAndAdd(rnew, testResultEqPrev);
+        ruleCheckAndAdd(rnew, backRef);
       }
       RuleCond rnewNeg = r.andRule(subR.negate());
       if( rnewNeg.complexity()>r.complexity() ){
-        ruleCheckAndAdd(rnewNeg, testResultEqPrev);
+        ruleCheckAndAdd(rnewNeg, backRef);
       }
     }
     return false;
@@ -546,7 +541,7 @@ public class SensorHist extends HistSuggest{
     DecisionStump myClassif  = new DecisionStump();
     lastUsedClassifier = myClassif;
 
-    WekaBuilder wf = buildClassifier(myClassif, exampleVals.keySet(), false);
+    WekaBuilder wf = buildClassifier(myClassif, exampleVals.keySet(), null);
 
     double d;
     try {
