@@ -125,6 +125,17 @@ public class SensorHist extends HistSuggest{
 
     makeNewRules(null);
     makeNewRules(viewToValPrev);
+    Set<String> set = vprev.getViewAll().keySet();
+    for( final String key : set){
+      if( vprev.get(key).equals(val) ){
+        move-type backRef half-way done
+        makeNewRules(new OneViewToVal(){
+          public Object val(OneView v) {
+            return v.get(key);
+          }
+        });
+      }
+    }
     makeNewSingleAttrRules();
 
     //
