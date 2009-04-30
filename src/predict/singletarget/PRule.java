@@ -19,9 +19,7 @@ import utils.Utils;
 public class PRule extends RuleCond implements java.io.Serializable{
   private CountingMap resultCounts = new CountingMap();
   private CountingMap<Boolean> resultCountsEqPrev = new CountingMap<Boolean>();
-
-  private Object result;
-  boolean resultEqPrev=false;
+  private Map<String,BoolCount> backRefs = new HashMap<String,BoolCount>();
 
   PRule(){
   }
@@ -31,17 +29,56 @@ public class PRule extends RuleCond implements java.io.Serializable{
     negCond = new HashMap<String, Object>(c.negCond);
   }
 
+  void addAttention(Set<String> keys){
+    if( keys==null ){
+      return;
+    }
+    for( String key : keys ){
+      addAttention(key);
+    }
+  }
+
+  void addAttention(String key){
+    if( key==null ){
+      return;
+    }
+    if( backRefs.put(key, new BoolCount())!=null ){
+      throw new IllegalStateException();
+    }
+  }
+
+  Set<String> attentionKeys(){
+    return backRefs.keySet();
+  }
+
   boolean convergent(){
-    return resultCounts.size()==1 || resultCountsEqPrev.getValOr0(Boolean.FALSE)==0;
+    if( resultCounts.size()==1 || resultCountsEqPrev.getValOr0(Boolean.FALSE)==0 ){
+      return true;
+    }
+    for( BoolCount b : backRefs.values() ){
+      if( b.cFalse==0 ){
+        return true;
+      }
+    }
+    return false;
   }
 
   Map<Object,Double> normalizedResCounts(OneView vprev, OneViewToVal v2v){
     CountingMap resC = resultCounts;
-    if( resultCounts.size()>1 &&
+    if( resC.size()>1 &&
         resultCountsEqPrev.size()==1 && resultCountsEqPrev.get(Boolean.FALSE)==null ){
       resC = new CountingMap();
       resC.increment( v2v.val(vprev.prev), resultCountsEqPrev.get(Boolean.TRUE) );
     }
+    for( String k : backRefs.keySet() ){
+      BoolCount c = backRefs.get(k);
+      if( resC.size()>1 && c.cFalse==0 ){
+        resC = new CountingMap();
+        resC.increment( vprev.get(k), c.cTrue );
+        break;
+      }
+    }
+
     double tot = resC.syncTotalCount();
     Map<Object,Double> ret = new HashMap<Object,Double>();
     for( Object v : resC.keySet() ){
@@ -62,41 +99,20 @@ public class PRule extends RuleCond implements java.io.Serializable{
 //    }
     resultCounts.increment(val);
     resultCountsEqPrev.increment(eqPrev);
-  }
 
-
-
-
-  boolean resultUseful(Object resultValue){
-    if( resultValue==null ){
-      return false;
-    }
-    if( resultEqPrev ){
-      return resultValue.equals("1");
-    }
-    return true;
-  }
-
-  Object getPredictedResult(OneView vprev, OneViewToVal v2v){
-    if( resultEqPrev ){
-      return v2v.val(vprev/*.prev*/);
-    }
-    return getResult();
-  }
-
-  Object resultValue(OneView v, Map<OneView, Object> exampleVals){
-    if( resultEqPrev ){
-      String vval = "0";
-      if( v.prev!=null && exampleVals.get(v.prev)!=null){
-        if( exampleVals.get(v.prev).equals(exampleVals.get(v)) ){
-          vval = "1";
-        }
+    if( vprev!=null ){
+      for( String k : backRefs.keySet() ){
+        boolean eqRef = val.equals(vprev.get(k));
+        backRefs.get(k).inc(eqRef);
       }
-      return vval;
-    }else{
-      return exampleVals.get(v);
     }
   }
+
+
+
+
+
+
 
   PRule(Map<String,Object> cond, Map<String,Object> negCond){
     this.cond=cond;
@@ -115,7 +131,6 @@ public class PRule extends RuleCond implements java.io.Serializable{
     PRule n = new PRule();
     n.cond.putAll(negCond);
     n.negCond.putAll(cond);
-    n.result=result;
     return n;
   }
 
@@ -145,14 +160,6 @@ public class PRule extends RuleCond implements java.io.Serializable{
     return true; // all conditions from 'other' are present in 'this'
   }
 
-
-  public void setResult(Object result) {
-    this.result = result;
-  }
-
-  public Object getResult() {
-    return result;
-  }
 
   public String toString() {
     String ret = super.toString() + " => ";

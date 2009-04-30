@@ -10,4 +10,6 @@ public interface OneViewToVal {
    * in case of multisensor predictor - sensor value in next view
    */
   Object val(OneView v);
+
+  String name();
 }

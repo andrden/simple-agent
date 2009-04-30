@@ -30,10 +30,16 @@ public class SensorHist extends HistSuggest{
     public Object val(OneView v) {
       return exampleVals.get(v);
     }
+    public String name() {
+      return null;
+    }
   };
   OneViewToVal viewToValPrev = new OneViewToVal(){
     public Object val(OneView v) {
       return exampleVals.get(v.prev);
+    }
+    public String name() {
+      return null;
     }
   };
 
@@ -43,7 +49,7 @@ public class SensorHist extends HistSuggest{
 
   public SensorHist(String sensorName) {
     this.sensorName = sensorName;
-    prulesAdd(new PRule(Collections.EMPTY_MAP, Collections.EMPTY_MAP));
+    prulesAdd(new PRule(Collections.EMPTY_MAP, Collections.EMPTY_MAP), null);
   }
 
   /**
@@ -106,11 +112,11 @@ public class SensorHist extends HistSuggest{
     for( PRule up : usefulPrules ){
       RuleCond c = up.intersect(vprev);
       if( c!=null ){
-        RuleImpression ri = new RuleImpression(c);
+        RuleImpression ri = new RuleImpression(c, null);
         if( ri.convergent ){
           //addRuleOrWider(c);
           if( !ruleIsExtra(c) ){
-            prulesAdd(c);
+            prulesAddA(c, up.attentionKeys());
           }
         }
       }
@@ -128,10 +134,13 @@ public class SensorHist extends HistSuggest{
     Set<String> set = vprev.getViewAll().keySet();
     for( final String key : set){
       if( vprev.get(key).equals(val) ){
-        move-type backRef half-way done
+        //move-type backRef half-way done
         makeNewRules(new OneViewToVal(){
           public Object val(OneView v) {
             return v.get(key);
+          }
+          public String name() {
+            return key;
           }
         });
       }
@@ -185,7 +194,7 @@ public class SensorHist extends HistSuggest{
         Object commonRes = commonResValue(exList);
         if( commonRes!=null ){
           if( !ruleIsExtra(r) ){
-            prulesAdd(r);
+            prulesAdd(r, null);
             break;
           }
         }
@@ -250,7 +259,7 @@ public class SensorHist extends HistSuggest{
     List<OneView> rexList;
     boolean convergent=false;
 
-    RuleImpression(RuleCond r){
+    RuleImpression(RuleCond r, String attentionKey){
       //List<OneView> rexList = examplesCondHolds(exampleVals.keySet(), r);
       rexList = examplesCondHolds(recentExamples(), r);
       if( rexList.size()<2 ){
@@ -258,6 +267,9 @@ public class SensorHist extends HistSuggest{
       }
 
       PRule pr = new PRule(r);
+      if( attentionKey!=null ){
+        pr.addAttention(attentionKey);
+      }
       for( OneView v : rexList){
         Object val = exampleVals.get(v);
         pr.recordResult(val, v.prev, viewToValStatic);
@@ -267,18 +279,18 @@ public class SensorHist extends HistSuggest{
     }
   }
 
-  boolean addRuleOrWider(RuleCond r){
-    RuleImpression masterImpr = new RuleImpression(r);
+  boolean addRuleOrWider(RuleCond r, String attentionKey){
+    RuleImpression masterImpr = new RuleImpression(r, attentionKey);
     List<RuleCond> wider = r.widerConds();
     boolean widerAdded=false;
     for( RuleCond w : wider ){
-      RuleImpression wi = new RuleImpression(r);
+      RuleImpression wi = new RuleImpression(r, attentionKey);
       if( wi.convergent && wi.rexList.size()>masterImpr.rexList.size()){
         // only if examples are versatile enough to exclude extra parm sensibly
         if( !ruleIsExtra(w) ){
           widerAdded=true;
           //prulesAdd(w);
-          addRuleOrWider(w);
+          addRuleOrWider(w, attentionKey);
         }
       }
     }
@@ -286,7 +298,7 @@ public class SensorHist extends HistSuggest{
       return true;
     }
     if( !ruleIsExtra(r) ){
-      prulesAdd(r);
+      prulesAdd(r, attentionKey);
       return true;
     }
     return false;
@@ -297,7 +309,8 @@ public class SensorHist extends HistSuggest{
       return false;
     }
 
-    RuleImpression ri = new RuleImpression(r);
+    String attentionKey = backRef == null ? null : backRef.name();
+    RuleImpression ri = new RuleImpression(r, attentionKey);
     if( ri.rexList.size()<2 ){
       return false;
     }
@@ -307,7 +320,7 @@ public class SensorHist extends HistSuggest{
       Map<String,Object> inters = Utils.interstectingVals(ri.rexList);
       filterSkippedKeys(inters);
       r.addToCondition(inters);
-      if( addRuleOrWider(r) ){
+      if( addRuleOrWider(r, attentionKey) ){
         return true;
       }
     }else{
@@ -324,10 +337,19 @@ public class SensorHist extends HistSuggest{
     return false;
   }
 
-  void prulesAdd(RuleCond r){
+  void prulesAdd(RuleCond r, String attentionKey){
+    Set<String> s = null;
+    if( attentionKey!=null ){
+      s = Collections.singleton(attentionKey);
+    }
+    prulesAddA(r, s);
+  }
+
+  void prulesAddA(RuleCond r, Set<String> attentionKeys){
     r.disallowConditions(skippedViewKeys);
 
     PRule pr = new PRule(r.getCond(), r.getNegCond());
+    pr.addAttention(attentionKeys);
     prulesInsertSorted(pr);
     for( OneView v : exampleVals.keySet() ){
       Object val = exampleVals.get(v);

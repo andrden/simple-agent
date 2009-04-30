@@ -85,6 +85,9 @@ public class Pred implements PredictorIntf {
           OneView vnext = (vv==v.prev ? v : vv.next);
           return vnext.get(t);
         }
+        public String name() {
+          return null;
+        }
       };
       PredictionResult prt = th.predictState(v, v2v);
       pr.merge(prt);
