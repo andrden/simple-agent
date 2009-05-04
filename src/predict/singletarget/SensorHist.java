@@ -272,7 +272,7 @@ public class SensorHist extends HistSuggest{
       }
       for( OneView v : rexList){
         Object val = exampleVals.get(v);
-        pr.recordResult(val, v.prev, viewToValStatic);
+        pr.recordResult(val, viewToValStatic.val(v.prev), v);
       }
 
       convergent = pr.convergent();
@@ -354,7 +354,7 @@ public class SensorHist extends HistSuggest{
     for( OneView v : exampleVals.keySet() ){
       Object val = exampleVals.get(v);
       if( pr.condHolds(v) ){
-        pr.recordResult(val, v.prev, viewToValStatic);
+        pr.recordResult(val, viewToValStatic.val(v.prev), v);
       }
     }
     prulesConds.add(pr.condToString());
@@ -394,7 +394,7 @@ public class SensorHist extends HistSuggest{
     for( Iterator<PRule> i = prules.iterator(); i.hasNext(); ){
       PRule pr = i.next();
       if( pr.condHolds(vprev) ){
-        pr.recordResult(val, vprev.prev, viewToValStatic);
+        pr.recordResult(val, viewToValStatic.val(vprev.prev), vprev);
       }
       if( pr.useful() ){
         usefulPrules.add(pr);

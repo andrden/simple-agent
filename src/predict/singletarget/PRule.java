@@ -92,8 +92,8 @@ public class PRule extends RuleCond implements java.io.Serializable{
         resultCountsEqPrev.size()==1 && resultCountsEqPrev.get(Boolean.FALSE)==null;
   }
 
-  void recordResult(Object val, OneView vprev, OneViewToVal v2v){
-    boolean eqPrev = val.equals(v2v.val(vprev));
+  void recordResult(Object val, Object valPrev, OneView vcurr){
+    boolean eqPrev = val.equals(valPrev);
 //    if( "N".equals(cond.get("!")) && !eqPrev ){
 //      Utils.breakPoint();
 //    }
@@ -101,10 +101,10 @@ public class PRule extends RuleCond implements java.io.Serializable{
     resultCountsEqPrev.increment(eqPrev);
 
     for( String k : backRefs.keySet() ){
-      boolean eqRef = false;
-      if( vprev!=null ){ smth. is wrong with this NULL
-        val.equals(vprev.get(k));
-      }
+      //boolean eqRef = false;
+      //if( vprev!=null ){ //smth. is wrong with this NULL
+      boolean eqRef = val.equals(vcurr.get(k));
+      //}
       backRefs.get(k).inc(eqRef);
     }
   }
@@ -170,7 +170,7 @@ public class PRule extends RuleCond implements java.io.Serializable{
     }
     for( String k : backRefs.keySet() ){
       BoolCount b = backRefs.get(k);
-      if( b.cFalse==0 ){
+      if( b.cFalse==0 && b.cTrue!=0 ){
         ret += " eq@"+k;
       }
     }
