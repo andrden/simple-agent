@@ -164,8 +164,11 @@ public class PRule extends RuleCond implements java.io.Serializable{
 
   public String toString() {
     String ret = super.toString() + " => ";
-    ret += resultCounts.mapSortedDesc();
-    if( resultCountsEqPrev.size()==1 && resultCountsEqPrev.get(Boolean.FALSE)==null ){
+    boolean eqPrev = resultCountsEqPrev.size() == 1 && resultCountsEqPrev.get(Boolean.FALSE) == null;
+    if( !eqPrev || resultCounts.size()<2 ){
+      ret += resultCounts.mapSortedDesc();
+    }
+    if(eqPrev){
       ret += " eqPrev";
     }
     for( String k : backRefs.keySet() ){

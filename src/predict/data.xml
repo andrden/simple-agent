@@ -9,6 +9,16 @@ MS{a=2, b=MS, !=M}
 ?Q{a=2, b=Q, !=M}
 </testMoveRef>
 
+<testMoveRef2>
+r{a=1, b=BIG, !=C}
+BIG{a=1, b=BIG, !=M}
+v{a=2, b=MS, !=A}
+BIG{a=2, b=BIG, !=M}
+r{a=2, b=MS, !=R}
+BI{a=2, b=BI, !=M}
+?Q{a=2, b=Q, !=M}
+</testMoveRef2>
+    
 <testTooManyRules1>
   {f=YELLOW, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}
   {f=YELLOW, !=R, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}

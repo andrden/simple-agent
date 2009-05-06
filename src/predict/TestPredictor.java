@@ -508,6 +508,14 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testMoveRef");
   }
   
+  public void testMoveRef2() throws Exception{
+    //need test for moves - references to prev row
+    SensorHist sensor = new SensorHist("mmm");
+    sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
+    examplesForSensorHist(sensor, "testMoveRef2");
+    usefulPrules doesn't contain MOVE here!!!
+    Utils.breakPoint();
+  }
 
   public void testSimple2atrr() throws Exception{
     SensorHist sensor = new SensorHist("$");

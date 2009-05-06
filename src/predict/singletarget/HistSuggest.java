@@ -78,7 +78,7 @@ public class HistSuggest implements java.io.Serializable{
         if( v.prev!=null /*&& exampleVals.get(v.prev)!=null*/){
           Object backRefVal = backRef.val(v);
           //if( exampleVals.get(v.prev).equals(exampleVals.get(v)) ){
-          if( backRefVal.equals(exampleVals.get(v)) ){
+          if( backRefVal!=null && backRefVal.equals(exampleVals.get(v)) ){
             vval = "1";
           }
         }

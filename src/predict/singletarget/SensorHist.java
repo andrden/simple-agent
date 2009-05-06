@@ -400,6 +400,7 @@ public class SensorHist extends HistSuggest{
         usefulPrules.add(pr);
       }
     }
+    usefulPrulesCompactDupl();
   }
 
   PredictionResult predictWithDecisionStumpBasedRulesNoOther(OneView vprev, OneViewToVal v2v){
