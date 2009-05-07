@@ -506,6 +506,8 @@ public class TestPredictor extends TestCase {
     SensorHist sensor = new SensorHist("mmm");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
     examplesForSensorHist(sensor, "testMoveRef");
+    //usefulPrules empty here!
+    Utils.breakPoint();
   }
   
   public void testMoveRef2() throws Exception{
@@ -513,7 +515,7 @@ public class TestPredictor extends TestCase {
     SensorHist sensor = new SensorHist("mmm");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
     examplesForSensorHist(sensor, "testMoveRef2");
-    usefulPrules doesn't contain MOVE here!!!
+    //usefulPrules doesn't contain MOVE here!!!
     Utils.breakPoint();
   }
 
@@ -546,6 +548,13 @@ public class TestPredictor extends TestCase {
     sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
     examplesForSensorHistFile(sensor, "testRecencySpread.properties");
   }
+
+//  public void testPessimRule() throws Exception{
+//    SensorHist sensor = new SensorHist("$");
+//    sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
+//    examplesForSensorHistFile(sensor, "testPessimRule.properties");
+//    Utils.breakPoint();
+//  }
 
   public void testNmisPred_fl() throws Exception{
     SensorHist sensor = new SensorHist("fl");

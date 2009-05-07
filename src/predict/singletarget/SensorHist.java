@@ -109,7 +109,7 @@ public class SensorHist extends HistSuggest{
 
     prulesRecordNewView(val, vprev);
 
-    for( PRule up : usefulPrules ){
+    for( PRule up : new ArrayList<PRule>(usefulPrules) ){
       RuleCond c = up.intersect(vprev);
       if( c!=null ){
         RuleImpression ri = new RuleImpression(c, null);
@@ -351,6 +351,7 @@ public class SensorHist extends HistSuggest{
     PRule pr = new PRule(r.getCond(), r.getNegCond());
     pr.addAttention(attentionKeys);
     prulesInsertSorted(pr);
+    usefulPrules.add(pr);
     for( OneView v : exampleVals.keySet() ){
       Object val = exampleVals.get(v);
       if( pr.condHolds(v) ){
@@ -396,7 +397,7 @@ public class SensorHist extends HistSuggest{
       if( pr.condHolds(vprev) ){
         pr.recordResult(val, viewToValStatic.val(vprev.prev), vprev);
       }
-      if( pr.useful() ){
+      if( pr.convergent() ){
         usefulPrules.add(pr);
       }
     }

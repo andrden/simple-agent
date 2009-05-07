@@ -16,6 +16,7 @@ v{a=2, b=MS, !=A}
 BIG{a=2, b=BIG, !=M}
 r{a=2, b=MS, !=R}
 BI{a=2, b=BI, !=M}
+r{a=2, b=MS, !=R}
 ?Q{a=2, b=Q, !=M}
 </testMoveRef2>
     

@@ -51,6 +51,10 @@ public class PRule extends RuleCond implements java.io.Serializable{
     return backRefs.keySet();
   }
 
+  /**
+   * Rule is useful if its prediction is convergent to some definite value
+   * @return
+   */
   boolean convergent(){
     if( resultCounts.size()==1 || resultCountsEqPrev.getValOr0(Boolean.FALSE)==0 ){
       return true;
@@ -87,10 +91,6 @@ public class PRule extends RuleCond implements java.io.Serializable{
     return ret;
   }
 
-  boolean useful(){
-    return resultCounts.size()==1 ||
-        resultCountsEqPrev.size()==1 && resultCountsEqPrev.get(Boolean.FALSE)==null;
-  }
 
   void recordResult(Object val, Object valPrev, OneView vcurr){
     boolean eqPrev = val.equals(valPrev);
@@ -163,21 +163,22 @@ public class PRule extends RuleCond implements java.io.Serializable{
 
 
   public String toString() {
-    String ret = super.toString() + " => ";
+    String left = super.toString() + " => ";
+    String right="";
     boolean eqPrev = resultCountsEqPrev.size() == 1 && resultCountsEqPrev.get(Boolean.FALSE) == null;
-    if( !eqPrev || resultCounts.size()<2 ){
-      ret += resultCounts.mapSortedDesc();
-    }
     if(eqPrev){
-      ret += " eqPrev";
+      right += "eqPrev ";
     }
     for( String k : backRefs.keySet() ){
       BoolCount b = backRefs.get(k);
       if( b.cFalse==0 && b.cTrue!=0 ){
-        ret += " eq@"+k;
+        right += " eq@"+k+" ";
       }
     }
-    return ret;
+    if( right.length()==0 || resultCounts.size()<2 ){
+      right += resultCounts.mapSortedDesc();
+    }
+    return left + right;
   }
 
   public String condToString(){
