@@ -24,12 +24,12 @@ public class Pred implements PredictorIntf {
     }
   }
 
-  public void printRuleStats(){
-    System.out.print("RuleStats:");
+  public String ruleStats(){
+    StringBuilder sb = new StringBuilder();
     for( SensorHist sh : singles.values() ){
-      System.out.print(" "+sh.sensorName+"="+sh.prules.size());
+      sb.append(" "+sh.sensorName+"="+sh.usefulPrules.size());
     }
-    System.out.println();
+    return sb.toString();
   }
 
   public void printRules(){

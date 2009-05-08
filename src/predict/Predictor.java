@@ -28,8 +28,8 @@ public class Predictor implements PredictorIntf {
     alg.printRules(elem);
   }
 
-  public void printRuleStats() {
-    alg.printRuleStats();
+  public String ruleStats() {
+    return alg.ruleStats();
   }
 
   public void appendValsToLastView(Map<String, Object> sensors) {

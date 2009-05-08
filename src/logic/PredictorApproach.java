@@ -24,6 +24,7 @@ public class PredictorApproach{
   Predictor predictor = new Predictor();
   Map<String,SensorHist> goodNextCmd = new HashMap<String,SensorHist>();
   LinkedList<Hist> lastSteps = new LinkedList<Hist>();
+  String prevRuleStats="";
 
   Plan currentPlan = null;
   class Plan implements Serializable {
@@ -126,8 +127,13 @@ public class PredictorApproach{
 
 
   public void printCmdPredictions(Hist next, List<String> possibleCommands){
-    CmdPredictionTree tree = new PredictionTreeBuilder(predictor, possibleCommands, TREE_CALC_DEPTH)
+    CmdPredictionTree tree;
+    if( next==null ){
+      tree = new CmdPredictionTree(next);
+    }else{
+      tree = new PredictionTreeBuilder(predictor, possibleCommands, TREE_CALC_DEPTH)
             .build(next);
+    }
     for( String c : possibleCommands ){
       OneView v = tree.viewOnCommand(c);
       CmdPredictionTree branch = tree.branchOnCommand(c);
@@ -145,7 +151,8 @@ public class PredictorApproach{
       }
       System.out.println(cmdDescr);
     }
-    predictor.printRuleStats();
+    String ruleStats = predictor.ruleStats();
+    System.out.println("RuleStats:"+ruleStats);
   }
 
   public SuggestionResult suggestCmd(final Hist next, final List<String> possibleCommands) {
@@ -220,6 +227,18 @@ public class PredictorApproach{
       return sugg;
     }
 
+    String ruleStats = predictor.ruleStats();
+    don't repeat if last step mispred=0,
+    or maybe need count all convergent rules, not pruned list
+    to know when really change occured
+    if( !ruleStats.equals(prevRuleStats) ){
+      // last cmd changed ruleStats, try to repeat that command
+      CmdSet cs = new CmdSet(next.prev.getCommand());
+      cs.setFoundFrom("ruleStats changed cmd repeat");
+      sugg.cmdSet = cs;
+      return sugg;
+    }
+
     List<String> minPredCmds = minPredicted.getMinNames();
     if( minPredCmds.size()!=possibleCommands.size() ){
       String rndCmd = Utils.rnd(minPredCmds);
@@ -269,6 +288,7 @@ public class PredictorApproach{
     }
 
     public void add(Hist next) {
+      prevRuleStats = predictor.ruleStats();
       logMispredictions(next);
 
       predictor.add(next);
