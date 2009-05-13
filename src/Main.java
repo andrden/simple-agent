@@ -52,6 +52,7 @@ public class Main extends JFrame {
   JPanel cmdPanel = new JPanel();
 
   JToggleButton autoNext = new JToggleButton("Run>>");
+  JCheckBox noPause = new JCheckBox("no pause");
   JLabel resultMark = new JLabel("|", SwingConstants.CENTER);
   JPanel gridPanel = new JPanel();
 
@@ -219,7 +220,9 @@ public class Main extends JFrame {
     new Thread("cr6 ActionNext") {
       public void run() {
         while (true) {
-          ssleep(700);
+          if( !noPause.isSelected() || !autoNext.isSelected() ){
+            ssleep(700);
+          }
           if (autoNext.isSelected() || alg.hasPlans()) {
             //SwingUtilities.invokeLater(new Runnable(){
             //public void run() {
@@ -243,6 +246,7 @@ public class Main extends JFrame {
     });
     nextPanel.add(next);
     nextPanel.add(autoNext);
+    nextPanel.add(noPause);
 
     final JToggleButton byCauses = new JToggleButton("by Causes");
     byCauses.addChangeListener(new ChangeListener() {

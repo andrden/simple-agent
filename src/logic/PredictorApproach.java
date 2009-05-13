@@ -228,16 +228,16 @@ public class PredictorApproach{
     }
 
     String ruleStats = predictor.ruleStats();
-    don't repeat if last step mispred=0,
-    or maybe need count all convergent rules, not pruned list
-    to know when really change occured
-    if( !ruleStats.equals(prevRuleStats) ){
-      // last cmd changed ruleStats, try to repeat that command
-      CmdSet cs = new CmdSet(next.prev.getCommand());
-      cs.setFoundFrom("ruleStats changed cmd repeat");
-      sugg.cmdSet = cs;
-      return sugg;
-    }
+//    don't repeat if last step mispred=0,
+//    or maybe need count all convergent rules, not pruned list
+//    to know when really change occured
+//    if( !ruleStats.equals(prevRuleStats) ){
+//      // last cmd changed ruleStats, try to repeat that command
+//      CmdSet cs = new CmdSet(next.prev.getCommand());
+//      cs.setFoundFrom("ruleStats changed cmd repeat");
+//      sugg.cmdSet = cs;
+//      return sugg;
+//    }
 
     List<String> minPredCmds = minPredicted.getMinNames();
     if( minPredCmds.size()!=possibleCommands.size() ){

@@ -50,6 +50,14 @@ public class SensorHist extends HistSuggest{
   public SensorHist(String sensorName) {
     this.sensorName = sensorName;
     prulesAdd(new PRule(Collections.EMPTY_MAP, Collections.EMPTY_MAP), null);
+//    if( sensorName.equals("fr") ){
+//      Map<String,Object> m1 = new HashMap<String,Object>();
+//      m1.put("!","L");
+//      m1.put("f","WHITE");
+//      m1.put("fr","WHITE");
+//      PRule r1 = new PRule(m1, Collections.<String,Object>emptyMap());
+//      prulesAdd(r1, "l");
+//    }
   }
 
   /**
