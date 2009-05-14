@@ -1,0 +1,9 @@
+A Tutorial on Dynamic Programming
+http://mat.gsia.cmu.edu/classes/dynamic/dynamic.html
+
+Resources on Reinforcement Learning - Book, FAQ
+http://people.revoledu.com/kardi/tutorial/ReinforcementLearning/Resources.html
+
+Pattern recognition: context-dependent classification
+http://www.it.lut.fi/kurssit/02-03/010586001/lectures/lecture12.pdf
+

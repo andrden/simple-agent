@@ -2,10 +2,9 @@ package contin;
 
 import intf.World;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
+
+import utils.Utils;
 
 /**
  * Caret pushed by telescopic rotating arm
@@ -35,7 +34,7 @@ public class PushCaretWorld implements World {
   }
 
   public List<String> commands() {
-    return Arrays.asList("U","P");
+    return Arrays.asList("U","P");  // up, push
   }
 
   public Map<String, Object> view() {
@@ -46,7 +45,7 @@ public class PushCaretWorld implements World {
   }
 
   public int command(String cmd) {
-    return command(cmd, 1);
+    return (int)(10*command(cmd, 1));
   }
 
   /**
@@ -55,12 +54,67 @@ public class PushCaretWorld implements World {
    * @param force -1..+1
    * @return
    */
-  public int command(String cmd, double force) {
-    todo
+  public double command(String cmd, double force) {
+    if( cmd.equals("U") ){
+      rotate += force;
+      rotate = Math.max(rotate, minRotate());
+      rotate = Math.min(rotate, 1);
+      return 0;
+    }else if( cmd.equals("P") ){
+      double newArm = arm+force;
+      newArm = Math.max(0, newArm);
+      newArm = Math.min(1, newArm);
+      if( newArm>maxArm() ){
+        double touchDist = Math.tan(Math.PI/2*rotate)*height;
+        double newDist = Math.sqrt(Math.pow(newArm,2)-Math.pow(height,2));
+        arm=newArm;
+        rotate=minRotate();
+        return newDist-touchDist;
+      }else{
+        arm=newArm;
+        return 0;
+      }
+    }
+    return 0;
   }
 
   public static void main(String[] args){
-    printViewSpace();
+    //printViewSpace();
+
+    List<Hist> history = new ArrayList<Hist>();
+    PushCaretWorld w = new PushCaretWorld();
+    for( int i=0; i<50; i++ ){
+      String cmd = Utils.rnd(Arrays.asList("U", "P"));
+      double force = Math.random() * 2 - 1;
+
+      if( !history.isEmpty() ){
+        Hist last = history.get(history.size()-1);
+        if( last.res>0 ){
+          cmd=last.cmd;
+          force=last.force;
+        }
+      }
+
+      double res = w.command(cmd, force);
+      Hist h = new Hist(cmd,force,res,w.view());
+      history.add(h);
+      System.out.printf("%s %.2f %.2f %s",cmd,force,res,""+w.view());
+      System.out.println();
+    }
+  }
+
+  static class Hist{
+    String cmd;
+    double force;
+    double res;
+    Map<String,Object> view;
+
+    Hist(String cmd, double force, double res, Map<String, Object> view) {
+      this.cmd = cmd;
+      this.force = force;
+      this.res = res;
+      this.view = view;
+    }
   }
 
   private static void printViewSpace() {
