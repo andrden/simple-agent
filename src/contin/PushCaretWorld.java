@@ -83,25 +83,64 @@ public class PushCaretWorld implements World {
 
     List<Hist> history = new ArrayList<Hist>();
     PushCaretWorld w = new PushCaretWorld();
+    Strategy[] strs = {new RptGood(), new Rnd()};
     for( int i=0; i<50; i++ ){
-      String cmd = Utils.rnd(Arrays.asList("U", "P"));
-      double force = Math.random() * 2 - 1;
-
-      if( !history.isEmpty() ){
-        Hist last = history.get(history.size()-1);
-        if( last.res>0 ){
-          cmd=last.cmd;
-          force=last.force;
+      String cmd = null;
+      double force = 0;
+      for( Strategy s : strs ){
+        if( s.activity>1 ){
+          s.exec();
+          cmd = s.cmd;
+          force = s.force;
+          break;
         }
       }
 
       double res = w.command(cmd, force);
       Hist h = new Hist(cmd,force,res,w.view());
       history.add(h);
-      System.out.printf("%s %.2f %.2f %s",cmd,force,res,""+w.view());
+      for( Strategy s : strs ){
+        s.update(h);
+      }
+      System.out.printf("%s %5.2f %.2f %s",cmd,force,res,""+w.view());
       System.out.println();
     }
   }
+
+  abstract static class Strategy{
+    String cmd;
+    double force;
+    double activity=0;
+    abstract void exec();
+    abstract void update(Hist last);
+  }
+
+  static class Rnd extends Strategy{
+    Rnd(){
+      activity=2;
+    }
+    void exec() {
+      cmd = Utils.rnd(Arrays.asList("U", "P"));
+      force = Math.random() * 2 - 1;
+    }
+    void update(Hist last) {
+    }
+  }
+
+  static class RptGood extends Strategy{
+    void exec() {
+    }
+    void update(Hist last) {
+      if( last.res>0 ){
+        cmd=last.cmd;
+        force=last.force;
+        activity=3;
+      }else{
+        activity/=2;
+      }
+    }
+  }
+
 
   static class Hist{
     String cmd;
