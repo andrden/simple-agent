@@ -22,7 +22,8 @@ public class ContinAlg {
   }
 
   public Command suggestCmd(){
-    return new Command(Utils.rnd(commands), 1);
+    //return new Command(Utils.rnd(commands), 1);
+    return new Command(Utils.rnd(commands), 2*Math.random()-1);
   }
 
   public void cmdExecuted(Command cmd, Map<String, Object> newView,
