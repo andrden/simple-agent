@@ -28,7 +28,8 @@ public class ContinAlg {
 
   public void cmdExecuted(Command cmd, Map<String, Object> newView,
       Map<String, Double> newSenses){
-
+    simplest generic adaptive way: find closest positive event in history
+    and execute the same command as old one!
   }
 
 
