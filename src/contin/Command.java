@@ -27,4 +27,30 @@ public class Command {
   public double getForce() {
     return force;
   }
+
+
+    public String toString() {
+        return command+" "+force;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Command command1 = (Command) o;
+
+        if (Double.compare(command1.force, force) != 0) return false;
+        if (command != null ? !command.equals(command1.command) : command1.command != null) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        long temp;
+        result = (command != null ? command.hashCode() : 0);
+        temp = force != +0.0d ? Double.doubleToLongBits(force) : 0L;
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }
