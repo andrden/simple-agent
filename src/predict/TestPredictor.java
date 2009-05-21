@@ -32,7 +32,7 @@ public class TestPredictor extends TestCase {
     assertEquals("1", p.predict().get("a"));
   }
 
-  public void testTimebasedFastLearn3() {
+  public void testFaTimebasedFastLearn3() {
     LinearPredictor p = new LinearPredictor();
     p.add(new OneView().pt("a", "1"));
     p.add(new OneView().pt("a", "0"));
@@ -41,12 +41,12 @@ public class TestPredictor extends TestCase {
     assertEquals("0", p.predict().get("a"));
   }
 
-  public void testTimebased3() {
+  public void testFaTimebased3() {
     String task = "110011>0";
     plainSeqProc(task);
   }
 
-  public void testTimebased4() {
+  public void testFaTimebased4() {
     // this is a complex task - we must treat 'inside rpt group 101' as another sensor
     // to see difference in situation
     String task = "0 1012 11 1012 01 10>12 0 101>2 0 10>12 101>2 11111 10>12 11";
@@ -63,7 +63,7 @@ public class TestPredictor extends TestCase {
 //    plainSeqProc(task);
 //  }
 
-  public void testTimebased5() {
+  public void testFaTimebased5() {
     // this is a complex task - we must treat 'inside rpt group 101' as another sensor
     // to see difference in situation
     String task = "0 101 22 101 00 10>1 00 10>1 10>1 11111 10>1 11";
@@ -306,7 +306,7 @@ public class TestPredictor extends TestCase {
     assertEquals("1", pred); // b=A, c=b => e=1 (require Ab)
   }
 
-  public void testFastLearn1(){
+  public void testFaFastLearn1(){
     LinearPredictor p = new LinearPredictor();
     addMultiMap(p, "{f=YELLOW, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}");
     addMultiMap(p, "{f=ORANGE, !=E, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}");
@@ -426,7 +426,7 @@ public class TestPredictor extends TestCase {
     buildPredictor("testTooManyRules1");
   }
 
-  public void testFastLearn2(){
+  public void testFaFastLearn2(){
     LinearPredictor p = new LinearPredictor();
     addMultiMapAll(p,
     "{f=YELLOW, !=Ep, fl=GRAY, r=YELLOW, ff=BLACK, $=0, fr=WHITE, l=GRAY}",
@@ -452,20 +452,20 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testRuleGeneralization");
   }
 
-  public void testRulesFor2Categories() throws Exception{
+  public void testFaRulesFor2Categories() throws Exception{
     //@todo what is the right condition in this test?
     SensorHist sensor = new SensorHist("$");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.CMD_KEY));
     examplesForSensorHist(sensor, "testRulesFor2Categories");
   }
 
-  public void testResultEqPrevNull() throws Exception{
+  public void testFaResultEqPrevNull() throws Exception{
     SensorHist sensor = new SensorHist("f");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.CMD_KEY));
     examplesForSensorHist(sensor, "testResultEqPrevNull");
   }
 
-  public void testResultEqPrevNullTree() throws Exception{
+  public void testFaResultEqPrevNullTree() throws Exception{
     LinearPredictor p = buildPredictor("testResultEqPrevNullTree");
     CmdPredictionTree tree = new PredictionTreeBuilder(p.p,
         Arrays.asList("L", "R", "N", "Fb", "A1","A2F","A2B","B1","B2"), 4)
@@ -537,7 +537,7 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testPredictRepeated2");
   }
 
-  public void testRecencyPredictRepeated3() throws Exception{
+  public void testFaRecencyPredictRepeated3() throws Exception{
     SensorHist sensor = new SensorHist("fr");
     sensor.setSkippedViewKeys(Collections.singleton(Hist.RES_KEY));
     examplesForSensorHist(sensor, "testRecencyPredictRepeated3");
