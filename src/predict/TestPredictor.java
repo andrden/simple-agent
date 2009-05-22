@@ -452,6 +452,40 @@ public class TestPredictor extends TestCase {
     examplesForSensorHist(sensor, "testRuleGeneralization");
   }
 
+    public void testAreaStrip() throws Exception{
+      SensorHist sensor = new SensorHist("E");
+      sensor.setSkippedViewKeys(Collections.singleton(Hist.CMD_KEY));
+      examplesForSensorHist(sensor, "testAreaStrip");
+      Utils.breakPoint(); // y=='D'
+    }
+    public void testAreaIsle() throws Exception{
+      SensorHist sensor = new SensorHist("E");
+      sensor.setSkippedViewKeys(Collections.singleton(Hist.CMD_KEY));
+      examplesForSensorHist(sensor, "testAreaIsle");
+      Utils.breakPoint(); // y=='D' && x=='B'
+    }
+    public void testArea2Islands() throws Exception{
+      SensorHist sensor = new SensorHist("E");
+      sensor.setSkippedViewKeys(Collections.singleton(Hist.CMD_KEY));
+      examplesForSensorHist(sensor, "testArea2Islands");
+      Utils.breakPoint(); // y=='D' && x=='B' || x=='C' && y=='C'
+    }
+    public void testArea2Strips() throws Exception{
+      SensorHist sensor = new SensorHist("E");
+      sensor.setSkippedViewKeys(Collections.singleton(Hist.CMD_KEY));
+      examplesForSensorHist(sensor, "testArea2Strips");
+      Utils.breakPoint();
+/*
+            String res="0";
+            if( y=='D' || y=='E' ){
+                res="1";
+            }else if( x=='C'){
+                res="2";
+            }
+
+         */
+    }
+
   public void testFaRulesFor2Categories() throws Exception{
     //@todo what is the right condition in this test?
     SensorHist sensor = new SensorHist("$");
