@@ -5,6 +5,7 @@ import com.pmstation.common.utils.MinMaxFinder;
 import worlds.Line1;
 import worlds.GridWorld3;
 import worlds.GridRadialWorld1;
+import worlds.ComparableSensors1;
 import worlds.intf.WorldGridView;
 
 import javax.swing.*;
@@ -27,14 +28,12 @@ import java.util.HashMap;
  * To change this template use File | Settings | File Templates.
  */
 public class Main extends JFrame {
-  //WorldGridView world = new GridWorld1();
-  //WorldGridView world = new GridWorld2();
-  WorldGridView world = new GridWorld3();
+//WorldGridView world = new GridWorld3();
   //WorldGridView world = new GridRadialWorld1();
   //WorldGridView world = new Line1();
 
   //WorldGridView world = new Rubic2x2World();
-  //WorldGridView world = new ComparableSensors1();
+  WorldGridView world = new ComparableSensors1();
 
   int totalResultPlus = 0;
   int totalResultMinus = 0;
@@ -356,13 +355,14 @@ public class Main extends JFrame {
       if (world.commandWrong(cmd)) {
         System.out.println("Main: cmd wrong " + cmd);
       }
-      int result = world.command(cmd);
-      logView(cmd, result);
+      //int result = world.command(cmd);
+      world.command(cmd);
+      logView(cmd, 0);
 
       refreshAllViews();
 
       long t1 = System.currentTimeMillis();
-      alg.cmdCompleted(result);
+      alg.cmdCompleted();
       long dt1 = System.currentTimeMillis() - t1;
 
       logArea.append(cmd + " n" + dt0 + " / r" + dt1 + "ms \n");

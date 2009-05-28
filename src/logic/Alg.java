@@ -26,7 +26,7 @@ public class Alg implements AlgIntf, Serializable {
 
   //Causes causes = new Causes();
   //Causes2 causes2 = new Causes2();
-  List<Hist> interestingEvents = new ArrayList<Hist>(); //- copy to Cause2
+  //List<Hist> interestingEvents = new ArrayList<Hist>(); //- copy to Cause2
 
   // experimentLevel - emotional koef.
   // Low if we are before difficult controlled situation.
@@ -91,7 +91,7 @@ public class Alg implements AlgIntf, Serializable {
     String cmd = curCmd.goNext(cmdGroups);
     Map<String, Object> view = w.view();
     if (history.last == null) {
-      history.setLastResult(0, view);
+      history.setLastResult(view);
       predictor.add(history.next);
     }
     history.nextCmd(cmd);
@@ -105,12 +105,12 @@ public class Alg implements AlgIntf, Serializable {
     return cmd;
   }
 
-  public void cmdCompleted(int result) {
+  public void cmdCompleted() {
     Map<String, Object> view = w.view();
-    history.setLastResult(result, view);
-    if (result > 0) {
-      interestingEvents.add(history.getNextHist());
-    }
+    history.setLastResult(view);
+//    if (result > 0) {
+//      interestingEvents.add(history.getNextHist());
+//    }
 //    if( cause1use ){
 //      new CmdCompletionAnalyzer(this).resultAnalyse(result, view);
 //    }

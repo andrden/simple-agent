@@ -13,10 +13,8 @@ public interface AlgIntf {
 
   /**
    * Container notification - triggers result analysis
-   *
-   * @param result
    */
-  void cmdCompleted(int result);
+  void cmdCompleted();
   //Hist prediction(String command)
 
   Set<String> cmdGroups();

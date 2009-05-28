@@ -3,10 +3,8 @@ package worlds;
 import worlds.intf.WorldGridView;
 
 import java.io.Serializable;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.awt.*;
 
 import utils.Utils;
@@ -22,9 +20,14 @@ public class ComparableSensors1 implements WorldGridView, Serializable {
   Color[] cells = new Color[2];
   int availableResults=0;
   int countEq=0;
+  int lastCmdRes=0;
 
   public ComparableSensors1(){
     genCells();
+  }
+
+  public Collection<String> targetSensors() {
+    return Collections.singleton("$");
   }
 
   void genCells(){
@@ -62,7 +65,7 @@ public class ComparableSensors1 implements WorldGridView, Serializable {
     return ret;
   }
 
-  public int command(String cmd) {
+  public void command(String cmd) {
     int res=0;
     if( cmd.equals("F0") && cells[0]!=cells[1] ){
       res=1;
@@ -72,7 +75,7 @@ public class ComparableSensors1 implements WorldGridView, Serializable {
     }
     availableResults++;
     genCells();
-    return res;
+    lastCmdRes = res;
   }
 
   public int getWidth() {

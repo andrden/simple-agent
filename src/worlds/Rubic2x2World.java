@@ -3,10 +3,8 @@ package worlds;
 import worlds.intf.WorldGridView;
 
 import java.io.Serializable;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.awt.*;
 
 import utils.Utils;
@@ -20,12 +18,16 @@ import utils.Utils;
  */
 public class Rubic2x2World extends Rubic2x2Model
     implements WorldGridView, Serializable {
+  int lastCmdRes=0;
   Face[][] faceLocations = {
       {null,t,null,null},
       {l,f,r,z},
       {null,b,null,null},
   };
 
+  public Collection<String> targetSensors() {
+    return Collections.singleton("$");
+  }
 
   public int availableResults() {
     return 0;
@@ -51,6 +53,7 @@ public class Rubic2x2World extends Rubic2x2Model
     for( String k : m.keySet() ){
       ms.put(k, Utils.color2name(m.get(k)));
     }
+    ms.put("$",lastCmdRes);
 
     return ms;
   }
@@ -63,11 +66,11 @@ public class Rubic2x2World extends Rubic2x2Model
     }
   }
 
-  public int command(String cmd) {
+  public void command(String cmd) {
     int sc0 = totalScore();
     execCommand(cmd);
     int sc1 = totalScore();
-    return sc1-sc0;
+    lastCmdRes = sc1-sc0;
   }
 
   public int getWidth() {

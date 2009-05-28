@@ -12,12 +12,16 @@ import java.util.List;
  * 2x2 creature, 2 arms added
  */
 public class Line1 implements WorldGridView, Serializable {
+  int lastCmdRes=0;
   int availableResults = 0;
   int width = 10;
   int height = 1;
 
   int pos;
 
+  public Collection<String> targetSensors() {
+    return Collections.singleton("$");
+  }
 
   void init(){
     Random r = new Random();
@@ -69,7 +73,7 @@ public class Line1 implements WorldGridView, Serializable {
     return Arrays.asList("L", "R");
   }
 
-  public int command(String cmd) {
+  public void command(String cmd) {
     int result = 0;
     if (cmd.equals("L") ) {
       if( pos==0 ){
@@ -88,7 +92,7 @@ public class Line1 implements WorldGridView, Serializable {
       }
     }
 
-    return result;
+    lastCmdRes = result;
   }
 
 
@@ -103,6 +107,7 @@ public class Line1 implements WorldGridView, Serializable {
     for( int i=0; i<width; i++ ){
       m.put("z"+i, data(i));
     }
+    m.put("$",lastCmdRes);
     return m;
   }
 

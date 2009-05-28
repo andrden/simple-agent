@@ -2,17 +2,17 @@ package intf;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Collection;
 
-/**
- * Created by IntelliJ IDEA.
- * User: adenysenko
- * Date: 21/1/2008
- * Time: 16:28:37
- * To change this template use File | Settings | File Templates.
- */
 public interface World {
   List<String> commands();
+  Collection<String> targetSensors();
 
+  /**
+   * View, part of which are targetSensors - results we are persuing
+   * @return
+   */
   Map<String, Object> view();
 
 
@@ -22,5 +22,5 @@ public interface World {
    * @param cmd
    * @return
    */
-  int command(String cmd);
+  void command(String cmd);
 }

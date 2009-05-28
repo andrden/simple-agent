@@ -12,6 +12,7 @@ import java.util.List;
  * 2x2 creature, 2 arms added
  */
 public class GridWorld3 implements WorldGridView, Serializable {
+  int lastCmdRes=0;
   int availableResults = 0;
   String[] FIELD_INIT = {
           "bbbbbbbbb",
@@ -27,6 +28,10 @@ public class GridWorld3 implements WorldGridView, Serializable {
 
   public int availableResults() {
     return availableResults;
+  }
+
+  public Collection<String> targetSensors() {
+    return Collections.singleton("$");
   }
 
   public boolean commandWrong(String cmd) {
@@ -213,7 +218,7 @@ public class GridWorld3 implements WorldGridView, Serializable {
     cr.y0 = p.y;
   }
 
-  public int command(String cmd) {
+  public void command(String cmd) {
     int result = 0;
     if (cmd.equals("L") && !cr.larm && !cr.rarm && !cr.lleg && !cr.rleg) {
       setX0Y0( getFwd(-1,0) );
@@ -281,7 +286,7 @@ public class GridWorld3 implements WorldGridView, Serializable {
 //    }
 
     prevCommand = cmd;
-    return result;
+    lastCmdRes = result;
   }
 
   private int moveFwd() {
@@ -374,6 +379,7 @@ public class GridWorld3 implements WorldGridView, Serializable {
       Point abs = getFwd(rel.get(k).x, rel.get(k).y);
       m.put(k, (Object) getColorName(abs));
     }
+    m.put("$", lastCmdRes);
     return m;
   }
 

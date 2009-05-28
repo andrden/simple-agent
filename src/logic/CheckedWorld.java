@@ -4,10 +4,7 @@ import intf.World;
 import mem.Hist;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,6 +27,16 @@ public class CheckedWorld implements World, Serializable {
     sensors.add(Hist.CMD_KEY);
     sensors.add(Hist.RES_KEY);
     sensors.add(Hist.NOOP_KEY);
+  }
+
+  public Collection<String> targetSensors() {
+    Collection<String> t = w.targetSensors();
+    for( String s : t ){
+      if( !s.startsWith("$") ){
+        throw new RuntimeException(s + " must start with $");
+      }
+    }
+    return t;
   }
 
   public List<String> commands() {
@@ -63,8 +70,8 @@ public class CheckedWorld implements World, Serializable {
     return v;
   }
 
-  public int command(String cmd) {
-    return w.command(cmd);
+  public void command(String cmd) {
+    w.command(cmd);
   }
 
 }

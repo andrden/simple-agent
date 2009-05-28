@@ -57,10 +57,10 @@ public class History implements Serializable {
     return h.order;
   }
 
-  public void setLastResult(int result, Map<String, Object> view) {
+  public void setLastResult(Map<String, Object> view) {
     Hist h = new Hist();
     h.setView(view);
-    h.setResult(result);
+    //h.setResult(result);
     add(h);
   }
 

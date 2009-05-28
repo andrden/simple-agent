@@ -5,26 +5,28 @@ import logic.Alg;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MainForGuess implements World {
   AlgIntf alg = new Alg((World) this);
   String lastInput = "0";
   int guess = 0;
   int miss = 0;
+  int lastCmdRes=0;
 
   public List<String> commands() {
     return Arrays.asList("0", "1");
   }
 
+  public Collection<String> targetSensors() {
+    return Collections.singleton("$");
+  }
+  
   public Map<String, Object> view() {
     return Collections.singletonMap("in", (Object) lastInput);
   }
 
-  public int command(String cmd) {
+  public void command(String cmd) {
     throw new UnsupportedOperationException();
   }
 
@@ -41,11 +43,11 @@ public class MainForGuess implements World {
         // now telling Alg our next value and corresponding result
         lastInput = inp;
         if (cmd.equals(inp)) {
-          alg.cmdCompleted(1);
+          //alg.cmdCompleted(1);
           guess++;
           System.out.println("- guessed; " + total());
         } else {
-          alg.cmdCompleted(0);
+          //alg.cmdCompleted(0);
           miss++;
           System.out.println("- missed; " + total());
         }

@@ -10,6 +10,7 @@ import utils.Utils;
  * Caret pushed by telescopic rotating arm
  */
 public class PushCaretWorld implements World {
+  double lastCmdRes=0;
   double rotate=0.9; // 0 is down, 1 is up, horizontal
   double arm=0; // 0..1
   final double height = Math.sqrt(2)/2; // let arm is fixed at this height
@@ -37,15 +38,20 @@ public class PushCaretWorld implements World {
     return Arrays.asList("U","P");  // up, push
   }
 
+  public Collection<String> targetSensors() {
+    return Collections.singleton("$");
+  }
+
   public Map<String, Object> view() {
     Map<String,Object> m = new HashMap<String,Object>();
     m.put("r", rotate);
     m.put("a", arm);
+    m.put("$", lastCmdRes);
     return m;
   }
 
-  public int command(String cmd) {
-    return (int)(10*command(cmd, 1));
+  public void command(String cmd) {
+    lastCmdRes = (int)(10*command(cmd, 1));
   }
 
   /**
