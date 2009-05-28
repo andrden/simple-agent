@@ -1,6 +1,7 @@
 import junit.framework.TestSuite;
 import predict.TestPredictor;
 import worlds.TestWorlds;
+import contin.tests.TestContin;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,6 +16,7 @@ public static TestSuite suite()
         TestSuite suite = new TestSuite();       
         suite.addTestSuite(TestPredictor.class);
         suite.addTestSuite(TestWorlds.class);
+        suite.addTestSuite(TestContin.class);
         return suite;
     }
 }

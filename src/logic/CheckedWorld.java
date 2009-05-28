@@ -21,11 +21,11 @@ public class CheckedWorld implements World, Serializable {
   public CheckedWorld(World w) {
     this.w = w;
     commands.add(Hist.CMD_KEY);
-    commands.add(Hist.RES_KEY);
+    //commands.add(Hist.RES_KEY);
     commands.add(Hist.NOOP_KEY);
 
     sensors.add(Hist.CMD_KEY);
-    sensors.add(Hist.RES_KEY);
+    //sensors.add(Hist.RES_KEY);
     sensors.add(Hist.NOOP_KEY);
   }
 
