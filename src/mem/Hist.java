@@ -55,16 +55,16 @@ public class Hist extends OneView<Hist> {
 
   public void setView(Map<String, Object> view) {
     this.view = new HashMap<String, Object>(view);
-    setResult(0);
+    //setResult(0);
   }
 
   public void setCommand(String command) {
     view.put(CMD_KEY, command);
   }
 
-  public void setResult(int result) {
-    view.put(RES_KEY, new Integer(result));
-  }
+//  public void setResult(int result) {
+//    view.put(RES_KEY, new Integer(result));
+//  }
 
 
   public Map<String, Object> getViewAllWithoutCmd() {
