@@ -32,6 +32,21 @@ public class TestWorlds extends TestCase {
 
   }
 
+  public void test2(){
+    W2 w = new W2();
+    Alg alg = new Alg(w);
+
+    for(int i=0; i<200; i++){
+      String cmd = alg.nextCmd(null);
+      if( i>100 && w.commandSuboptimal(cmd) ){
+        fail("step "+i+ " view="+w.view()+" cmd="+cmd);
+      }
+      w.command(cmd);
+      alg.cmdCompleted();
+    }
+
+  }
+
   double targetSum(World w){
     double sum = 0;
     Map<String,Object> v = w.view();
