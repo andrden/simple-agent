@@ -11,11 +11,14 @@ import java.util.StringTokenizer;
  * Time: 7:47:41 PM
  * To change this template use File | Settings | File Templates.
  */
-public class StochasticWind {
-  static List<String> actions = Arrays.asList("n","ne","e","se","s","sw","w","nw");
+public class StochasticWind implements RWorld{
   private String s="1_4";
-  boolean isTerminal(){
+  public boolean isTerminal(){
     return s.equals("8_4");
+  }
+
+  public List<String> actions(){
+    return Arrays.asList("n","ne","e","se","s","sw","w","nw");
   }
 
   public String getS() {
@@ -26,7 +29,7 @@ public class StochasticWind {
     return (new int[]{0, 0,0,0,1,1, 1,2,2,1,0})[x];
   }
 
-  double action(String a){
+  public double action(String a){
     StringTokenizer st = new StringTokenizer(s,"_");
     long x = Long.parseLong(st.nextToken());
     long y = Long.parseLong(st.nextToken());
@@ -62,5 +65,21 @@ public class StochasticWind {
     }
     s = x + "_" + y;
     return -1;
+  }
+
+  public void println(){
+    StringTokenizer st = new StringTokenizer(s,"_");
+    long sx = Long.parseLong(st.nextToken());
+    long sy = Long.parseLong(st.nextToken());
+    for( int y=1; y<=7; y++ ){
+      for( int x=1; x<=10; x++ ){
+        char c = '.';
+        if( x==1 && y==4 ) c='S';
+        if( x==8 && y==4 ) c='F';
+        if( x==sx && y==sy ) c='*';
+        System.out.print(c);
+      }
+      System.out.println();
+    }
   }
 }

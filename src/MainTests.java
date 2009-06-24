@@ -2,6 +2,7 @@ import junit.framework.TestSuite;
 import predict.TestPredictor;
 import worlds.TestWorlds;
 import contin.tests.TestContin;
+import reinforcement.TestSoftGreedy;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +18,7 @@ public static TestSuite suite()
         suite.addTestSuite(TestPredictor.class);
         suite.addTestSuite(TestWorlds.class);
         suite.addTestSuite(TestContin.class);
+        suite.addTestSuite(TestSoftGreedy.class);
         return suite;
     }
 }

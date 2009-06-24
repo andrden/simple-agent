@@ -15,9 +15,9 @@ import utils.Utils;
  * Time: 7:48:21 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Sarsa {
+public class QLearning {
   public static void main(String[] args){
-    new Sarsa().doit();
+    new QLearning().doit();
   }
 
   double epsilon=0.1;
@@ -42,8 +42,7 @@ public class Sarsa {
       System.out.println("episode end t="+t+" dt="+ dt +" ep="+ep);
       if( t/ep<20 ){
         Utils.breakPoint();
-        // t=220k-240k on SoftGreedy2
-        // t=245k-265k on epsilon-greedy
+        // t=195k-215k on SoftGreedy2 - QLearning
       }
       printPolicy();
     }
@@ -74,37 +73,30 @@ public class Sarsa {
 
   private void episode() {
     RWorld w = mkWorld();
-    String s = w.getS();
-    String a = policyAction(s);
     while(!w.isTerminal()){
+      t++;
+      String s = w.getS();
+      String a = policyAction(s);
 //      if( ep>5000 ){
 //        w.println();
 //        System.out.println("a="+a+" greedy="+greedyActions(s));
 //      }
-      t++;
       double r = w.action(a);
       String s1 = w.getS();
-      String a1 = policyAction(s1);
-//      if( w.isTerminal() ){
-//        a1="";
-//      }
 
       // update Q
       StAct sa = new StAct(s,a);
-      StAct sa1 = new StAct(s1,a1);
       Double q = qval.get(sa);
       if( q==null ){
         q=0d;
       }
-      Double q1 = qval.get(sa1);
-      if( q1==null ){
-        q1=0d;
+      MinMaxFinder mmfQ = new MinMaxFinder();
+      for( String a1 : actions ){
+        double q1 = qvalGet(s1, a1);
+        mmfQ.add(q1, "");
       }
-      q = q + alpha*(r+q1-q);
+      q = q + alpha*(r+mmfQ.getMaxVal()-q);
       qval.put(sa, q);
-
-      s=s1;
-      a=a1;
     }
   }
 
