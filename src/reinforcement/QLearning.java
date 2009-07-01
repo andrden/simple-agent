@@ -28,7 +28,8 @@ public class QLearning {
   List<String> actions;
 
   private RWorld mkWorld() {
-    RWorld w = new StochasticWind();
+    //RWorld w = new StochasticWind();
+    RWorld w = new CliffWorld();
     actions = w.actions();
     return w;
   }
@@ -36,10 +37,11 @@ public class QLearning {
   private void doit() {
     while(true){
       int t0=t;
-      episode();
+      double totalRew=episode();
       ep++;
       int dt = t - t0;
-      System.out.println("episode end t="+t+" dt="+ dt +" ep="+ep);
+      System.out.println("episode end t="+t+" dt="+ dt
+          +" ep="+ep+" totalRew="+totalRew);
       if( t/ep<20 ){
         Utils.breakPoint();
         // t=195k-215k on SoftGreedy2 - QLearning
@@ -71,8 +73,9 @@ public class QLearning {
     }
   }
 
-  private void episode() {
+  private double episode() {
     RWorld w = mkWorld();
+    double totalRew=0;
     while(!w.isTerminal()){
       t++;
       String s = w.getS();
@@ -82,6 +85,7 @@ public class QLearning {
 //        System.out.println("a="+a+" greedy="+greedyActions(s));
 //      }
       double r = w.action(a);
+      totalRew+=r;
       String s1 = w.getS();
 
       // update Q
@@ -98,6 +102,7 @@ public class QLearning {
       q = q + alpha*(r+mmfQ.getMaxVal()-q);
       qval.put(sa, q);
     }
+    return totalRew;
   }
 
 

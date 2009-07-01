@@ -2,7 +2,7 @@ Reinforcement Learning:
 An Introduction
 http://www.cs.ualberta.ca/~sutton/book/the-book.html
 
-====>>>>> 6.5 Q-Learning: Off-Policy TD Control
+====>>>>> 7.4 Equivalence of Forward and Backward Views
 
 A Tutorial on Dynamic Programming
 http://mat.gsia.cmu.edu/classes/dynamic/dynamic.html

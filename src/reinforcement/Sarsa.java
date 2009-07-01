@@ -28,7 +28,8 @@ public class Sarsa {
   List<String> actions;
 
   private RWorld mkWorld() {
-    RWorld w = new StochasticWind();
+    //RWorld w = new StochasticWind();
+    RWorld w = new CliffWorld();
     actions = w.actions();
     return w;
   }
@@ -36,10 +37,11 @@ public class Sarsa {
   private void doit() {
     while(true){
       int t0=t;
-      episode();
+      double totalReward = episode();
       ep++;
       int dt = t - t0;
-      System.out.println("episode end t="+t+" dt="+ dt +" ep="+ep);
+      System.out.println("episode end t="+t+" dt="+ dt
+          +" ep="+ep+" totalRew="+totalReward);
       if( t/ep<20 ){
         Utils.breakPoint();
         // t=220k-240k on SoftGreedy2
@@ -72,17 +74,19 @@ public class Sarsa {
     }
   }
 
-  private void episode() {
+  private double episode() {
+    double totalReward=0;
     RWorld w = mkWorld();
     String s = w.getS();
     String a = policyAction(s);
     while(!w.isTerminal()){
-//      if( ep>5000 ){
+//      if( ep>500 ){
 //        w.println();
 //        System.out.println("a="+a+" greedy="+greedyActions(s));
 //      }
       t++;
       double r = w.action(a);
+      totalReward+=r;
       String s1 = w.getS();
       String a1 = policyAction(s1);
 //      if( w.isTerminal() ){
@@ -106,6 +110,7 @@ public class Sarsa {
       s=s1;
       a=a1;
     }
+    return totalReward;
   }
 
 
