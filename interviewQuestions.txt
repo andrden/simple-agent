@@ -1,0 +1,33 @@
+*)
+server with 8 CPUs
+List<User> users - 1 million users
+User.isValid() - long running CPU intensive method
+
+how to produce List<User> validUsers
+taking advantage of all CPUs
+
+Write complete code, up to resulting list generation
+
+*)
+List<User> users - 1 million users
+User.getLogin() - returns String
+
+need to compose longgggGGGG String loginsList
+of all user logins separated with '\n':
+
+ivanov
+petrov
+....
+john.r
+
+*)
+String a = "12333333356789";
+a.replace("3","33");
+System.out.println(a); - what is the result?
+
+*)
+Is that correct -
+
+byte[] buf = remote.read();
+String s = new String(buf, utf-8);
+
