@@ -5,31 +5,58 @@ import com.pmstation.common.utils.MinMaxFinder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 
 import utils.Utils;
 
-/**
- * Created by IntelliJ IDEA.
- * User: adenysenko
- * Date: Jun 22, 2009
- * Time: 7:48:21 PM
- * To change this template use File | Settings | File Templates.
- */
-public class QLearning {
+public class DynaQPlus {
   public static void main(String[] args){
-    new QLearning().doit();
+    new DynaQPlus().doit();
   }
 
   double epsilon=0.1;
   double alpha=0.1;
   Map<StAct,Double> qval = new HashMap<StAct,Double>();
+  Model model = new Model();
   int t=0;
   int ep=0;
   List<String> actions;
 
+  class Model{
+    Map<StAct,String> nextSt = new HashMap<StAct,String>();
+    Map<StAct,Double> rew = new HashMap<StAct,Double>();
+    void update(StAct sa, String nextSt, double rew){
+      String nextSt0 = this.nextSt.get(sa);
+//      if( nextSt0!=null && !nextSt0.equals(nextSt) ){
+//        throw new IllegalArgumentException("stochastic not yet supported");
+//      }
+      Double rew0 = this.rew.get(sa);
+//      if( rew0!=null && !rew0.equals(rew) ){
+//        throw new IllegalArgumentException("stochastic not yet supported");
+//      }
+
+      this.nextSt.put(sa, nextSt);
+      this.rew.put(sa, rew);
+    }
+    StAct randomStAct(){
+      if( nextSt.isEmpty() ){
+        return null;
+      }
+      List<StAct> allStAct = new ArrayList<StAct>(nextSt.keySet());
+      return allStAct.get((int)(Math.random() * allStAct.size()));
+    }
+    String nextSt(StAct sa){
+      return nextSt.get(sa);
+    }
+    double rew(StAct sa){
+      return rew.get(sa);
+    }
+  }
+
   private RWorld mkWorld() {
     //RWorld w = new StochasticWind();
-    RWorld w = new CliffWorld();
+    //RWorld w = new CliffWorld();
+    RWorld w = new MazeWorld();
     actions = w.actions();
     return w;
   }
@@ -43,7 +70,8 @@ public class QLearning {
       System.out.println("episode end t="+t+" dt="+ dt
           +" ep="+ep+" totalRew="+totalRew);
       if( dt<20 /*t/ep<20*/ ){
-        // t=7000-9000 => dt<20
+        // t=7000-9000 => dt<20 - qlearning
+        // t=400-600 => dt<20 - DynaQ
         Utils.breakPoint();
         // t=195k-215k on SoftGreedy2 - QLearning
       }
@@ -52,9 +80,10 @@ public class QLearning {
   }
 
   private void printPolicy() {
-    if( ep>200000 ){
-      for( int y=1; y<=7; y++ ){
-        for( int x=1; x<=10; x++ ){
+    if( t>3000 ){
+      Utils.breakPoint();
+      for( int y=1; y<=6; y++ ){
+        for( int x=1; x<=9; x++ ){
           String s = x+"_"+y;
           String a = (String) Utils.rnd(greedyActions(s));
           System.out.printf("%2s ",a);
@@ -62,8 +91,8 @@ public class QLearning {
         System.out.println();
       }
 
-      for( int y=1; y<=7; y++ ){
-        for( int x=1; x<=10; x++ ){
+      for( int y=1; y<=6; y++ ){
+        for( int x=1; x<=9; x++ ){
           String s = x+"_"+y;
           double val = value(s);
           System.out.printf("%6.2f ",val);
@@ -81,29 +110,45 @@ public class QLearning {
       t++;
       String s = w.getS();
       String a = policyAction(s);
-//      if( ep>5000 ){
-//        w.println();
-//        System.out.println("a="+a+" greedy="+greedyActions(s));
-//      }
+      if( t>3000 ){
+        w.println();
+        System.out.println("a="+a+" greedy="+greedyActions(s));
+      }
       double r = w.action(a);
       totalRew+=r;
       String s1 = w.getS();
 
       // update Q
       StAct sa = new StAct(s,a);
-      Double q = qval.get(sa);
-      if( q==null ){
-        q=0d;
+      qLearn(sa, r, s1);
+
+      // update model
+      model.update(sa, s1, r);
+
+      // planning using model
+      for( int i=0; i<50; i++ ){
+        StAct rndSa = model.randomStAct();
+        if( rndSa==null ){
+          break;
+        }
+        qLearn(rndSa, model.rew(rndSa), model.nextSt(rndSa));
       }
-      MinMaxFinder mmfQ = new MinMaxFinder();
-      for( String a1 : actions ){
-        double q1 = qvalGet(s1, a1);
-        mmfQ.add(q1, "");
-      }
-      q = q + alpha*(r+mmfQ.getMaxVal()-q);
-      qval.put(sa, q);
     }
     return totalRew;
+  }
+
+  private void qLearn(StAct sa, double r, String s1) {
+    Double q = qval.get(sa);
+    if( q==null ){
+      q=0d;
+    }
+    MinMaxFinder mmfQ = new MinMaxFinder();
+    for( String a1 : actions ){
+      double q1 = qvalGet(s1, a1);
+      mmfQ.add(q1, "");
+    }
+    q = q + alpha*(r+mmfQ.getMaxVal()-q);
+    qval.put(sa, q);
   }
 
 

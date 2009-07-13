@@ -51,4 +51,9 @@ public class StAct {
     result = 31 * result + (a != null ? a.hashCode() : 0);
     return result;
   }
+
+  @Override
+  public String toString() {
+    return s + " "+a;
+  }
 }
