@@ -14,11 +14,16 @@ public class DynaQPlus {
     new DynaQPlus().doit();
   }
 
-  double epsilon=0.1;
+  double epsilon=0.01;//0.01;//0.1;
   double alpha=0.1;
+  double explorationBonusK = 0.017;
+  boolean bonusOnCommand=false;
+  boolean bonusOnPlan=true;
+
   Map<StAct,Double> qval = new HashMap<StAct,Double>();
+  Map<StAct,Long> stActLastT = new HashMap<StAct,Long>();
   Model model = new Model();
-  int t=0;
+  long t=0;
   int ep=0;
   List<String> actions;
 
@@ -63,19 +68,28 @@ public class DynaQPlus {
 
   private void doit() {
     while(true){
-      int t0=t;
+      long t0=t;
       double totalRew=episode();
       ep++;
-      int dt = t - t0;
+      long dt = t - t0;
       System.out.println("episode end t="+t+" dt="+ dt
           +" ep="+ep+" totalRew="+totalRew);
+      if(ep==1000){
+        // DynaQ - t=19000-19200 ep=1000
+        // DynaQPlusAct k=0.1 - t=22800-22900 ep=1000
+        // DynaQPlusAct k=0.01 - t=18200-18400 ep=1000
+        // DynaQPlusAct k=0.001 - t=18000-18400 ep=1000
+        // DynaQPlusAct k=0.0000001 - t=18400-18600 ep=1000
+
+        Utils.breakPoint();
+      }
       if( dt<20 /*t/ep<20*/ ){
         // t=7000-9000 => dt<20 - qlearning
         // t=400-600 => dt<20 - DynaQ
         Utils.breakPoint();
         // t=195k-215k on SoftGreedy2 - QLearning
       }
-      printPolicy();
+      //printPolicy();
     }
   }
 
@@ -110,16 +124,17 @@ public class DynaQPlus {
       t++;
       String s = w.getS();
       String a = policyAction(s);
+      StAct sa = new StAct(s,a);
       if( t>3000 ){
-        w.println();
-        System.out.println("a="+a+" greedy="+greedyActions(s));
+//        w.println();
+//        System.out.println("a="+a+" greedy="+greedyActions(s));
       }
+      stActLastT.put(sa, t);
       double r = w.action(a);
       totalRew+=r;
       String s1 = w.getS();
 
       // update Q
-      StAct sa = new StAct(s,a);
       qLearn(sa, r, s1);
 
       // update model
@@ -131,7 +146,15 @@ public class DynaQPlus {
         if( rndSa==null ){
           break;
         }
-        qLearn(rndSa, model.rew(rndSa), model.nextSt(rndSa));
+
+        double simulRew = model.rew(rndSa);
+        if( bonusOnPlan ){
+          Long told = stActLastT.get(rndSa);
+          if( told!=null ){
+            simulRew += explorationBonusK * Math.sqrt(t-told);
+          }
+        }
+        qLearn(rndSa, simulRew, model.nextSt(rndSa));
       }
     }
     return totalRew;
@@ -160,7 +183,14 @@ public class DynaQPlus {
   private String softGreedy(String s) {
     SoftGreedy2 sg = new SoftGreedy2(epsilon);
     for( String a : actions ){
-      sg.put(a, qvalGet(s,a));
+      double actionQ = qvalGet(s, a);
+      if( bonusOnCommand ){
+        Long told = stActLastT.get(new StAct(s,a));
+        if( told!=null ){
+          actionQ += explorationBonusK * Math.sqrt(t-told);
+        }
+      }
+      sg.put(a, actionQ);
     }
     return sg.policyAction();
   }

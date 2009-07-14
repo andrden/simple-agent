@@ -52,7 +52,9 @@ public class MazeWorld implements RWorld{
       y=1;
     }
 
-    if( y==4 && (step<=3000 && x>=2 || step>3000 && x<=8) ){
+    //if( y==4 && (step<=3000 && x>=2 || step>3000 && x<=8) ){
+    //if( y==4 && x>=2 ){
+    if( y==4 && x>=2 && (step<=3000 || x<=8) ){
       // barrier in the maze
       x=x0;
       y=y0;
