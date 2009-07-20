@@ -1,5 +1,6 @@
 package reinforcement;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -19,4 +20,6 @@ public interface RWorld {
   List<String> actions();
 
   void println();
+
+  JPanel visualizer();
 }

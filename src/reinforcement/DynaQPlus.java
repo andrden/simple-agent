@@ -58,10 +58,15 @@ public class DynaQPlus {
     }
   }
 
+  Visualizer vis = new Visualizer();
+
   private RWorld mkWorld() {
     //RWorld w = new StochasticWind();
     //RWorld w = new CliffWorld();
-    RWorld w = new MazeWorld();
+    //RWorld w = new MazeWorld();
+    RWorld w = new CarParkingWorld();
+
+    vis.setWorld(w);
     actions = w.actions();
     return w;
   }

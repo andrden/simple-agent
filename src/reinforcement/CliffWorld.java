@@ -1,5 +1,6 @@
 package reinforcement;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -19,6 +20,10 @@ public class CliffWorld implements RWorld{
 
   public List<String> actions(){
     return Arrays.asList("n","e","s","w");
+  }
+
+  public JPanel visualizer() {
+    return null;
   }
 
   public String getS() {

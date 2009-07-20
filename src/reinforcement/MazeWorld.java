@@ -1,5 +1,6 @@
 package reinforcement;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -16,6 +17,10 @@ public class MazeWorld implements RWorld{
   static long step=0;
   public boolean isTerminal(){
     return s.equals("9_1");
+  }
+
+  public JPanel visualizer() {
+    return null;
   }
 
   public List<String> actions(){

@@ -1,10 +1,12 @@
+hierarchical Reinforcement Learning methods, Q-Cut
+
 Relational Reinforcement Learning - RRL
 
 Reinforcement Learning:
 An Introduction
 http://www.cs.ualberta.ca/~sutton/book/the-book.html
 
-====>>>>> 9.3 When the Model Is Wrong
+====>>>>> 9.7 Heuristic Search
 
 A Tutorial on Dynamic Programming
 http://mat.gsia.cmu.edu/classes/dynamic/dynamic.html
