@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.List;
 
 import utils.Utils;
+import reinforcement.worlds.CliffWorld;
+import reinforcement.worlds.RWorld;
 
 /**
  * Created by IntelliJ IDEA.

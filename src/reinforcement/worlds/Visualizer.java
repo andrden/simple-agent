@@ -1,4 +1,4 @@
-package reinforcement;
+package reinforcement.worlds;
 
 import javax.swing.*;
 

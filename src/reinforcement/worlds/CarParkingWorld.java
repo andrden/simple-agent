@@ -1,4 +1,4 @@
-package reinforcement;
+package reinforcement.worlds;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,11 +27,27 @@ public class CarParkingWorld implements RWorld{
   public boolean isTerminal() {
     return intersects(carSide(), border) ||
         intersects(carSide(), leftWall) ||
-        intersects(carSide(), rightWall);
+        //intersects(carSide(), rightWall) ||
+        intersects(carSide(), targetMark);
   }
 
   public String getS() {
-    return "s";
+    return ""+(int)(carX0/5)+" "+(int)(carY0/5)+" "+(int)(carAngle/PI*20);
+  }
+
+  double distToTarget(){
+    double d=-1;
+    for( Point p : carSide() ){
+      for( Point pt : targetMark ){
+        double dst = p.distance(pt);
+        if( d==-1 ){
+          d=dst;
+        }else{
+          d = Math.min(d,dst);
+        }
+      }
+    }
+    return d;
   }
 
   public double action(String a) {
@@ -39,21 +55,44 @@ public class CarParkingWorld implements RWorld{
       return 0;
     }
     try {
-      Thread.sleep(500);
+      Thread.sleep(40);
     } catch (InterruptedException e) {
     }
-    carAngle += PI/20;
+
+    double dstTarg0 = distToTarget();
+
+    double steerAngle = Double.parseDouble(a.substring(1));
+    if( a.startsWith("b") ){
+      steerAngle += PI; // reverse
+    }
+
+    double targX = carX0 + carLen*cos(carAngle)+step*cos(carAngle+steerAngle);
+    double targY = carY0 + carLen*sin(carAngle)+step*sin(carAngle+steerAngle);
+    carAngle = atan2(targY - carY0, targX - carX0);
+    carX0 += step*cos(steerAngle)*cos(carAngle);
+    carY0 += step*cos(steerAngle)*sin(carAngle);
+
     if( visPanel!=null ){
       visPanel.getComponent(0).repaint();
     }
-    if( isTerminal() ){
-      return -1;
+    if( intersects(carSide(), targetMark) ){
+      return +1000;
     }
-    return 0;
+    if( isTerminal() ){
+      return -1000;
+    }
+    double dstTarg1 = distToTarget();
+    double targetApproachBonus = (dstTarg0 - dstTarg1)/step;
+    return -1 + targetApproachBonus;
   }
 
   public List<String> actions() {
-    return Arrays.asList("a");
+    List<String> r = new ArrayList<String>();
+    for( double a = -10; a<=10; a+=2 ){
+      r.add("f"+a/10);
+      r.add("b"+a/10);
+    }
+    return r;
   }
 
   public void println() {
@@ -68,16 +107,6 @@ public class CarParkingWorld implements RWorld{
         }
       }
     }
-
-//    Polygon pg = new Polygon();
-//    for( Point p : pcar ){
-//      pg.addPoint( p.x, p.y );
-//    }
-//    for( int i=0; i<p2.length; i++ ){
-//      if( pg.intersects(p2[i].x, p2[i].y, p2[(i+1)%p2.length].x, p2[(i+1)%p2.length].y) ){
-//        return true;
-//      }
-//    }
     return false;
   }
 
@@ -97,12 +126,17 @@ public class CarParkingWorld implements RWorld{
       new Point(40,5),new Point(45,5),new Point(45,90),new Point(40,90)};
   Point[] rightWall = new Point[]{
       new Point(90,5),new Point(95,5),new Point(95,90),new Point(90,90)};
+  Point[] targetMark = new Point[]{
+      new Point(60,30),new Point(70,30),new Point(65,40)};
+
 
   double carX0=120;
   double carY0=80;
   double carAngle=-PI/6;
+  //double steerAngle=PI/14;
   double carLen=70;
-  double carWidth=40;
+  double carWidth=30;
+  final int step=5;
 
   Point[] carSide(){
     ArrayList<Point> l = new ArrayList<Point>();
@@ -156,6 +190,7 @@ public class CarParkingWorld implements RWorld{
       paint(g, rightWall);
       paint(g, carSide());
       paint(g, carDriver());
+      paint(g, targetMark);
     }
 
     void paint(Graphics g, Point[] p){

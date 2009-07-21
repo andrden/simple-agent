@@ -8,17 +8,30 @@ import java.util.List;
 import java.util.ArrayList;
 
 import utils.Utils;
+import reinforcement.worlds.CarParkingWorld;
+import reinforcement.worlds.RWorld;
+import reinforcement.worlds.Visualizer;
 
 public class DynaQPlus {
   public static void main(String[] args){
     new DynaQPlus().doit();
   }
 
+  /*
+  // params for MazeWorld
   double epsilon=0.01;//0.01;//0.1;
   double alpha=0.1;
   double explorationBonusK = 0.017;
   boolean bonusOnCommand=false;
   boolean bonusOnPlan=true;
+  */
+
+  // params for CarParkingWorld
+  double epsilon=0;
+  double alpha=0.1;
+  double explorationBonusK = 0.0;
+  boolean bonusOnCommand=false;
+  boolean bonusOnPlan=false;
 
   Map<StAct,Double> qval = new HashMap<StAct,Double>();
   Map<StAct,Long> stActLastT = new HashMap<StAct,Long>();
@@ -29,19 +42,25 @@ public class DynaQPlus {
 
   class Model{
     Map<StAct,String> nextSt = new HashMap<StAct,String>();
-    Map<StAct,Double> rew = new HashMap<StAct,Double>();
+    Map<StAct,Damper> rew = new HashMap<StAct,Damper>();
     void update(StAct sa, String nextSt, double rew){
       String nextSt0 = this.nextSt.get(sa);
 //      if( nextSt0!=null && !nextSt0.equals(nextSt) ){
 //        throw new IllegalArgumentException("stochastic not yet supported");
 //      }
-      Double rew0 = this.rew.get(sa);
+//      Double rew0 = this.rew.get(sa);
 //      if( rew0!=null && !rew0.equals(rew) ){
 //        throw new IllegalArgumentException("stochastic not yet supported");
 //      }
 
       this.nextSt.put(sa, nextSt);
-      this.rew.put(sa, rew);
+
+      Damper drew = this.rew.get(sa);
+      if( drew==null ){
+        drew = new Damper();
+        this.rew.put(sa, drew);
+      }
+      drew.add(rew);
     }
     StAct randomStAct(){
       if( nextSt.isEmpty() ){
@@ -54,7 +73,9 @@ public class DynaQPlus {
       return nextSt.get(sa);
     }
     double rew(StAct sa){
-      return rew.get(sa);
+      Damper damper = rew.get(sa);
+      double v = damper.value();
+      return v;
     }
   }
 
@@ -71,6 +92,16 @@ public class DynaQPlus {
     return w;
   }
 
+  int qvalsOver(double limit){
+    int r=0;
+    for( double v : qval.values() ){
+      if( v>=limit ){
+        r++;
+      }
+    }
+    return r;
+  }
+
   private void doit() {
     while(true){
       long t0=t;
@@ -78,7 +109,7 @@ public class DynaQPlus {
       ep++;
       long dt = t - t0;
       System.out.println("episode end t="+t+" dt="+ dt
-          +" ep="+ep+" totalRew="+totalRew);
+          +" ep="+ep+" totalRew="+totalRew+" qvals>100="+qvalsOver(100));
       if(ep==1000){
         // DynaQ - t=19000-19200 ep=1000
         // DynaQPlusAct k=0.1 - t=22800-22900 ep=1000
@@ -146,7 +177,7 @@ public class DynaQPlus {
       model.update(sa, s1, r);
 
       // planning using model
-      for( int i=0; i<50; i++ ){
+      for( int i=0; i<500; i++ ){
         StAct rndSa = model.randomStAct();
         if( rndSa==null ){
           break;
