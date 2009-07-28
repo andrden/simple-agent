@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,10 +13,16 @@ import java.util.StringTokenizer;
  * Time: 7:47:41 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CliffWorld implements RWorld{
+public class CliffWorld implements RWorld<RState>{
   private String s="1_4";
   public boolean isTerminal(){
     return s.equals("12_4");
+  }
+  public double initStateValue(RState s) {
+    return 0;
+  }
+
+  public void printStateMap(Map<RState, String> m){
   }
 
   public List<String> actions(){
@@ -26,8 +33,8 @@ public class CliffWorld implements RWorld{
     return null;
   }
 
-  public String getS() {
-    return s;
+  public RState getS() {
+    return new StringState(s);
   }
 
   public double action(String a){

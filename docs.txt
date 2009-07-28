@@ -6,7 +6,7 @@ Reinforcement Learning:
 An Introduction
 http://www.cs.ualberta.ca/~sutton/book/the-book.html
 
-====>>>>> 10. Dimensions of Reinforcement Learning
+====>>>>> 10.2 Other Frontier Dimensions
 
 A Tutorial on Dynamic Programming
 http://mat.gsia.cmu.edu/classes/dynamic/dynamic.html

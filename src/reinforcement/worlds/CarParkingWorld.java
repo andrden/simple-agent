@@ -14,7 +14,7 @@ import static java.lang.Math.*;
  * Time: 10:55:20 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CarParkingWorld implements RWorld{
+public class CarParkingWorld implements RWorld<RState>{
   public static void main(String[] args){
     JPanel p = new CarParkingWorld().visualizer();
 
@@ -24,6 +24,15 @@ public class CarParkingWorld implements RWorld{
     f.setVisible(true);
   }
 
+  public void printStateMap(Map<RState, String> m){
+  }
+
+
+  public double initStateValue(RState s) {
+    throw new NoSuchMethodError();
+  }
+
+
   public boolean isTerminal() {
     return intersects(carSide(), border) ||
         intersects(carSide(), leftWall) ||
@@ -31,8 +40,8 @@ public class CarParkingWorld implements RWorld{
         intersects(carSide(), targetMark);
   }
 
-  public String getS() {
-    return ""+(int)(carX0/5)+" "+(int)(carY0/5)+" "+(int)(carAngle/PI*20);
+  public RState getS() {
+    return new StringState(""+(int)(carX0/5)+" "+(int)(carY0/5)+" "+(int)(carAngle/PI*20));
   }
 
   double distToTarget(){

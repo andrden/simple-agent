@@ -2,10 +2,7 @@ package reinforcement;
 
 import com.pmstation.common.utils.MinMaxFinder;
 
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Soft policy mixing exploration and exploitation
@@ -23,7 +20,7 @@ import java.util.Iterator;
 
 //only splitting within epsilon should be changed
 public class SoftGreedy2 {
-  Map<String,Double> qvals = new HashMap<String,Double>();
+  Map<String,Double> qvals = new LinkedHashMap<String,Double>();
   double epsilon;
 
   public SoftGreedy2(double epsilon) {

@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,11 +13,15 @@ import java.util.StringTokenizer;
  * Time: 7:47:41 PM
  * To change this template use File | Settings | File Templates.
  */
-public class MazeWorld implements RWorld{
+public class MazeWorld implements RWorld<RState>{
   private String s="4_6";
   static long step=0;
   public boolean isTerminal(){
     return s.equals("9_1");
+  }
+
+
+  public void printStateMap(Map<RState, String> m){
   }
 
   public JPanel visualizer() {
@@ -27,8 +32,13 @@ public class MazeWorld implements RWorld{
     return Arrays.asList("n","e","s","w");
   }
 
-  public String getS() {
-    return s;
+  public double initStateValue(RState s) {
+    return 0;
+  }
+
+
+  public RState getS() {
+    return new StringState(s);
   }
 
   public double action(String a){

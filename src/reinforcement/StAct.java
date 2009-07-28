@@ -1,5 +1,7 @@
 package reinforcement;
 
+import reinforcement.worlds.RState;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -8,19 +10,19 @@ package reinforcement;
  * To change this template use File | Settings | File Templates.
  */
 public class StAct {
-  String s;
+  RState s;
   String a;
 
-  public StAct(String s, String a) {
+  public StAct(RState s, String a) {
     this.s = s;
     this.a = a;
   }
 
-  public String getS() {
+  public RState getS() {
     return s;
   }
 
-  public void setS(String s) {
+  public void setS(RState s) {
     this.s = s;
   }
 
