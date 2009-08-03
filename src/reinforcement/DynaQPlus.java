@@ -29,7 +29,7 @@ public class DynaQPlus {
   */
 
   // params for CarParkingWorld
-  double epsilon=0.01;
+  double epsilon=0.03;
   double alpha=0.1;
   double explorationBonusK = 0.0;
   boolean bonusOnCommand=false;
@@ -103,12 +103,12 @@ public class DynaQPlus {
       MinMaxFinder mm = new MinMaxFinder();
       String nextSt="";
       for( String a : actions ){
-        double qvala = qvalGet(s, a);
+        double qvala = qvalGetNoTrend(s, a);
         mm.add(qvala, a);
-        RState ns = model.nextSt.get(new StAct(s,a));
-        if( ns!=null ){
-          nextSt += " "+a+"=>"+ns;
-        }
+//        RState ns = model.nextSt.get(new StAct(s,a));
+//        if( ns!=null ){
+//          nextSt += " "+a+"=>"+ns;
+//        }
       }
       String msg = String.format("%.1f", mm.getMaxVal());
       String amaxN = (String)mm.getMaxNames().get(0);
@@ -168,7 +168,7 @@ public class DynaQPlus {
       RState s1 = myWorld.getS();
 
       // update Q
-      qLearn(sa, r, s1);
+      qLearn(sa, r, Collections.singletonMap(s1,1.));
 
 //      System.out.println("a="+a+" s="+myWorld.getS()+" dv0="+(v0b-v0a)
 //          +" v0a="+v0a+" qvalUpd="+qval.get(sa));
@@ -196,19 +196,32 @@ public class DynaQPlus {
     return totalRew;
   }
 
-  private void qLearn(StAct sa, double r, RState s1) {
+  private void qLearn(StAct sa, double r, Map<RState,Double> nextSt) {
     Double q = qval.get(sa);
     if( q==null ){
       //q=0d;
       q = qvalGetNoTrend(sa.s, sa.a);
     }
-    MinMaxFinder mmfQ = new MinMaxFinder();
-    for( String a1 : actions ){
-      //double q1 = qvalGet(s1, a1);
-      double q1 = qvalGetNoTrend(s1, a1);
-      mmfQ.add(q1, "");
+    double stateValAll=0;
+    if( nextSt.size()>1 ){
+      Utils.breakPoint();
     }
-    q = q + alpha*(r+mmfQ.getMaxVal()-q);
+    for( RState s1 : nextSt.keySet() ){
+      MinMaxFinder mmfQ = new MinMaxFinder();
+      Map<String,Double> aqs = new HashMap<String,Double>();
+      for( String a1 : actions ){
+        //double q1 = qvalGet(s1, a1);
+        double q1 = qvalGetNoTrend(s1, a1);
+        mmfQ.add(q1, "");
+        aqs.put(a1, q1);
+      }
+      double stateVal = mmfQ.getMaxVal();
+      stateValAll += stateVal*nextSt.get(s1);
+    }
+    q = q + alpha*(r+ stateValAll -q);
+    if( q>2000 ){
+      Utils.breakPoint();
+    }
     qval.put(sa, q);
   }
 
@@ -265,21 +278,11 @@ public class DynaQPlus {
   private double qvalGet(RState s, String a) {
     Double val = qval.get(new StAct(s, a));
     if( val==null ){
-       val = actionInitValue(s,a);
+      val = myWorld.initStateValue(s);
+      val += actionTrend(s, a);
       //val=0d;
     }
     return val;
-  }
-
-  double actionInitValue(RState s, String a){
-    double r = myWorld.initStateValue(s);
-
-    r += actionTrend(s, a)*alpha;
-    // trends of neighbouring actions mustn't feed each other,
-    // signal must weaken if going from aside,
-    // hence "*alpha"
-
-    return r;
   }
 
   private double actionTrend(RState s, String a) {

@@ -4,6 +4,8 @@ import reinforcement.worlds.RState;
 
 import java.util.*;
 
+import com.pmstation.common.utils.CountingMap;
+
 /**
  * Created by IntelliJ IDEA.
 * User: adenysenko
@@ -14,10 +16,20 @@ import java.util.*;
 class Model {
   Map<RState,Set<RState>> neighborStates = new HashMap<RState,Set<RState>>();
 
-  Map<StAct,RState> nextSt = new HashMap<StAct,RState>();
+  //Map<StAct,RState> nextSt = new HashMap<StAct,RState>();
   Map<StAct,Damper> rew = new HashMap<StAct,Damper>();
+
+  Map<StAct, CountingMap<RState>> nextStList = new HashMap<StAct,CountingMap<RState>>();
+
   void update(StAct sa, RState nextSt, double rew){
-    RState nextSt0 = this.nextSt.get(sa);
+    CountingMap<RState> cm = nextStList.get(sa);
+    if( cm==null ){
+      cm = new CountingMap<RState>();
+      nextStList.put(sa, cm);
+    }
+    cm.increment(nextSt);
+
+    //RState nextSt0 = this.nextSt.get(sa);
 //      if( nextSt0!=null && !nextSt0.equals(nextSt) ){
 //        throw new IllegalArgumentException("stochastic not yet supported");
 //      }
@@ -26,7 +38,7 @@ class Model {
 //        throw new IllegalArgumentException("stochastic not yet supported");
 //      }
 
-    this.nextSt.put(sa, nextSt);
+    //this.nextSt.put(sa, nextSt);
 
     Damper drew = this.rew.get(sa);
     if( drew==null ){
@@ -56,15 +68,26 @@ class Model {
   }
 
   StAct randomStAct(){
-    if( nextSt.isEmpty() ){
+    if( nextStList.isEmpty() ){
       return null;
     }
-    List<StAct> allStAct = new ArrayList<StAct>(nextSt.keySet());
+    List<StAct> allStAct = new ArrayList<StAct>(nextStList.keySet());
     return allStAct.get((int)(Math.random() * allStAct.size()));
   }
-  RState nextSt(StAct sa){
-    return nextSt.get(sa);
+//  RState nextSt(StAct sa){
+//    return nextSt.get(sa);
+//  }
+
+  Map<RState,Double> nextSt(StAct sa){
+    CountingMap<RState> cmap = nextStList.get(sa);
+    double all=cmap.syncTotalCount();
+    Map<RState,Double> ret = new HashMap<RState,Double>();
+    for( RState s : cmap.keySet() ){
+      ret.put(s, cmap.get(s)/all);
+    }
+    return ret;
   }
+
   double rew(StAct sa){
     Damper damper = rew.get(sa);
     double v = damper.value();

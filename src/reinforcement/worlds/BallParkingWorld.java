@@ -67,6 +67,7 @@ public class BallParkingWorld implements RWorld<BallParkingState>{
     double ival = 1000 - distToTarget() * 2;
     if( isTerminal() ){
       ival=0;
+      s = new BallParkingState(-1, -1);
     }
     initStateValues.put(s, ival);
     // - must have steep enough gradient to overcome every step reward of (-1)
