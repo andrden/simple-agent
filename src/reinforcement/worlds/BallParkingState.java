@@ -10,15 +10,17 @@ package reinforcement.worlds;
 class BallParkingState implements RState{
   int x;
   int y;
+  String prevCmd;
 
-  BallParkingState(int x, int y) {
+  BallParkingState(int x, int y, String prevCmd) {
     this.x = x;
     this.y = y;
+    this.prevCmd = prevCmd;
   }
 
   @Override
   public String toString() {
-    return x+" "+y;
+    return x+" "+y+" "+prevCmd;
   }
 
   @Override
@@ -26,10 +28,11 @@ class BallParkingState implements RState{
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    BallParkingState state = (BallParkingState) o;
+    BallParkingState that = (BallParkingState) o;
 
-    if (x != state.x) return false;
-    if (y != state.y) return false;
+    if (x != that.x) return false;
+    if (y != that.y) return false;
+    if (!prevCmd.equals(that.prevCmd)) return false;
 
     return true;
   }
@@ -38,6 +41,7 @@ class BallParkingState implements RState{
   public int hashCode() {
     int result = x;
     result = 31 * result + y;
+    result = 31 * result + prevCmd.hashCode();
     return result;
   }
 }

@@ -20,12 +20,14 @@ class Model {
   Map<StAct,Damper> rew = new HashMap<StAct,Damper>();
 
   Map<StAct, CountingMap<RState>> nextStList = new HashMap<StAct,CountingMap<RState>>();
+  List<StAct> allStAct = new ArrayList<StAct>();
 
   void update(StAct sa, RState nextSt, double rew){
     CountingMap<RState> cm = nextStList.get(sa);
     if( cm==null ){
       cm = new CountingMap<RState>();
       nextStList.put(sa, cm);
+      allStAct.add(sa);
     }
     cm.increment(nextSt);
 
@@ -42,7 +44,7 @@ class Model {
 
     Damper drew = this.rew.get(sa);
     if( drew==null ){
-      drew = new Damper();
+      drew = new DamperAvg();
       this.rew.put(sa, drew);
     }
     drew.add(rew);
@@ -68,10 +70,9 @@ class Model {
   }
 
   StAct randomStAct(){
-    if( nextStList.isEmpty() ){
+    if( allStAct.isEmpty() ){
       return null;
     }
-    List<StAct> allStAct = new ArrayList<StAct>(nextStList.keySet());
     return allStAct.get((int)(Math.random() * allStAct.size()));
   }
 //  RState nextSt(StAct sa){
@@ -80,6 +81,9 @@ class Model {
 
   Map<RState,Double> nextSt(StAct sa){
     CountingMap<RState> cmap = nextStList.get(sa);
+    if( cmap==null ){
+      return null;
+    }
     double all=cmap.syncTotalCount();
     Map<RState,Double> ret = new HashMap<RState,Double>();
     for( RState s : cmap.keySet() ){
@@ -90,6 +94,9 @@ class Model {
 
   double rew(StAct sa){
     Damper damper = rew.get(sa);
+    if( damper==null ){
+      return 0;
+    }
     double v = damper.value();
     return v;
   }

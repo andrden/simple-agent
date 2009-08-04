@@ -29,7 +29,7 @@ public class DynaQPlus {
   */
 
   // params for CarParkingWorld
-  double epsilon=0.03;
+  double epsilon=0.0;
   double alpha=0.1;
   double explorationBonusK = 0.0;
   boolean bonusOnCommand=false;
@@ -102,18 +102,25 @@ public class DynaQPlus {
     for( RState s : statesVisited ){
       MinMaxFinder mm = new MinMaxFinder();
       String nextSt="";
+      String msg = "<b>"+s+"</b> ";
       for( String a : actions ){
         double qvala = qvalGetNoTrend(s, a);
         mm.add(qvala, a);
+        if( model.rew(new StAct(s,a))>0 ){
+          msg += " <b>rew@"+a+"="+model.rew(new StAct(s,a))+"</b> ";
+        }
 //        RState ns = model.nextSt.get(new StAct(s,a));
 //        if( ns!=null ){
 //          nextSt += " "+a+"=>"+ns;
 //        }
       }
-      String msg = String.format("%.1f", mm.getMaxVal());
+      msg += String.format("%.1f", mm.getMaxVal());
       String amaxN = (String)mm.getMaxNames().get(0);
       double trend = actionTrend(s, amaxN);
-      m.put(s, msg+nextSt+" maxN="+mm.getMaxNames()+" trend-"+amaxN+"="+trend);
+      msg += nextSt+" maxN="+mm.getMaxNames()+
+          "nextSt="+model.nextSt(new StAct(s, (String)mm.getMaxNames().get(0)))+
+          " trend-"+amaxN+"="+trend;
+      m.put(s, msg);
     }
     myWorld.printStateMap(m);
 
@@ -166,6 +173,7 @@ public class DynaQPlus {
 
       totalRew+=r;
       RState s1 = myWorld.getS();
+      System.out.println("  "+s+" a="+a+" >> "+s1);
 
       // update Q
       qLearn(sa, r, Collections.singletonMap(s1,1.));
@@ -218,8 +226,9 @@ public class DynaQPlus {
       double stateVal = mmfQ.getMaxVal();
       stateValAll += stateVal*nextSt.get(s1);
     }
-    q = q + alpha*(r+ stateValAll -q);
-    if( q>2000 ){
+    double dq = alpha * (r + stateValAll - q);
+    q = q + dq;
+    if( q>1000 ){
       Utils.breakPoint();
     }
     qval.put(sa, q);
@@ -235,8 +244,12 @@ public class DynaQPlus {
 
   private SoftGreedy2 mkSoftGreedy(RState s) {
     SoftGreedy2 sg = new SoftGreedy2(epsilon);
+    boolean tryTrend = Math.random()<epsilon/2;
     for( String a : actions ){
       double actionQ = qvalGet(s, a);
+      if( tryTrend ){
+        actionQ += actionTrend(s, a);
+      }
       if( bonusOnCommand ){
         Long told = stActLastT.get(new StAct(s,a));
         if( told!=null ){
@@ -278,9 +291,10 @@ public class DynaQPlus {
   private double qvalGet(RState s, String a) {
     Double val = qval.get(new StAct(s, a));
     if( val==null ){
-      val = myWorld.initStateValue(s);
-      val += actionTrend(s, a);
+      //val = myWorld.initStateValue(s);
+      //val += actionTrend(s, a);
       //val=0d;
+      val=2000d;//encourage exploration
     }
     return val;
   }
