@@ -7,10 +7,7 @@ import java.util.List;
 import java.awt.*;
 
 import utils.Utils;
-import reinforcement.worlds.RWorld;
-import reinforcement.worlds.Visualizer;
-import reinforcement.worlds.BallParkingWorld;
-import reinforcement.worlds.RState;
+import reinforcement.worlds.*;
 
 import javax.swing.*;
 
@@ -167,13 +164,13 @@ public class DynaQPlus {
       stActLastT.put(sa, t);
       statesVisited.add(s);
 
-      double v0a=myWorld.initStateValue(myWorld.getS());
+      //double v0a=myWorld.initStateValue(myWorld.getS());
       double r = myWorld.action(a);
-      double v0b=myWorld.initStateValue(myWorld.getS());
+      //double v0b=myWorld.initStateValue(myWorld.getS());
 
       totalRew+=r;
       RState s1 = myWorld.getS();
-      System.out.println("  "+s+" a="+a+" >> "+s1);
+      //System.out.println("  "+s+" a="+a+" >> "+s1);
 
       // update Q
       qLearn(sa, r, Collections.singletonMap(s1,1.));
@@ -280,6 +277,7 @@ public class DynaQPlus {
   }
 
   private double qvalGetNoTrend(RState s, String a) {
+    //return qvalGet(s, a);
     Double val = qval.get(new StAct(s, a));
     if( val==null ){
        val = myWorld.initStateValue(s);

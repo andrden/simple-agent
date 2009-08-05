@@ -27,6 +27,10 @@ public class CarParkingWorld implements RWorld<RState>{
   public void printStateMap(Map<RState, String> m){
   }
 
+  // 'static' to survive multiple episodes of basically same setup
+  static Map<BallParkingState,Double> initStateValues =
+      new HashMap<BallParkingState,Double>();
+
 
   public double initStateValue(RState s) {
     throw new NoSuchMethodError();
