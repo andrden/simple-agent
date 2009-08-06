@@ -10,17 +10,17 @@ package reinforcement.worlds;
 class CarParkingState implements RState{
   int x;
   int y;
-  int carAngle; - discretization done by hand is not good
+  int carAngle;
 
-  CarParkingState(int x, int y, String prevCmd) {
+  CarParkingState(int x, int y, int carAngle) {
     this.x = x;
     this.y = y;
-    this.prevCmd = prevCmd;
+    this.carAngle = carAngle;
   }
 
   @Override
   public String toString() {
-    return x+" "+y+" "+prevCmd;
+    return x+" "+y+" "+carAngle;
   }
 
   @Override
@@ -30,9 +30,9 @@ class CarParkingState implements RState{
 
     CarParkingState that = (CarParkingState) o;
 
+    if (carAngle != that.carAngle) return false;
     if (x != that.x) return false;
     if (y != that.y) return false;
-    if (!prevCmd.equals(that.prevCmd)) return false;
 
     return true;
   }
@@ -41,7 +41,7 @@ class CarParkingState implements RState{
   public int hashCode() {
     int result = x;
     result = 31 * result + y;
-    result = 31 * result + prevCmd.hashCode();
+    result = 31 * result + carAngle;
     return result;
   }
 }

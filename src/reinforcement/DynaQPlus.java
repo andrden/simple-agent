@@ -47,8 +47,8 @@ public class DynaQPlus {
     //RWorld w = new StochasticWind();
     //RWorld w = new CliffWorld();
     //RWorld w = new MazeWorld();
-    //RWorld w = new CarParkingWorld();
-    RWorld w = new BallParkingWorld();
+    RWorld w = new CarParkingWorld();
+    //RWorld w = new BallParkingWorld();
 
     vis.setWorld(w);
     actions = w.actions();

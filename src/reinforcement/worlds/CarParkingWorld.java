@@ -14,7 +14,7 @@ import static java.lang.Math.*;
  * Time: 10:55:20 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CarParkingWorld implements RWorld<RState>{
+public class CarParkingWorld implements RWorld<CarParkingState>{
   public static void main(String[] args){
     JPanel p = new CarParkingWorld().visualizer();
 
@@ -24,16 +24,16 @@ public class CarParkingWorld implements RWorld<RState>{
     f.setVisible(true);
   }
 
-  public void printStateMap(Map<RState, String> m){
+  public void printStateMap(Map<CarParkingState, String> m){
   }
 
   // 'static' to survive multiple episodes of basically same setup
-  static Map<BallParkingState,Double> initStateValues =
-      new HashMap<BallParkingState,Double>();
+  static Map<CarParkingState,Double> initStateValues =
+      new HashMap<CarParkingState,Double>();
 
 
-  public double initStateValue(RState s) {
-    throw new NoSuchMethodError();
+  public double initStateValue(CarParkingState s) {
+    return initStateValues.get(s);
   }
 
 
@@ -44,8 +44,19 @@ public class CarParkingWorld implements RWorld<RState>{
         intersects(carSide(), targetMark);
   }
 
-  public RState getS() {
-    return new StringState(""+(int)(carX0/5)+" "+(int)(carY0/5)+" "+(int)(carAngle/PI*20));
+  public CarParkingState getS() {
+    CarParkingState s = new CarParkingState((int)(carX0/5), (int)(carY0/5), (int)(carAngle/PI*100));
+
+    double ival = 1000 - distToTarget() * 2;
+    if( isTerminal() ){
+      ival=0;
+      s = new CarParkingState(-1, -1, 0);
+    }
+    initStateValues.put(s, ival);
+    // - must have steep enough gradient to overcome every step reward of (-1)
+
+    return s;
+
   }
 
   double distToTarget(){
@@ -95,8 +106,8 @@ public class CarParkingWorld implements RWorld<RState>{
       return -1000;
     }
     double dstTarg1 = distToTarget();
-    double targetApproachBonus = (dstTarg0 - dstTarg1)/step;
-    return -1 + targetApproachBonus;
+    //double targetApproachBonus = (dstTarg0 - dstTarg1)/step;
+    return -1;// + targetApproachBonus;
   }
 
   public List<String> actions() {
