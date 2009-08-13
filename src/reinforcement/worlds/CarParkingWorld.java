@@ -45,12 +45,14 @@ public class CarParkingWorld implements RWorld<CarParkingState>{
   }
 
   public CarParkingState getS() {
-    CarParkingState s = new CarParkingState((int)(carX0/5), (int)(carY0/5), (int)(carAngle/PI*100));
+    CarParkingState s =
+        new CarParkingState((int)(carX0/5), (int)(carY0/5), (int)(carAngle/PI*100), prevAction);
 
-    double ival = 1000 - distToTarget() * 2;
+    double ival = 500 - distToTarget() * 2;
+    // must be only a scent, much below 1000, so real objective is bright when found
     if( isTerminal() ){
       ival=0;
-      s = new CarParkingState(-1, -1, 0);
+      s = new CarParkingState(-1, -1, 0, "");
     }
     initStateValues.put(s, ival);
     // - must have steep enough gradient to overcome every step reward of (-1)
@@ -74,12 +76,15 @@ public class CarParkingWorld implements RWorld<CarParkingState>{
     return d;
   }
 
+
+  static int sleepPause=5;
+
   public double action(String a) {
     if( isTerminal() ){
       return 0;
     }
     try {
-      Thread.sleep(40);
+      Thread.sleep(sleepPause);
     } catch (InterruptedException e) {
     }
 
@@ -95,6 +100,8 @@ public class CarParkingWorld implements RWorld<CarParkingState>{
     carAngle = atan2(targY - carY0, targX - carX0);
     carX0 += step*cos(steerAngle)*cos(carAngle);
     carY0 += step*cos(steerAngle)*sin(carAngle);
+    boolean steerChange = !a.equals(prevAction);
+    prevAction=a;
 
     if( visPanel!=null ){
       visPanel.getComponent(0).repaint();
@@ -105,8 +112,11 @@ public class CarParkingWorld implements RWorld<CarParkingState>{
     if( isTerminal() ){
       return -1000;
     }
-    double dstTarg1 = distToTarget();
+    //double dstTarg1 = distToTarget();
     //double targetApproachBonus = (dstTarg0 - dstTarg1)/step;
+    if( steerChange ){
+      return -5;
+    }
     return -1;// + targetApproachBonus;
   }
 
@@ -157,6 +167,7 @@ public class CarParkingWorld implements RWorld<CarParkingState>{
   double carX0=120;
   double carY0=80;
   double carAngle=-PI/6;
+  String prevAction="";
   //double steerAngle=PI/14;
   double carLen=70;
   double carWidth=30;

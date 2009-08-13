@@ -66,7 +66,7 @@ public class DynaQPlus {
   }
 
   private void doit() {
-    showVFunction();
+    //showVFunction();
 
     while(true){
       long t0=t;
@@ -150,7 +150,9 @@ public class DynaQPlus {
   private double episode() {
     myWorld = mkWorld();
     double totalRew=0;
+    int step=0;
     while(!myWorld.isTerminal()){
+      step++;
       t++;
       RState s = myWorld.getS();
       String a = policyAction(s);
@@ -170,7 +172,9 @@ public class DynaQPlus {
 
       totalRew+=r;
       RState s1 = myWorld.getS();
-      //System.out.println("  "+s+" a="+a+" >> "+s1);
+      if( step<7 ){
+        System.out.println("  "+s+" a="+a+" >> "+s1);
+      }
 
       // update Q
       qLearn(sa, r, Collections.singletonMap(s1,1.));
@@ -292,7 +296,8 @@ public class DynaQPlus {
       //val = myWorld.initStateValue(s);
       //val += actionTrend(s, a);
       //val=0d;
-      val=2000d;//encourage exploration
+      //val=2000d;//encourage exploration
+      val=600d;//encourage exploration
     }
     return val;
   }

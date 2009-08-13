@@ -11,16 +11,18 @@ class CarParkingState implements RState{
   int x;
   int y;
   int carAngle;
+  String prevCmd;
 
-  CarParkingState(int x, int y, int carAngle) {
+  CarParkingState(int x, int y, int carAngle, String prevCmd) {
     this.x = x;
     this.y = y;
     this.carAngle = carAngle;
+    this.prevCmd = prevCmd;
   }
 
   @Override
   public String toString() {
-    return x+" "+y+" "+carAngle;
+    return x+" "+y+" "+carAngle+" p"+prevCmd;
   }
 
   @Override
@@ -33,6 +35,7 @@ class CarParkingState implements RState{
     if (carAngle != that.carAngle) return false;
     if (x != that.x) return false;
     if (y != that.y) return false;
+    if (prevCmd != null ? !prevCmd.equals(that.prevCmd) : that.prevCmd != null) return false;
 
     return true;
   }
@@ -42,6 +45,7 @@ class CarParkingState implements RState{
     int result = x;
     result = 31 * result + y;
     result = 31 * result + carAngle;
+    result = 31 * result + (prevCmd != null ? prevCmd.hashCode() : 0);
     return result;
   }
 }
