@@ -1,6 +1,7 @@
 package reinforcement;
 
 import com.pmstation.common.utils.MinMaxFinder;
+import com.pmstation.common.utils.CountingMap;
 
 import java.util.*;
 import java.util.List;
@@ -65,16 +66,25 @@ public class DynaQPlus {
     return r;
   }
 
+  Episode firstHit=null;
+
   private void doit() {
     //showVFunction();
 
     while(true){
       long t0=t;
-      double totalRew=episode();
+      Episode epis = episode();
+      double totalRew = epis.totalRew;
+      if( epis.maxRew==1000 && firstHit==null ){
+        firstHit=epis;
+      }
       ep++;
       long dt = t - t0;
       System.out.println("episode end t="+t+" dt="+ dt
           +" ep="+ep+" totalRew="+totalRew+" qvals>100="+qvalsOver(100));
+      if( firstHit!=null ){
+        firstHit.printTrace();
+      }
       if(ep==1000){
         // DynaQ - t=19000-19200 ep=1000
         // DynaQPlusAct k=0.1 - t=22800-22900 ep=1000
@@ -147,9 +157,36 @@ public class DynaQPlus {
 //    }
 //  }
 
-  private double episode() {
+  class Episode{
+    List<StAct> trace = new ArrayList<StAct>();
+    double totalRew;
+    double maxRew = Double.NaN;
+
+    void addReward(double r){
+      totalRew += r;
+      if( Double.isNaN(maxRew) ){
+        maxRew=r;
+      }else{
+        maxRew = Math.max(r, maxRew);
+      }
+    }
+
+    void printTrace(){
+      CountingMap<RState> ls = new CountingMap<RState>();
+      for( StAct sa : trace ){
+        ls.increment(sa.getS());
+      }
+      System.out.println("trace.len="+trace.size()+" distinct.size="+ls.size());
+      for( int i=0; i<trace.size(); i++ ){
+        StAct sa = trace.get(i);
+        System.out.println(sa +" Q="+qvalGet(sa.getS(), sa.getA()));
+      }
+    }
+  }
+
+  private Episode episode() {
     myWorld = mkWorld();
-    double totalRew=0;
+    Episode ep = new Episode();
     int step=0;
     while(!myWorld.isTerminal()){
       step++;
@@ -170,10 +207,12 @@ public class DynaQPlus {
       double r = myWorld.action(a);
       //double v0b=myWorld.initStateValue(myWorld.getS());
 
-      totalRew+=r;
+      ep.addReward(r);
+      ep.trace.add(sa);
+
       RState s1 = myWorld.getS();
       if( step<7 ){
-        System.out.println("  "+s+" a="+a+" >> "+s1);
+        //System.out.println("  "+s+" a="+a+" >> "+s1);
       }
 
       // update Q
@@ -202,7 +241,7 @@ public class DynaQPlus {
         qLearn(rndSa, simulRew, model.nextSt(rndSa));
       }
     }
-    return totalRew;
+    return ep;
   }
 
   private void qLearn(StAct sa, double r, Map<RState,Double> nextSt) {
@@ -297,7 +336,8 @@ public class DynaQPlus {
       //val += actionTrend(s, a);
       //val=0d;
       //val=2000d;//encourage exploration
-      val=600d;//encourage exploration
+      //val=1d;//encourage exploration
+      val = myWorld.initStateValue(s);
     }
     return val;
   }

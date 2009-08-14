@@ -40,7 +40,7 @@ public class CarParkingWorld implements RWorld<CarParkingState>{
   public boolean isTerminal() {
     return intersects(carSide(), border) ||
         intersects(carSide(), leftWall) ||
-        //intersects(carSide(), rightWall) ||
+        intersects(carSide(), rightWall) ||
         intersects(carSide(), targetMark);
   }
 
@@ -48,7 +48,7 @@ public class CarParkingWorld implements RWorld<CarParkingState>{
     CarParkingState s =
         new CarParkingState((int)(carX0/5), (int)(carY0/5), (int)(carAngle/PI*100), prevAction);
 
-    double ival = 500 - distToTarget() * 2;
+    double ival = 500 - distToTarget() * 10;
     // must be only a scent, much below 1000, so real objective is bright when found
     if( isTerminal() ){
       ival=0;

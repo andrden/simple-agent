@@ -1,3 +1,6 @@
+http://www.youtube.com/watch?v=hFBe9L1xCyY
+
+
 hierarchical Reinforcement Learning methods, Q-Cut
 
 Relational Reinforcement Learning - RRL
@@ -5,8 +8,6 @@ Relational Reinforcement Learning - RRL
 Reinforcement Learning:
 An Introduction
 http://www.cs.ualberta.ca/~sutton/book/the-book.html
-
-====>>>>> 11.6 Job-Shop Scheduling
 
 A Tutorial on Dynamic Programming
 http://mat.gsia.cmu.edu/classes/dynamic/dynamic.html
