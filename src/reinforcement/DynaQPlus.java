@@ -27,7 +27,7 @@ public class DynaQPlus {
   */
 
   // params for CarParkingWorld
-  double epsilon=0.0;
+  double epsilon=0.01;
   double alpha=0.1;
   double explorationBonusK = 0.0;
   boolean bonusOnCommand=false;
@@ -48,8 +48,9 @@ public class DynaQPlus {
     //RWorld w = new StochasticWind();
     //RWorld w = new CliffWorld();
     //RWorld w = new MazeWorld();
-    RWorld w = new CarParkingWorld();
+    //RWorld w = new CarParkingWorld();
     //RWorld w = new BallParkingWorld();
+    RWorld w = new PushCaretWorld();
 
     vis.setWorld(w);
     actions = w.actions();
@@ -211,9 +212,9 @@ public class DynaQPlus {
       ep.trace.add(sa);
 
       RState s1 = myWorld.getS();
-      if( step<7 ){
-        //System.out.println("  "+s+" a="+a+" >> "+s1);
-      }
+      //if( step<7 ){
+        System.out.println(t+":  "+s+" a="+a+" >> "+r+" >> "+s1);
+      //}
 
       // update Q
       qLearn(sa, r, Collections.singletonMap(s1,1.));
@@ -284,7 +285,7 @@ public class DynaQPlus {
 
   private SoftGreedy2 mkSoftGreedy(RState s) {
     SoftGreedy2 sg = new SoftGreedy2(epsilon);
-    boolean tryTrend = Math.random()<epsilon/2;
+    boolean tryTrend = false;//Math.random()<epsilon/2;
     for( String a : actions ){
       double actionQ = qvalGet(s, a);
       if( tryTrend ){
@@ -333,11 +334,12 @@ public class DynaQPlus {
     Double val = qval.get(new StAct(s, a));
     if( val==null ){
       //val = myWorld.initStateValue(s);
-      //val += actionTrend(s, a);
+
       //val=0d;
-      //val=2000d;//encourage exploration
+      val=2000d;//encourage exploration
       //val=1d;//encourage exploration
-      val = myWorld.initStateValue(s);
+      //val = myWorld.initStateValue(s);
+      //val += actionTrend(s, a);
     }
     return val;
   }

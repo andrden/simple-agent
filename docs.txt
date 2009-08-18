@@ -1,5 +1,6 @@
-http://www.youtube.com/watch?v=hFBe9L1xCyY
+Bayesian RL - BEETLE algorithm, Dirichlets
 
+http://www.youtube.com/watch?v=hFBe9L1xCyY
 
 hierarchical Reinforcement Learning methods, Q-Cut
 

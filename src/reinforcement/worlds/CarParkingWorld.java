@@ -122,7 +122,7 @@ public class CarParkingWorld implements RWorld<CarParkingState>{
 
   public List<String> actions() {
     List<String> r = new ArrayList<String>();
-    for( double a = -10; a<=10; a+=2 ){
+    for( double a = -10; a<=10; a+=1 ){
       r.add("f"+a/10);
       r.add("b"+a/10);
     }
@@ -209,14 +209,7 @@ public class CarParkingWorld implements RWorld<CarParkingState>{
     return p;
   }
 
-  class CarCanvas extends Canvas{
-    CarCanvas() {
-      setBackground(Color.LIGHT_GRAY); // to have update() called and flipping suppressed
-    }
-
-//    @Override
-//    public void update(Graphics g) {
-//    }
+  class CarCanvas extends WCanvas{
 
     @Override
     public void paint(Graphics g) {
@@ -228,23 +221,5 @@ public class CarParkingWorld implements RWorld<CarParkingState>{
       paint(g, targetMark);
     }
 
-    void paint(Graphics g, Point[] p){
-      g.setColor(Color.YELLOW);
-      int[] xx = new int[p.length+1];
-      int[] yy = new int[p.length+1];
-      for( int i=0; i<p.length+1; i++ ){
-        xx[i] = screenX(p[i==p.length ? 0 : i]);
-        yy[i] = screenY(p[i==p.length ? 0 : i]);
-        //g.drawOval(xx[i],yy[i],3,3);
-      }
-      g.drawPolyline(xx,yy,p.length+1);
-    }
-
-    int screenX(Point p){
-      return p.x;
-    }
-    int screenY(Point p){
-      return 200-p.y;
-    }
   }
 }
