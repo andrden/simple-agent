@@ -8,6 +8,9 @@
 <%@ page import="org.xml.sax.SAXException" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="javax.xml.parsers.ParserConfigurationException" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.text.DateFormat" %>
+<%@ page import="java.util.Date" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%!
     class T{
@@ -95,8 +98,9 @@
     data for "amount over 5000"
     t delta r1 r2 amountStop1 amountStop2
 <%
+    DateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     for( T t : ts ){
-      out.println(new Timestamp(t.t+7*3600*1000).toString()
+      out.println(dfmt.format(new Date(t.t+7*3600*1000))
               +"   "+String.format("%.2f",(t.rate-t.rate2))
               +"   "+String.format("%.4f",t.rate)
               +" "+String.format("%.4f",t.rate2)
