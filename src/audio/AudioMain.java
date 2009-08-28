@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.awt.image.BufferedImage;
 import java.awt.*;
 
+import kjdss.KJFFT;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -23,7 +25,7 @@ public class AudioMain {
   
 
   public static void main(String[] args) throws Exception{
-    System.out.println(Math.pow(0.25, 1./400));
+    //System.out.println(Math.pow(0.25, 1./400));
     new AudioMain().m();
   }
 
@@ -72,9 +74,9 @@ public class AudioMain {
 
   void m() throws Exception{
     //wavWrite();
-    //wavTransform();
+    wavTransform();
     //wavVisualize();
-    wavVisualizeAvg();
+    //wavVisualizeAvg();
   }
 
   private void wavVisualize() throws Exception {
@@ -140,6 +142,35 @@ public class AudioMain {
     int rate = rateBytes.getRate();
     byte[] b = rateBytes.getB();
 
+//    for( double w=1; w<1000; w++ ){
+//      double x=0;
+//      double vx=0;
+//      double sumDx=0;
+//      for( int i=0; i<b.length; i++ ){
+//        sumDx=Math.max(sumDx,Math.pow(vx,2));
+//        x = x + vx/rate;
+//        vx += (-x*w + b[i] - vx)/rate;
+//      }
+//      System.out.println("w="+w+" sumDx="+sumDx);
+//    }
+    KJFFT fft = new KJFFT(256);
+    for( int st=0; st<b.length ; st+=256 ){
+      float[] d = new float[256];
+      for( int j=0; j<256; j++ ){
+        d[j] = b[st+j];
+      }
+      float[] res = fft.calculate(d);
+      //float[] res2 = fft.calculate(res);
+      for( int j=0; j<256/2; j++ ){
+        //System.out.println(j+" "+res[j]);
+        if( res[j]>0.5 ){
+          //System.out.println(j+" "+res[j]);
+          System.out.print(j+" ");
+        }
+      }
+      System.out.println();
+    }
+    
 
     for( double freq = 1; freq<rate/2; freq++ ){
       double p = power(b, rate, freq) / b.length / b.length;
@@ -158,36 +189,6 @@ public class AudioMain {
       s2 += val*Math.cos(2*Math.PI*i/rate*freq);
     }
     return s1*s1+s2*s2;
-  }
-
-  private class RateBytes {
-    private int rate;
-    private byte[] b;
-
-    public int getRate() {
-      return rate;
-    }
-
-    public byte[] getB() {
-      return b;
-    }
-
-    public RateBytes invoke() throws UnsupportedAudioFileException, IOException {
-      File fwav = new File("c:/tmp/accessed.wav");
-      //File fwav = new File("c:/tmp/precise_dial_tone.wav");  // a sine wave at 350 hertz and a sine wave at 440 hertz
-      //File fwav = new File("C:\\proj\\cr6\\sounds\\quatre.wav");
-      AudioInputStream in = AudioSystem.getAudioInputStream(fwav);
-      //in = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, in);
-      AudioFormat fmt = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-        in.getFormat().getSampleRate(), 8, 1, 1, in.getFormat().getFrameRate(), false  );
-      in = AudioSystem.getAudioInputStream(fmt, in);
-      //int rate = 11025;
-      rate = (int) in.getFormat().getFrameRate();
-      //b = new byte[rate / 10];
-      b = new byte[rate / 2];
-      in.read(b);
-      return this;
-    }
   }
 
 }

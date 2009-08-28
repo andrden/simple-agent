@@ -1,10 +1,17 @@
+Relational Reinforcement Learning - RRL
+http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.24.3318 - downloaded
+http://web.engr.oregonstate.edu/~tadepall/research/papers/rrl-overview.pdf
+
+Relational Learning, inductive logic programming, relational data mining,
+probabilistic relational modeling, speedup learning
+
+
 Bayesian RL - BEETLE algorithm, Dirichlets
 
 http://www.youtube.com/watch?v=hFBe9L1xCyY
 
 hierarchical Reinforcement Learning methods, Q-Cut
 
-Relational Reinforcement Learning - RRL
 
 Reinforcement Learning:
 An Introduction
