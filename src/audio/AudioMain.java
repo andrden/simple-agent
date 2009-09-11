@@ -163,7 +163,8 @@ public class AudioMain {
       //float[] res2 = fft.calculate(res);
       for( int j=0; j<256/2; j++ ){
         //System.out.println(j+" "+res[j]);
-        if( res[j]>0.5 ){
+        if( j<256/2-1 && j>0 && res[j]>res[j-1] && res[j]>res[j+1] ){
+        //if( res[j]>0.5 ){
           //System.out.println(j+" "+res[j]);
           System.out.print(j+" ");
         }
