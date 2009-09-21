@@ -160,7 +160,15 @@ public class KJFFT {
 
     }
 
-    private void prepareTables() {
+  public float[] getXre() {
+    return xre;
+  }
+
+  public float[] getXim() {
+    return xim;
+  }
+
+  private void prepareTables() {
 
         int n2 = ss2;
         int nu1 = nu - 1;
