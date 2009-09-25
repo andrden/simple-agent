@@ -28,7 +28,7 @@ public class FFTTest {
 
     File fwav = new File("D:\\proj\\4shared\\bin\\video\\windows\\aou.wav");
     //int chunk = 1024;
-    int chunk = 1024*4*16;
+    int chunk = 1024*2;
     AudioIn ai = new AudioIn(fwav, chunk);
     List<DFT> dfts = new ArrayList<DFT>();
 //    for( int i=0; i<20; i++ ){
@@ -37,11 +37,18 @@ public class FFTTest {
     
     for( int i=0; i<50; i++ ){
       double[] ch = ai.nextChunkDouble();
-      ai.play(ch, 5);
+
+
       DFT dft = new DFT();
       dft.meanStdDevRunning(ch);
-      //dft.forward(ch);
+      dft.forward(ch);
+
+      Graph g = new Graph();
+      //g.show(dft.mag);
+      g.show(ch);
+
       System.out.printf("stddev %f \n",  dft.stdDev);
+      //ai.play(ch, 20);
       dfts.add(dft);
     }
 //    for( int i=0; i<chunk/2+1; i++ ){
