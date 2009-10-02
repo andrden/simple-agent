@@ -11,12 +11,16 @@ public class DFT {
   double[] re;
   double[] im;
   double[] mag;
-  double twoPi = 2*Math.PI;
+  static double twoPi = 2*Math.PI;
 
   double mean;
   double stdDev;
 
   public double[] reconstruct(){
+    return reconstruct(re, im);
+  }
+
+  public static double[] reconstruct(double[] re, double[] im){
     int N = (re.length-1)*2;
     double[] ret = new double[N];
 
@@ -27,7 +31,9 @@ public class DFT {
           k = N;
         }
         ret[i] += re[j]*Math.cos(i*j*twoPi/N)/k;
-        ret[i] += im[j]*Math.sin(i*j*twoPi/N)/k;
+        if( im!=null ){
+          ret[i] += im[j]*Math.sin(i*j*twoPi/N)/k;
+        }
       }
     }
 

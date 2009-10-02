@@ -74,7 +74,10 @@ public class Graph {
     if( arr.length==h.length+1 ){
       return arr[idx];
     }
-    throw new UnsupportedOperationException();
+    if( arr.length==h.length/4 ){
+      return arr[idx/4];
+    }
+    throw new UnsupportedOperationException("arr.len="+arr.length);
   }
 
 

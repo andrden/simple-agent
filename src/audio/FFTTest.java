@@ -1,9 +1,7 @@
 package audio;
 
-import kjdss.KJFFT;
 import utils.Utils;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
@@ -34,23 +32,30 @@ public class FFTTest {
 //    for( int i=0; i<20; i++ ){
 //      double[] ch = ai.nextChunkDouble();
 //    }
-    
-    for( int i=0; i<50; i++ ){
-      double[] ch = ai.nextChunkDouble();
 
+    ChunkOps chAvg = new ChunkOps();
+    for( int i=0; i<50/*280*/; i++ ){
+      double[] ch = ai.nextChunkDouble();
+      //ch = ChunkOps.hammingWindow(ch);
 
       DFT dft = new DFT();
       dft.meanStdDevRunning(ch);
       dft.forward(ch);
 
-      Graph g = new Graph();
+      chAvg.add(dft.mag);
+      //Graph g = new Graph();
       //g.show(dft.mag);
-      g.show(ch);
+      //g.show(ch);
 
-      System.out.printf("stddev %f \n",  dft.stdDev);
-      //ai.play(ch, 20);
+      System.out.printf("i=%d stddev %f \n",  i, dft.stdDev);
+      ch = DFT.reconstruct(dft.mag,  null);
+      ai.play(ch, 5);
       dfts.add(dft);
     }
+
+    Graph g = new Graph();
+    g.show(ChunkOps.first(chAvg.avg(),256));
+
 //    for( int i=0; i<chunk/2+1; i++ ){
 //      for( DFT d : dfts ){
 //        System.out.printf("%4.0f ",d.mag[i]);
