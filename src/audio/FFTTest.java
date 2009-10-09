@@ -4,7 +4,11 @@ import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 import java.io.File;
+
+import edu.princeton.cs.FFT;
+import edu.princeton.cs.Complex;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,25 +40,33 @@ public class FFTTest {
     ChunkOps chAvg = new ChunkOps();
     for( int i=0; i<50/*280*/; i++ ){
       double[] ch = ai.nextChunkDouble();
-      //ch = ChunkOps.hammingWindow(ch);
+      ch = ChunkOps.hammingWindow(ch);
 
       DFT dft = new DFT();
       dft.meanStdDevRunning(ch);
       dft.forward(ch);
+      
 
       chAvg.add(dft.mag);
-      //Graph g = new Graph();
-      //g.show(dft.mag);
+
+      Graph g = new Graph();
+      double[] magMod = dft.mag.clone();
+      Arrays.fill(magMod, 0, 20/*up to 100hz*/, 0d);
+      //g.show(magMod);
       //g.show(ch);
 
-      System.out.printf("i=%d stddev %f \n",  i, dft.stdDev);
-      ch = DFT.reconstruct(dft.mag,  null);
-      ai.play(ch, 5);
+      System.out.printf("i=%d stddev %f  sum2=%f \n",  i, dft.stdDev, ChunkOps.sumSquared(ch));
+      //ch = DFT.reconstruct(dft.mag,  null);
+      //ai.play(ch, 5);
       dfts.add(dft);
     }
 
     Graph g = new Graph();
-    g.show(ChunkOps.first(chAvg.avg(),256));
+    double[] magShow = chAvg.avg().clone();
+    g.show( ChunkOps.toDecibels(magShow) );
+    Arrays.fill(magShow, 0, 20/*up to 100hz*/, 0d);
+    g.show( ChunkOps.toDecibels(magShow) );
+    //g.show(ChunkOps.first(chAvg.avg(),256));
 
 //    for( int i=0; i<chunk/2+1; i++ ){
 //      for( DFT d : dfts ){

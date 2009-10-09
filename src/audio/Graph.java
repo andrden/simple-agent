@@ -91,6 +91,8 @@ public class Graph {
     //clicked=false;
     if( frame==null ){
       mkFrame();
+    }else{
+      frame.setVisible(true);
     }
     while(frame.isVisible()){
       try {

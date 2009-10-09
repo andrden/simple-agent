@@ -1,5 +1,8 @@
 package audio;
 
+import edu.princeton.cs.Complex;
+import edu.princeton.cs.FFT;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -32,7 +35,7 @@ public class DFT {
         }
         ret[i] += re[j]*Math.cos(i*j*twoPi/N)/k;
         if( im!=null ){
-          ret[i] += im[j]*Math.sin(i*j*twoPi/N)/k;
+          ret[i] -= im[j]*Math.sin(i*j*twoPi/N)/k;
         }
       }
     }
@@ -68,18 +71,39 @@ public class DFT {
   public void forward(double[] input) {
     meanStdDevRunning(input);
 
+    Complex[] chCompl = new Complex[input.length];
+    for( int j=0; j<input.length; j++ ){
+      chCompl[j] = new Complex(input[j],0);
+    }
+    Complex[] freqCompl = FFT.fft(chCompl);
+
     int N = input.length;
     re = new double[N/2+1];
     im = new double[N/2+1];
-    mag = new double[N/2+1];
     for( int j=0; j<re.length; j++ ){
-      for( int i=0; i<N; i++ ){
-        re[j] += input[i]*Math.cos(i*j*twoPi/N);
-        im[j] += input[i]*Math.sin(i*j*twoPi/N);
-      }
+      re[j] = freqCompl[j].re();
+      im[j] = freqCompl[j].im();
+    }
+
+    //correlationDFT(input);
+
+    mag = new double[input.length/2+1];
+    for( int j=0; j<re.length; j++ ){
       mag[j] = Math.sqrt(re[j]*re[j] + im[j]*im[j]);
     }
 
+  }
+
+  private void correlationDFT(double[] input) {
+    int N = input.length;
+    re = new double[N/2+1];
+    im = new double[N/2+1];
+    for( int j=0; j<re.length; j++ ){
+      for( int i=0; i<N; i++ ){
+        re[j] += input[i]*Math.cos(i*j*twoPi/N);
+        im[j] -= input[i]*Math.sin(i*j*twoPi/N);
+      }
+    }
   }
 
 }

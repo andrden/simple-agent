@@ -43,4 +43,27 @@ public class ChunkOps {
     System.arraycopy(d,0,ret,0,count);
     return ret;
   }
+
+  static double[] toDecibels(double[] d){
+    double[] res = new double[d.length];
+    for( int i=0;i<d.length; i++ ){
+      if(d[i]==0 ){
+        res[i] = -100;
+      }else{
+        res[i] = 20*Math.log10(d[i]);
+      }
+      if( Double.isInfinite(res[i]) || Double.isNaN(res[i]) ){
+        throw new RuntimeException("log() err "+res[i]);
+      }
+    }
+    return res;
+  }
+
+  static double sumSquared(double[] d){
+    double s = 0;
+    for( double di : d ){
+      s += di*di;
+    }
+    return s;
+  }
 }
