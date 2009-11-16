@@ -31,3 +31,5 @@ Is that correct -
 byte[] buf = remote.read();
 String s = new String(buf, utf-8);
 
+*)
+Have you ever found any bugs in JVM or java standard library?
