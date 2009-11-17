@@ -12,7 +12,7 @@ import static java.lang.Math.*;
  */
 public class Pendulum {
   final double freq;
-  double a = 5;
+  double a = 25;
   double x=0;
   double v=0;
   double c1=0;
