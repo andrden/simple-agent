@@ -12,17 +12,42 @@ import static java.lang.Math.*;
  */
 public class Pendulum {
   final double freq;
+  final double freqHz;
   double a = 25;
   double x=0;
   double v=0;
   double c1=0;
   double c2=0;
 
+  double[] powersPrev=new double[200];
+  int powersPrevIdx=0;
+  double prevP;
+  double oldPdelta=0;
+  double segStartPAvg=0;
+
   Pendulum(double freqHz){
+      this.freqHz=freqHz;
       freq = freqHz  *2*PI;
   }
 
   void timeStep(double delta){
+      double curP = power();
+      double curPAvg=powerAvg();
+      double pdelta=Math.signum(curP-powersPrev[powersPrevIdx]);
+      powersPrev[powersPrevIdx]=curP;
+      powersPrevIdx = (powersPrevIdx + 1) % powersPrev.length;
+      if( pdelta*oldPdelta<0 ){
+          if(curP>0.2 && Math.abs(curPAvg-segStartPAvg)>0.01){
+            System.out.println(System.currentTimeMillis()+
+                    " freq="+freqHz+" end delta "+oldPdelta+" pavg="+curPAvg);
+          }
+          segStartPAvg=curPAvg;
+      }
+      if( pdelta!=0 ){
+          oldPdelta = pdelta;
+      }
+      prevP=curP;
+
       double e = exp(-a*delta);
       x = e*(c1*cos(freq*delta)+c2*sin(freq*delta));
       v = -a*x + freq*e*(-c1*sin(freq*delta)+c2*cos(freq*delta));
@@ -36,6 +61,13 @@ public class Pendulum {
   }
   double power(){
       return sqrt(c1*c1+c2*c2);
+  }
+  double powerAvg(){
+      double s=0;
+      for( double d : powersPrev ){
+          s+=d;
+      }
+      return s/powersPrev.length;
   }
 
   public static void main(String[] args){

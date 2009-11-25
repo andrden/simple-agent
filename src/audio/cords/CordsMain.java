@@ -30,10 +30,25 @@ public class CordsMain {
      jframe.setSize(600,600);
      jframe.setVisible(true);
 
+     JFrame singframe = new JFrame();
+     singframe.setSize(800,300);
+     singframe.setVisible(true);
+
+     Pendulum sing=null;
+     Pendulum sing2=null;
      List<Pendulum> pends = new ArrayList<Pendulum>();
-     for( double i=10; i<=5000; i*= (i<200 ? 1.3 :1.07)  ){
+     for( double i=70; i<=5000; i*= (i<200 ? 1.3 :1.07)  ){
          System.out.println(i);
-         pends.add(new Pendulum(i));
+         Pendulum pi = new Pendulum(i);
+         if( sing==null && i>820 ){
+             sing=pi;
+             System.out.println("single "+i);
+         }
+         if( sing2==null && i>1820 ){
+             sing2=pi;
+             System.out.println("single2 "+i);
+         }
+         pends.add(pi);
      }
 
      int sampleRate = 11025;
@@ -46,6 +61,8 @@ public class CordsMain {
          line.read(buf, 0, buf.length);
          DataInputStream di = new DataInputStream(new ByteArrayInputStream(buf));
          final Graphics graphics = jframe.getContentPane().getGraphics();
+         final Graphics sgraphics = singframe.getContentPane().getGraphics();
+         double audioValPrev=0;
          for( int i=0; i<buf.length/2; i++ ){
              double audioVal = di.readShort()/256.;
              for( Pendulum p : pends ){
@@ -72,10 +89,10 @@ public class CordsMain {
                  int pvalMax=0;
                  for( Pendulum p : pends ){
                      x++;
-                     double pp = p.power()*100;
+                     double pp = p.powerAvg()*100;
                      dvals[x-1]=pp;
-                     if( pp<2 ){
-                         pp=2;
+                     if( pp<5 ){
+                         pp=5;
                      }
                      int pi = (int)(Math.log10(1+pp)*60);
                      //System.out.println(pi);
@@ -95,8 +112,32 @@ public class CordsMain {
                      graphics.fillRect(x*10,y*2, 10,2);
                      //System.out.print(pi+" ");
                  }
-                 //System.out.println("==");
              }
+             if(globalIdx%10==0){
+                 int x=globalIdx/10 % singframe.getWidth();
+                 sgraphics.setColor(Color.WHITE);
+                 sgraphics.drawLine(x, 0, x, singframe.getHeight());
+                 double p;
+                 //if( globalIdx%20==0 ){
+                   sgraphics.setColor(Color.BLUE.darker());
+                   //p=sing2.power()*10;
+                   p=Math.abs(audioVal-audioValPrev)/256*10;
+                 if( p>1 ) p=1;
+                 sgraphics.drawLine(x, (int)(singframe.getHeight()*(1./2-p/2)),
+                         x, singframe.getHeight()/2);
+
+                   //}else{
+                   sgraphics.setColor(Color.GREEN.darker());
+                   p=sing.powerAvg()*10;
+                 //}
+                 if( p>1 ) p=1;
+                 sgraphics.drawLine(x, (int)(singframe.getHeight()*(1-p/2)),
+                         x, singframe.getHeight());
+             }
+
+                 if( sing.powerAvg()>0.1 ){
+                   //System.out.println(globalIdx+ " sing.power()="+sing.power());
+                 }
 
              /*
              System.out.print(buf[i]+" ");
@@ -104,6 +145,7 @@ public class CordsMain {
                  System.out.println();
              }
               */
+             audioValPrev=audioVal;
          }
      }
    }
