@@ -34,14 +34,23 @@ public class Generate {
           sum += v;
       }
 
+      long tglob=0;
       for( ;; ){
           ByteArrayOutputStream ba = new ByteArrayOutputStream();
           DataOutputStream dos = new DataOutputStream(ba);
           for( int i=0; i<1000; i++ ){
+              tglob++;
               t++;
               double sig=0;
               for( Double f : sines.keySet() ){
-                  sig += sines.get(f)*sin(f*t/sampleRate*2*Math.PI);
+                if( tglob<25000 ){
+                  break;
+                }
+                if( f*30 > tglob-25000){
+                  break;
+                }
+
+                  sig += sines.get(f)*sin(f*(tglob-25000-f*30)/sampleRate*2*Math.PI);
               }
               dos.writeShort((short)(sig/sum*25000));
           }
