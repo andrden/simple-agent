@@ -52,19 +52,18 @@ public class CordsMain {
      }
 
      int sampleRate = 11025;
-     TargetDataLine line = AudioSystem.getTargetDataLine(new AudioFormat(sampleRate,16,1,true,true));
-     line.open();
-     line.start();
-     byte[] buf = new byte[2048];
+     //SoundIn soundIn = new Mike(sampleRate);
+     SoundIn soundIn = new Noise();
      int globalIdx=0;
      for( int j=0; ; j++ ){
-         line.read(buf, 0, buf.length);
-         DataInputStream di = new DataInputStream(new ByteArrayInputStream(buf));
          final Graphics graphics = jframe.getContentPane().getGraphics();
          final Graphics sgraphics = singframe.getContentPane().getGraphics();
          double audioValPrev=0;
-         for( int i=0; i<buf.length/2; i++ ){
-             double audioVal = di.readShort()/256.;
+         for( int i=0; ; i++ ){
+             if(globalIdx%1000==0){
+               Thread.sleep(150);
+             }
+             double audioVal = soundIn.next()/256./3;
              for( Pendulum p : pends ){
                  p.timeStep(1./sampleRate);
                  p.vchange(audioVal*p.freq/1000);
