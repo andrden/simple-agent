@@ -10,7 +10,8 @@ import cern.jet.random.engine.MersenneTwister64;
 * To change this template use File | Settings | File Templates.
 */
 class Noise implements SoundIn{
-    short[] buf = new short[11025*4*1/7];
+    short[] buf = new short[11025*4*15/7];
+    int globalIdx=0;
     int idx=-1;
     Noise(){
         //Random rnd = new Random(System.nanoTime());
@@ -33,6 +34,11 @@ class Noise implements SoundIn{
     }
     public short next(){
        idx = (idx+1)%buf.length;
-       return buf[idx];
+       globalIdx++;
+       double dsin=0;
+       if( globalIdx/(11025*4*4) % 2 == 0 ){
+           dsin = 150*Math.sin(2*Math.PI*globalIdx*350/(11025*4));
+       }
+       return (short)(buf[idx] + dsin);
     }
 }

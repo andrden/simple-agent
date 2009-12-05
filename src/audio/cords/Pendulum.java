@@ -38,8 +38,8 @@ public class Pendulum {
       powersPrevIdx = (powersPrevIdx + 1) % powersPrev.length;
       if( pdelta*oldPdelta<0 ){
           if(curP>0.2 && Math.abs(curPAvg-segStartPAvg)>0.01){
-            System.out.println(System.currentTimeMillis()+
-                    " freq="+freqHz+" end delta "+oldPdelta+" pavg="+curPAvg);
+            //System.out.println(System.currentTimeMillis()+
+             //       " freq="+freqHz+" end delta "+oldPdelta+" pavg="+curPAvg);
           }
           segStartPAvg=curPAvg;
       }
