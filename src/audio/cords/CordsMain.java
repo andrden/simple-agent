@@ -27,12 +27,12 @@ public class CordsMain {
     static class TwoRanges{
         List<Pendulum> pends1=new ArrayList<Pendulum>();
         List<Pendulum> pends2=new ArrayList<Pendulum>();
-        TwoRanges(List<Pendulum> pends){
+        TwoRanges(List<Pendulum> pends, int a1, int a2, int b1, int b2){
             for( Pendulum p : pends ){
-              if( p.freqHz>=100 && p.freqHz<=500 ){
+              if( p.freqHz>=a1 && p.freqHz<=a2 ){
                   pends1.add(p);
               }
-              if( p.freqHz>=500 && p.freqHz<=1500 ){
+              if( p.freqHz>=b1 && p.freqHz<=b2 ){
                   pends2.add(p);
               }
             }
@@ -44,13 +44,16 @@ public class CordsMain {
             }
             return d/pends.size();
         }
-        void paint(Graphics g, int w, int h){
+        void paint(Graphics g, int x0, int w, int h){
            double a1 = avg(pends1);
            double a2 = avg(pends2);
            double k=a1/a2;
            double y = k/10*h;
            double x = (a1+a2)/0.01*w;
-           g.drawOval((int)x, (int)y, 2, 2);
+           if( x>w ){
+               x=w;
+           }
+           g.drawOval(x0+(int)x, (int)y, 2, 2);
         }
     }
 
@@ -86,7 +89,11 @@ public class CordsMain {
      }
      sing = new Pendulum(350);
      pends.add(sing);
-     TwoRanges twoR = new TwoRanges(pends);
+     List<TwoRanges> twoRList = new ArrayList<TwoRanges>();
+     twoRList.add( new TwoRanges(pends,200,500,500,1000) );
+     twoRList.add( new TwoRanges(pends,100,200,1000,1500) );
+     twoRList.add( new TwoRanges(pends,200,1000,1000,2000) );
+     twoRList.add( new TwoRanges(pends,1000,2000,2000,3000) );
 
      int sampleRate = 11025;
      SoundIn soundIn = new Mike(sampleRate);
@@ -117,8 +124,14 @@ public class CordsMain {
              }
 */
              if(globalIdx%10==0){
-                 twoR.paint(cmpFrame.getContentPane().getGraphics(), 
-                         cmpFrame.getWidth(), cmpFrame.getHeight());
+                 int ii=0;
+                 final Graphics gr = cmpFrame.getContentPane().getGraphics();
+                 int w = cmpFrame.getWidth();
+                 for( TwoRanges twoR  : twoRList ){
+
+                   twoR.paint(gr,w*ii/twoRList.size(),w/twoRList.size(),cmpFrame.getHeight());
+                   ii++;
+                 }
              }
              if(false && globalIdx%100==0){
 
