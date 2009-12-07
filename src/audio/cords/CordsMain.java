@@ -40,7 +40,8 @@ public class CordsMain {
         double avg(List<Pendulum> pends){
             double d=0;
             for( Pendulum p : pends ){
-                d+=p.power();
+                //d+=p.power();
+                d+=p.powerAvg();
             }
             return d/pends.size();
         }
@@ -74,9 +75,11 @@ public class CordsMain {
      Pendulum sing=null;
      Pendulum sing2=null;
      List<Pendulum> pends = new ArrayList<Pendulum>();
+     int sampleRate = 11025;
+     double step=1./sampleRate;
      for( double i=70; i<=5000; i*= (i<200 ? 1.3 :1.07)  ){
          System.out.println(i);
-         Pendulum pi = new Pendulum(i);
+         Pendulum pi = new Pendulum(i, step);
          if( sing==null && i>350 ){
              sing=pi;
              System.out.println("single "+i);
@@ -87,7 +90,7 @@ public class CordsMain {
          }
          pends.add(pi);
      }
-     sing = new Pendulum(350);
+     sing = new Pendulum(350, step);
      pends.add(sing);
      List<TwoRanges> twoRList = new ArrayList<TwoRanges>();
      twoRList.add( new TwoRanges(pends,200,500,500,1000) );
@@ -95,23 +98,23 @@ public class CordsMain {
      twoRList.add( new TwoRanges(pends,200,1000,1000,2000) );
      twoRList.add( new TwoRanges(pends,1000,2000,2000,3000) );
 
-     int sampleRate = 11025;
+     
      SoundIn soundIn = new Mike(sampleRate);
      //SoundIn soundIn = new Noise();
      int globalIdx=0;
      for( int j=0; ; j++ ){
          double audioValPrev=0;
          for( int i=0; ; i++ ){
-         final Graphics graphics = jframe.getContentPane().getGraphics();
-         final Graphics sgraphics = singframe.getContentPane().getGraphics();
              if(globalIdx%1000==0){
                //Thread.sleep(150);
                //System.out.println(twoR.avg(twoR.pends1)+" rates to "+twoR.avg(twoR.pends2));
              }
              double audioVal = soundIn.next()/256./3;
+             double audioVal1000 = audioVal/1000;
+             
              for( Pendulum p : pends ){
-                 p.timeStep(1./sampleRate);
-                 p.vchange(audioVal*p.freq/1000);
+                 p.timeStep();
+                 p.vchange(audioVal1000 * p.freq);
              }
              globalIdx++;
 /*
@@ -134,6 +137,8 @@ public class CordsMain {
                  }
              }
              if(false && globalIdx%100==0){
+         final Graphics graphics = jframe.getContentPane().getGraphics();
+         final Graphics sgraphics = singframe.getContentPane().getGraphics();
 
                  final int y = globalIdx / 100 % (jframe.getHeight()/2);
                  graphics.setColor(Color.BLUE);
@@ -169,6 +174,9 @@ public class CordsMain {
                  }
              }
              if(false && globalIdx%10==0){
+          final Graphics graphics = jframe.getContentPane().getGraphics();
+          final Graphics sgraphics = singframe.getContentPane().getGraphics();
+
                  int x=globalIdx/10 % singframe.getWidth();
                  sgraphics.setColor(Color.WHITE);
                  sgraphics.drawLine(x, 0, x, singframe.getHeight());
