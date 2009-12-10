@@ -68,6 +68,10 @@ public class DFT {
     stdDev = Math.sqrt((sum2 - sum*sum/input.length)/(input.length-1));
   }
 
+  /**
+   * Forward FFT
+   * @param input
+   */
   public void forward(double[] input) {
     meanStdDevRunning(input);
 
@@ -106,4 +110,7 @@ public class DFT {
     }
   }
 
+  public double[] getMagnitudes() {
+    return mag;
+  }
 }
