@@ -30,11 +30,20 @@ public class ShShCorrelate {
   }
 
   void play() throws Exception{
+    // sh ш to higher (*3/2 or *2) freq = sh' щ
+    // ch ч to higher (*3/2 or *2) freq = ts ц - very distinct
+    // ss с to higher (*3/2 or *2) freq = ss с - no change
+    // sh ш to lower freq (/2) = mechanic sound
+    // ch ч to lower freq (/2) = ч ch-strong
+    // ss с to lower freq (/2) = щ sh'
+    // [sh - sh' - ss  ш-щ-с] is lower-higher series of the same freq curve
+
+
     double[] freqMagRef = freqMagnitudes(soundBufAt(250));
 
     DataInputStream di = soundFile();
     short[] buf = new short[128];
-    int freq = 11025;
+    int freq = 11025*2;
     SourceDataLine line = AudioSystem.getSourceDataLine(new AudioFormat(freq,16,1,true,true));
     line.open();
     line.start();
@@ -50,7 +59,7 @@ public class ShShCorrelate {
 
       byte[] b = toBytes(buf);
       line.write(b, 0, b.length);
-      line.drain();
+      //line.drain();
     }
   }
 
