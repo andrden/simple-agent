@@ -6,6 +6,8 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.AudioFormat;
 import java.io.*;
+import java.util.List;
+import java.util.Arrays;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +19,11 @@ import java.io.*;
 public class ShShCorrelate {
   public static void main(String[] args) throws Exception{
     new ShShCorrelate().play();
+  }
+  private DataInputStream soundFile() throws FileNotFoundException {
+    DataInputStream di = new DataInputStream(new FileInputStream(
+        "C:\\proj\\cr6\\sounds/shshss.voice"));
+    return di;
   }
 
   short[] soundBufAt(int pos) throws Exception{
@@ -38,36 +45,57 @@ public class ShShCorrelate {
     // ss с to lower freq (/2) = щ sh'
     // [sh - sh' - ss  ш-щ-с] is lower-higher series of the same freq curve
 
-
-    double[] freqMagRef = freqMagnitudes(soundBufAt(250));
+    List<double[]> freqMagRefs = Arrays.asList(
+        freqMagnitudes(soundBufAt(250)),
+        freqMagnitudes(soundBufAt(339))
+        //freqMagnitudes(soundBufAt(240)),
+        //freqMagnitudes(soundBufAt(253))
+    );
 
     DataInputStream di = soundFile();
     short[] buf = new short[128];
-    int freq = 11025*2;
+    int freq = 11025;
     SourceDataLine line = AudioSystem.getSourceDataLine(new AudioFormat(freq,16,1,true,true));
     line.open();
     line.start();
+    double oldMight=0;
     for( int i=0; ; i++ ){
       readAll(di, buf);
+      double might = Math.sqrt(sumSq(buf)/buf.length);
       double[] freqMagI = freqMagnitudes(buf);
-      double korr = korr0(freqMagRef, freqMagI);
       //Thread.sleep( 1000*buf.length/freq );
+
+      double[] korrs = new double[freqMagRefs.size()];
+      double ksum=0;
+      StringBuilder kstr=new StringBuilder();
+      for( int ki=0; ki<korrs.length; ki++ ){
+        korrs[ki] = korr0(freqMagRefs.get(ki), freqMagI);
+        ksum += korrs[ki];
+        kstr.append( " "+(int)(korrs[ki]*100) );
+      }
+
       System.out.println(System.currentTimeMillis()%100000+" "
           +i+": "
-          +(int)Math.sqrt(sumSq(buf)/buf.length)
-          +" korr%="+(int)(korr*100) );
+          +(int)might
+          +" korr%="+(int)(ksum/korrs.length*100)
+          +" []="+kstr );
 
-      byte[] b = toBytes(buf);
+      byte[] b = toBytes( mightCorrect(buf,oldMight,might,500) );
       line.write(b, 0, b.length);
       //line.drain();
+      oldMight = might;
     }
   }
 
-  private DataInputStream soundFile() throws FileNotFoundException {
-    DataInputStream di = new DataInputStream(new FileInputStream(
-        "C:\\proj\\cr6\\sounds/shshss.voice"));
-    return di;
+  short[] mightCorrect(short[] src, double might1, double might2, double mightTarget){
+    short[] ret = new short[src.length];
+    for( int i=0 ;i<src.length; i++ ){
+      double k = mightTarget / (might1 + (might2-might1)*(i+1)/src.length);
+      ret[i] = (short)(k*src[i]);
+    }
+    return ret;
   }
+
 
   double sumSq(short[] sh){
     double d=0;
