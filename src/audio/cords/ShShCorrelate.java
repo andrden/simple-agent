@@ -61,9 +61,10 @@ public class ShShCorrelate {
     double oldMight=0;
     for( int i=0; ; i++ ){
       readAll(di, buf);
-      double might = Math.sqrt(sumSq(buf)/buf.length);
+      double might = might(buf);
+      buf=mightCorrect(buf,oldMight,might,200);
       double[] freqMagI = freqMagnitudes(buf);
-      //Thread.sleep( 1000*buf.length/freq );
+      Thread.sleep( 1000*buf.length/freq );
 
       double[] korrs = new double[freqMagRefs.size()];
       double ksum=0;
@@ -76,22 +77,42 @@ public class ShShCorrelate {
 
       System.out.println(System.currentTimeMillis()%100000+" "
           +i+": "
-          +(int)might
+          +(int)might+"->"+(int)might(buf)
           +" korr%="+(int)(ksum/korrs.length*100)
           +" []="+kstr );
 
-      byte[] b = toBytes( mightCorrect(buf,oldMight,might,500) );
+      //byte[] b = toBytes( mightCorrect(buf,oldMight,might,500) );
+      byte[] b = toBytes( buf );
+
       line.write(b, 0, b.length);
       //line.drain();
       oldMight = might;
     }
   }
 
+  double might(short[] buf){
+    //double might = Math.sqrt(sumSq(buf)/buf.length);
+
+    double s=0;
+    for( int i=1; i<buf.length; i++ ){
+      double diff = buf[i] - buf[i-1];
+      s += diff*diff;
+    }
+    return Math.sqrt(s/(buf.length-1));
+  }
+
   short[] mightCorrect(short[] src, double might1, double might2, double mightTarget){
     short[] ret = new short[src.length];
     for( int i=0 ;i<src.length; i++ ){
       double k = mightTarget / (might1 + (might2-might1)*(i+1)/src.length);
-      ret[i] = (short)(k*src[i]);
+      double newv = k * src[i];
+      if( newv>Short.MAX_VALUE ){
+        newv = Short.MAX_VALUE;
+      }
+      if( newv<Short.MIN_VALUE ){
+        newv = Short.MIN_VALUE;
+      }
+      ret[i] = (short) newv;
     }
     return ret;
   }
