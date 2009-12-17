@@ -66,4 +66,19 @@ public class ChunkOps {
     }
     return s;
   }
+
+  public static double[] add(double[] d1, double[] d2){
+    double[] ret = new double[d1.length];
+    for( int i=0; i<d1.length; i++ ){
+      ret[i] = d1[i]+d2[i];
+    }
+    return ret;
+  }
+  public static double[] div(double[] d1, double k){
+    double[] ret = new double[d1.length];
+    for( int i=0; i<d1.length; i++ ){
+      ret[i] = d1[i]/k;
+    }
+    return ret;
+  }
 }

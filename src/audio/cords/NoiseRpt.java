@@ -9,11 +9,11 @@ import cern.jet.random.engine.MersenneTwister64;
 * Time: 4:21:37 PM
 * To change this template use File | Settings | File Templates.
 */
-class Noise implements SoundIn{
+class NoiseRpt implements SoundIn{
     short[] buf = new short[11025*4*15/7];
     int globalIdx=0;
     int idx=-1;
-    Noise(){
+    NoiseRpt(){
         //Random rnd = new Random(System.nanoTime());
       MersenneTwister64 rnd64 = new MersenneTwister64(new java.util.Date());
         for( int i=0; i<buf.length; i++ ){
@@ -32,7 +32,8 @@ class Noise implements SoundIn{
             buf[i] = (short)(s/12*25000);
         }
     }
-    public short next(){
+
+  public short next(){
        idx = (idx+1)%buf.length;
        globalIdx++;
        double dsin=0;

@@ -13,7 +13,7 @@ public class RepeatNoise {
               AudioSystem.getSourceDataLine(new AudioFormat(sampleRate,16,1,true,true));
       line.open();
       line.start();
-      SoundIn noise=new Noise();
+      SoundIn noise=new NoiseRpt();
 
       for( ;; ){
           ByteArrayOutputStream ba = new ByteArrayOutputStream();
