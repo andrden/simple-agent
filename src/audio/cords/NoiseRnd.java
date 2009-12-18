@@ -28,6 +28,14 @@ class NoiseRnd implements SoundIn{
     return (short)(s/12*25000);
   }
 
+  short[] next(int len){
+    short[] r = new short[len];
+    for( int i=0; i<len; i++ ){
+      r[i] = next();
+    }
+    return r;
+  }
+
   public static void main(String[] args) throws Exception{
       int sampleRate = 11025*4;
       SourceDataLine line =
@@ -41,19 +49,19 @@ class NoiseRnd implements SoundIn{
 //      desirFreq[i]=i;
 //    }
 
-    режем на большие куски, чтобы получить ШШШШ ?
+    //режем на большие куски, чтобы получить ШШШШ ?
 
-      ShShCorrelate shsh = new ShShCorrelate();
+      ShShCorrelate shsh = new ShShCorrelate(4096);
       //double[] desirFreq = shsh.freqMagnitudes(shsh.soundBufAt(257));
       //double[] desirFreq = shsh.freqMagnitudes(shsh.soundBufAt(405));
-      double[] desirFreq = shsh.freqMagnitudes(shsh.soundBufAt(250));
-      int avg=15;
-      for( int i=1; i<avg; i++ ){
-        desirFreq = ChunkOps.add(desirFreq, shsh.freqMagnitudes(shsh.soundBufAt(250+i)));
-      }
-      desirFreq = ChunkOps.div(desirFreq, avg);
+      double[] desirFreq = shsh.freqMagnitudes(shsh.soundBufAt(250/8/4));
+//      int avg=15;
+//      for( int i=1; i<avg; i++ ){
+//        desirFreq = ChunkOps.add(desirFreq, shsh.freqMagnitudes(shsh.soundBufAt(250+i)));
+//      }
+//      desirFreq = ChunkOps.div(desirFreq, avg);
 
-      noise = new Filter(noise, desirFreq, 101, 0.02);
+      noise = new Filter(noise, desirFreq, 2001, 0.01);
 
       for( ;; ){
           ByteArrayOutputStream ba = new ByteArrayOutputStream();

@@ -17,8 +17,14 @@ import java.util.Arrays;
  * To change this template use File | Settings | File Templates.
  */
 public class ShShCorrelate {
+  int chunkSize;
+
+  public ShShCorrelate(int chunkSize) {
+    this.chunkSize = chunkSize;
+  }
+
   public static void main(String[] args) throws Exception{
-    new ShShCorrelate().play();
+    new ShShCorrelate(128).play();
   }
   private DataInputStream soundFile() throws FileNotFoundException {
     DataInputStream di = new DataInputStream(new FileInputStream(
@@ -28,7 +34,7 @@ public class ShShCorrelate {
 
   short[] soundBufAt(int pos) throws Exception{
     DataInputStream di = soundFile();
-    short[] buf = new short[128];
+    short[] buf = new short[chunkSize];
     int freq = 11025;
     for( int i=0; i<=pos; i++ ){
       readAll(di, buf);
@@ -53,17 +59,28 @@ public class ShShCorrelate {
     );
 
     DataInputStream di = soundFile();
-    short[] buf = new short[128];
+    short[] buf = new short[chunkSize];
     int freq = 11025;
     SourceDataLine line = AudioSystem.getSourceDataLine(new AudioFormat(freq,16,1,true,true));
     line.open();
     line.start();
     double oldMight=0;
+
+    int kernelLen=21;
+    NoiseRnd noiseRnd = new NoiseRnd();
+    short[] remain=new short[kernelLen-1];
+
     for( int i=0; ; i++ ){
       readAll(di, buf);
       double might = might(buf);
-      buf=mightCorrect(buf,oldMight,might,200);
+      //buf=mightCorrect(buf,oldMight,might,200);
       double[] freqMagI = freqMagnitudes(buf);
+
+      short[] bufOrig=buf;
+      short[] convolve=Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.05);
+      buf = Filter.convolveOverlap(remain, convolve);
+      double[] freqMagIModif = freqMagnitudes(buf);
+
       Thread.sleep( 1000*buf.length/freq );
 
       double[] korrs = new double[freqMagRefs.size()];

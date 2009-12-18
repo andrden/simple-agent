@@ -23,6 +23,32 @@ public class Filter implements SoundIn{
     baseBuf = new short[kernelLen];
   }
 
+  public static short[] apply(short[] src, double[] desirFreq, int kernelLen, double scaleTarget){
+    short[] ret = new short[src.length+kernelLen-1];
+    SoundIn si = new ArraySoundIn(src);
+    Filter f = new Filter(si, desirFreq, kernelLen, scaleTarget);
+    for( int i=0; i<ret.length; i++ ){
+      ret[i] = f.next();
+    }
+    return ret;
+  }
+
+  public static short[] convolveOverlap(short[] remain, short[] allNew){
+    short[] ret = new short[allNew.length-remain.length];
+    for( int i=0; i<ret.length; i++ ){
+      if( i<remain.length ){
+        ret[i] = (short)(allNew[i]+remain[i]);
+      }else{
+        ret[i] = allNew[i];
+      }
+
+    }
+    for( int i=0; i<remain.length; i++ ){
+      remain[i] = allNew[allNew.length-remain.length+i];
+    }
+    return ret;
+  }
+
   public short next() {
     baseBuf[baseBufPos] = base.next();
     double sum=0;
