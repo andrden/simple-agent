@@ -28,7 +28,7 @@ public class ShShCorrelate {
   }
   private DataInputStream soundFile() throws FileNotFoundException {
     DataInputStream di = new DataInputStream(new FileInputStream(
-        "C:\\proj\\cr6\\sounds/shshss.voice"));
+        "C:\\proj\\cr6\\sounds/onetwothree.voice"));
     return di;
   }
 
@@ -77,11 +77,11 @@ public class ShShCorrelate {
       double[] freqMagI = freqMagnitudes(buf);
 
       short[] bufOrig=buf;
-      short[] convolve=Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.05);
+      short[] convolve=Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.1);
       buf = Filter.convolveOverlap(remain, convolve);
       double[] freqMagIModif = freqMagnitudes(buf);
 
-      Thread.sleep( 1000*buf.length/freq );
+      //Thread.sleep( 1000*buf.length/freq );
 
       double[] korrs = new double[freqMagRefs.size()];
       double ksum=0;

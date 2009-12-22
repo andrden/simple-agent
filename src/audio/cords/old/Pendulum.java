@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package audio.cords;
+package audio.cords.old;
 import static java.lang.Math.*;
 
 /**

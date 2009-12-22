@@ -3,21 +3,16 @@
  * and open the template in the editor.
  */
 
-package audio.cords;
+package audio.cords.old;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.geom.Ellipse2D;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.TargetDataLine;
 import javax.swing.JFrame;
-import sun.applet.Main;
+
+import audio.cords.SoundIn;
+import audio.cords.Mike;
 
 /**
  *
