@@ -73,6 +73,20 @@ public class ShShCorrelate {
 
     for(;;){
       for(double[] freqMagI : freqMagRefs ){
+/*
+        for( int i=0; i<50; i++ ){
+          //freqMagI[i]=0;
+        }
+*/
+/*
+        for( int i=30; i<freqMagI.length; i++ ){
+          //freqMagI[i]=0;
+        }
+*/
+        for( int i=35; i<45; i++ ){
+          //freqMagI[i]=0;
+        }
+
         short[] convolve=Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.1);
         buf = Filter.convolveOverlap(remain, convolve);
 
