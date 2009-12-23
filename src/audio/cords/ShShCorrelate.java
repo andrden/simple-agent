@@ -8,6 +8,11 @@ import javax.sound.sampled.AudioFormat;
 import java.io.*;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Random;
+
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.ui.RefineryUtilities;
 
 /**
  * Created by IntelliJ IDEA.
@@ -70,11 +75,36 @@ public class ShShCorrelate {
       for(double[] freqMagI : freqMagRefs ){
         short[] convolve=Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.1);
         buf = Filter.convolveOverlap(remain, convolve);
+
+        double[] mnew = freqMagnitudes(buf);
+
+        display(Arrays.asList(freqMagI,  mnew));
+
         byte[] b = toBytes( buf );
         line.write(b, 0, b.length);
       }
     }
 
+  }
+
+  void display(List<double[]> freqMagRefs) throws Exception{
+      XYSeriesCollection data = new XYSeriesCollection();
+      for (int i = 0; i <freqMagRefs.size(); i++) {
+        XYSeries series = new XYSeries("Series " + i);
+        double[] fdata = freqMagRefs.get(i);
+        double koef=Math.sqrt(sumSq(fdata));
+        for (int j = 0; j <fdata.length; j++) {
+          series.add(j, fdata[j]/koef);
+        }
+        data.addSeries(series);
+      }
+
+      RegressionDemo demo = new RegressionDemo(data);
+      RefineryUtilities.centerFrameOnScreen(demo);
+      demo.setVisible(true);
+      while(demo.isVisible()){
+        Thread.sleep(0);
+      }
   }
 
   void play() throws Exception{
