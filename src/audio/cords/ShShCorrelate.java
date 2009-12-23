@@ -18,17 +18,24 @@ import java.util.Arrays;
  */
 public class ShShCorrelate {
   int chunkSize;
+  short[] buf;
+  int freq = 11025;
 
   public ShShCorrelate(int chunkSize) {
     this.chunkSize = chunkSize;
+    buf = new short[chunkSize];
   }
 
   public static void main(String[] args) throws Exception{
-    new ShShCorrelate(128).play();
+    //new ShShCorrelate(128).play();
+    new ShShCorrelate(128).playNoiseModulated();
   }
   private DataInputStream soundFile() throws FileNotFoundException {
     DataInputStream di = new DataInputStream(new FileInputStream(
-        "C:\\proj\\cr6\\sounds/onetwothree.voice"));
+        //"C:\\proj\\cr6\\sounds/onetwothree.voice"
+        "C:\\proj\\cr6\\sounds/shshss.voice"
+    ));
+
     return di;
   }
 
@@ -40,6 +47,34 @@ public class ShShCorrelate {
       readAll(di, buf);
     }
     return buf;
+  }
+
+  void playNoiseModulated() throws Exception{
+    List<double[]> freqMagRefs = Arrays.asList(
+        freqMagnitudes(soundBufAt(1406))
+     );
+    // #1405 - russian sound chchchch
+    playNoiseModulated(freqMagRefs);
+  }
+
+  void playNoiseModulated(List<double[]> freqMagRefs) throws Exception{
+    SourceDataLine line = AudioSystem.getSourceDataLine(new AudioFormat(freq,16,1,true,true));
+    line.open();
+    line.start();
+
+    int kernelLen=21;
+    short[] remain=new short[kernelLen-1];
+    NoiseRnd noiseRnd = new NoiseRnd();
+
+    for(;;){
+      for(double[] freqMagI : freqMagRefs ){
+        short[] convolve=Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.1);
+        buf = Filter.convolveOverlap(remain, convolve);
+        byte[] b = toBytes( buf );
+        line.write(b, 0, b.length);
+      }
+    }
+
   }
 
   void play() throws Exception{
@@ -59,8 +94,6 @@ public class ShShCorrelate {
     );
 
     DataInputStream di = soundFile();
-    short[] buf = new short[chunkSize];
-    int freq = 11025;
     SourceDataLine line = AudioSystem.getSourceDataLine(new AudioFormat(freq,16,1,true,true));
     line.open();
     line.start();
