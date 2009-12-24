@@ -55,6 +55,15 @@ public class ShShCorrelate {
   }
 
   void playNoiseModulated() throws Exception{
+    display(Arrays.asList(
+        freqMagnitudes(soundBufAt(1400)),
+        freqMagnitudes(soundBufAt(1401)),
+        freqMagnitudes(soundBufAt(1402)),
+        freqMagnitudes(soundBufAt(1403)),
+        freqMagnitudes(soundBufAt(1404)),
+        freqMagnitudes(soundBufAt(1405))
+    ));
+
     List<double[]> freqMagRefs = Arrays.asList(
         freqMagnitudes(soundBufAt(1406))
      );
