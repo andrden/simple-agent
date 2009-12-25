@@ -56,18 +56,25 @@ public class ShShCorrelate {
 
   void playNoiseModulated() throws Exception{
     display(Arrays.asList(
+        /*freqMagnitudes(soundBufAt(1399)),
         freqMagnitudes(soundBufAt(1400)),
-        freqMagnitudes(soundBufAt(1401)),
+        freqMagnitudes(soundBufAt(1401)),*/
         freqMagnitudes(soundBufAt(1402)),
         freqMagnitudes(soundBufAt(1403)),
         freqMagnitudes(soundBufAt(1404)),
-        freqMagnitudes(soundBufAt(1405))
+        freqMagnitudes(soundBufAt(1405)),
+        freqMagnitudes(soundBufAt(1406))
     ));
 
     List<double[]> freqMagRefs = Arrays.asList(
-        freqMagnitudes(soundBufAt(1406))
+        freqMagnitudes(soundBufAt(1399))
      );
+
+
     // #1405 - russian sound chchchch
+    // #1402 - just white noise
+    // #1401 - like waterfall
+    // #1400 - remote street with traffic
     playNoiseModulated(freqMagRefs);
   }
 
@@ -101,7 +108,7 @@ public class ShShCorrelate {
 
         double[] mnew = freqMagnitudes(buf);
 
-        display(Arrays.asList(freqMagI,  mnew));
+        //display(Arrays.asList(freqMagI,  mnew));
 
         byte[] b = toBytes( buf );
         line.write(b, 0, b.length);
@@ -161,6 +168,13 @@ public class ShShCorrelate {
       double might = might(buf);
       //buf=mightCorrect(buf,oldMight,might,200);
       double[] freqMagI = freqMagnitudes(buf);
+      LinearRegression linRegr = new LinearRegression();
+      //linRegr.addByIdx(freqMagI);
+      double koef=Math.sqrt(sumSq(freqMagI));
+      for (int j = 0; j <freqMagI.length; j++) {
+        linRegr.add(j, freqMagI[j]/koef);
+      }
+
 
       short[] bufOrig=buf;
       short[] convolve=Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.1);
@@ -178,16 +192,16 @@ public class ShShCorrelate {
         kstr.append( " "+(int)(korrs[ki]*100) );
       }
 
-      System.out.println(System.currentTimeMillis()%100000+" "
-          +i+": "
+      System.out.println(//System.currentTimeMillis()%100000+" "
+          i+": "
           +(int)might+"->"+(int)might(buf)
           +" korr%="+(int)(ksum/korrs.length*100)
-          +" []="+kstr );
+          +" []="+kstr+ " b="+linRegr.getB()*10000 );
 
       //byte[] b = toBytes( mightCorrect(buf,oldMight,might,500) );
       byte[] b = toBytes( buf );
 
-      line.write(b, 0, b.length);
+      //line.write(b, 0, b.length);
       //line.drain();
       oldMight = might;
     }
