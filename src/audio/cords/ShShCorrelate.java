@@ -32,8 +32,8 @@ public class ShShCorrelate {
   }
 
   public static void main(String[] args) throws Exception{
-    //new ShShCorrelate(128).play();
-    new ShShCorrelate(128).playNoiseModulated();
+    new ShShCorrelate(128).play();
+    //new ShShCorrelate(128).playNoiseModulated();
   }
   private DataInputStream soundFile() throws FileNotFoundException {
     DataInputStream di = new DataInputStream(new FileInputStream(
@@ -55,19 +55,23 @@ public class ShShCorrelate {
   }
 
   void playNoiseModulated() throws Exception{
+/*
     display(Arrays.asList(
-        /*freqMagnitudes(soundBufAt(1399)),
+        */
+/*freqMagnitudes(soundBufAt(1399)),
         freqMagnitudes(soundBufAt(1400)),
         freqMagnitudes(soundBufAt(1401)),*/
+/*
         freqMagnitudes(soundBufAt(1402)),
         freqMagnitudes(soundBufAt(1403)),
         freqMagnitudes(soundBufAt(1404)),
         freqMagnitudes(soundBufAt(1405)),
         freqMagnitudes(soundBufAt(1406))
     ));
+*/
 
     List<double[]> freqMagRefs = Arrays.asList(
-        freqMagnitudes(soundBufAt(1399))
+        freqMagnitudes(soundBufAt(1405))
      );
 
 
@@ -79,6 +83,10 @@ public class ShShCorrelate {
   }
 
   void playNoiseModulated(List<double[]> freqMagRefs) throws Exception{
+    for( double[] dd : freqMagRefs ){
+      blockAvg(dd, 8);
+    }
+    
     SourceDataLine line = AudioSystem.getSourceDataLine(new AudioFormat(freq,16,1,true,true));
     line.open();
     line.start();
@@ -152,6 +160,9 @@ public class ShShCorrelate {
         //freqMagnitudes(soundBufAt(240)),
         //freqMagnitudes(soundBufAt(253))
     );
+    for( double[] dd : freqMagRefs ){
+      blockAvg(dd, 8);
+    }
 
     DataInputStream di = soundFile();
     SourceDataLine line = AudioSystem.getSourceDataLine(new AudioFormat(freq,16,1,true,true));
@@ -159,15 +170,16 @@ public class ShShCorrelate {
     line.start();
     double oldMight=0;
 
-    int kernelLen=21;
+    int kernelLen=121;
     NoiseRnd noiseRnd = new NoiseRnd();
     short[] remain=new short[kernelLen-1];
 
+    double[] freqMagIPrev=null;
     for( int i=0; ; i++ ){
       readAll(di, buf);
       double might = might(buf);
       //buf=mightCorrect(buf,oldMight,might,200);
-      double[] freqMagI = freqMagnitudes(buf);
+      final double[] freqMagI = freqMagnitudes(buf);
       LinearRegression linRegr = new LinearRegression();
       //linRegr.addByIdx(freqMagI);
       double koef=Math.sqrt(sumSq(freqMagI));
@@ -177,7 +189,8 @@ public class ShShCorrelate {
 
 
       short[] bufOrig=buf;
-      short[] convolve=Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.1);
+      blockAvg(freqMagI, 8);
+      short[] convolve=Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.02);
       buf = Filter.convolveOverlap(remain, convolve);
       double[] freqMagIModif = freqMagnitudes(buf);
 
@@ -192,18 +205,20 @@ public class ShShCorrelate {
         kstr.append( " "+(int)(korrs[ki]*100) );
       }
 
+      double korPr = (freqMagIPrev==null) ? 0 :  korr0(freqMagI, freqMagIPrev);
       System.out.println(//System.currentTimeMillis()%100000+" "
           i+": "
           +(int)might+"->"+(int)might(buf)
           +" korr%="+(int)(ksum/korrs.length*100)
-          +" []="+kstr+ " b="+linRegr.getB()*10000 );
+          +" []="+kstr+ " b="+linRegr.getB()*10000+" kp"+(int)(korPr*100) );
 
       //byte[] b = toBytes( mightCorrect(buf,oldMight,might,500) );
       byte[] b = toBytes( buf );
 
-      //line.write(b, 0, b.length);
+      line.write(b, 0, b.length);
       //line.drain();
       oldMight = might;
+      freqMagIPrev = freqMagI;
     }
   }
 
@@ -275,7 +290,28 @@ public class ShShCorrelate {
     return dft.getMagnitudes();
   }
 
+  void blockAvg(double[] d, int blocks){
+    int blockSize = d.length/blocks;
+    for( int i=0; i<blocks; i++ ){
+      double s = 0;
+      for( int j=0; j<blockSize; j++ ){
+        s += d[i*blockSize+j];
+      }
+      s /= blockSize;
+      for( int j=0; j<blockSize; j++ ){
+        d[i*blockSize+j]=s;
+      }
+    }
+  }
+
   double korr0(double[] d1, double[] d2){
+    d1 = d1.clone();
+    d2 = d2.clone();
+    for( int i=0; i<d1.length/3; i++ ){
+      d1[i]=0;
+      d2[i]=0;
+    }
+
     double sum=0;
     for( int i=0; i<d1.length; i++ ){
       sum += d1[i]*d2[i];
