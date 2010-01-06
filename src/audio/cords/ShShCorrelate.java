@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.ArrayList;
 
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.xy.XYSeries;
@@ -32,7 +33,8 @@ public class ShShCorrelate {
   }
 
   public static void main(String[] args) throws Exception{
-    new ShShCorrelate(128).play();
+    new ShShCorrelate(128).graphSegments();
+    //new ShShCorrelate(128).play();
     //new ShShCorrelate(128).playNoiseModulated();
   }
   private DataInputStream soundFile() throws FileNotFoundException {
@@ -143,6 +145,93 @@ public class ShShCorrelate {
       while(demo.isVisible()){
         Thread.sleep(0);
       }
+  }
+
+  class Seg{
+    int a1, a2,  b1, b2;
+    List<Double> points = new ArrayList<Double>();
+
+    Seg(int a1, int a2, int b1, int b2) {
+      if( a2>a1 ){
+        this.a1 = a1;
+        this.a2 = a2;
+      }else{
+        this.a1 = a2;
+        this.a2 = a1;
+      }
+
+      if(b2>b1){
+        this.b1 = b1;
+        this.b2 = b2;
+      }else{
+        this.b1 = b2;
+        this.b2 = b1;
+      }
+    }
+
+    @Override
+    public String toString() {
+      return a1+" "+a2+" "+b1+" "+b2;
+    }
+
+    double comp(double[] freqMagI){
+      double sa=0;
+      for( int i=a1; i<=a2; i++ ){
+        sa+=freqMagI[i];
+      }
+      double sb=0;
+      for( int i=b1; i<=b2; i++ ){
+        sb+=freqMagI[i];
+      }
+      return sa/sb;
+    }
+
+  }
+
+  void graphSegments() throws Exception{
+    DataInputStream di = soundFile();
+    List<Double> mights = new ArrayList<Double>();
+    Seg seg1 = new Seg(25,35,45,55);
+    Random r = new Random();
+    //Seg seg2 = new Seg(50,55,60,64);
+    Seg seg2 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
+/*  shsh discriminators:
+seg2=57 61 7 12 
+seg2=17 36 0 63
+
+whispering sounds discriminator: seg2=10 12 47 57
+
+sssss discriminator: seg2=25 48 14 45
+*/
+
+    System.out.println("seg2="+seg2.toString());
+    try{
+      for( int i=0; ; i++ ){
+        readAll(di, buf);
+        double might = might(buf);
+        mights.add(might);
+        final double[] freqMagI = freqMagnitudes(buf);
+
+        double c1 = seg1.comp(freqMagI);
+        seg1.points.add(c1);
+        double c2 = seg2.comp(freqMagI);
+        seg2.points.add(c2);
+
+        System.out.println(""+i+" "+might+" "+c1+" "+c2);
+      }
+    }catch(Exception e){
+      e.printStackTrace();
+    }
+    display(Arrays.asList(toArr(mights), toArr(seg1.points), toArr(seg2.points)));
+  }
+
+
+  double[] toArr(List<Double> l){
+    double[] r = new double[l.size()];
+    for( int i=0; i<l.size(); i++ ){
+      r[i] = l.get(i);
+    }
+    return r;
   }
 
   void play() throws Exception{
