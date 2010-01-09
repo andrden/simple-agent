@@ -40,7 +40,8 @@ public class ShShCorrelate {
   private DataInputStream soundFile() throws FileNotFoundException {
     DataInputStream di = new DataInputStream(new FileInputStream(
         //"C:\\proj\\cr6\\sounds/onetwothree.voice"
-        "C:\\proj\\cr6\\sounds/shshss.voice"
+        //"C:\\proj\\cr6\\sounds/shshss.voice"
+        "C:\\Projects\\simple-agent\\sounds/shshss.voice"
     ));
 
     return di;
@@ -139,7 +140,7 @@ public class ShShCorrelate {
         data.addSeries(series);
       }
 
-      RegressionDemo demo = new RegressionDemo(data);
+      SimplestChart demo = new SimplestChart(data);
       RefineryUtilities.centerFrameOnScreen(demo);
       demo.setVisible(true);
       while(demo.isVisible()){
