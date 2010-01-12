@@ -35,8 +35,10 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
+import javax.swing.*;
+
 @SuppressWarnings("serial")
-public class SimplestChart extends ApplicationFrame {
+public class SimplestChart extends JFrame {
 	public SimplestChart(XYSeriesCollection data) {
 		super("Regression Demo");
 		setContentPane(new ChartPanel(createChart(data)));

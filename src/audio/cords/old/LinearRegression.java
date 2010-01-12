@@ -1,4 +1,4 @@
-package audio.cords;
+package audio.cords.old;
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,7 +11,7 @@ public class LinearRegression {
   // y = a+bx
   double sx, sy, sxy, sx2;
   int n=0;
-  void add(double x, double y){
+  public void add(double x, double y){
     n++;
     sx += x;
     sy += y;
@@ -23,7 +23,7 @@ public class LinearRegression {
       add(i,data[i]);
     }
   }
-  double getB(){
+  public double getB(){
     return (sx*sy-n*sxy)/(sx*sx-n*sx2);
   }
   public static void main(String[] args){

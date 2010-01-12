@@ -1,6 +1,7 @@
 package audio.cords;
 
 import audio.DFT;
+import audio.cords.old.LinearRegression;
 
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.AudioSystem;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.ui.RefineryUtilities;
+import utils.Utils;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,10 +40,15 @@ public class ShShCorrelate {
     //new ShShCorrelate(128).playNoiseModulated();
   }
   private DataInputStream soundFile() throws FileNotFoundException {
+    // "C:\\proj\\cr6\\sounds/onetwothree.voice" says the following:
+    // "рас, рас, рас, два, три, четыре, пять ... в веб-камере мирофон ещё есть..
+    // . правда не понял где он там ..."
+
+
     DataInputStream di = new DataInputStream(new FileInputStream(
         //"C:\\proj\\cr6\\sounds/onetwothree.voice"
-        //"C:\\proj\\cr6\\sounds/shshss.voice"
-        "C:\\Projects\\simple-agent\\sounds/shshss.voice"
+        "C:\\proj\\cr6\\sounds/shshss.voice"
+        //"C:\\Projects\\simple-agent\\sounds/shshss.voice"
     ));
 
     return di;
@@ -133,7 +140,7 @@ public class ShShCorrelate {
       for (int i = 0; i <freqMagRefs.size(); i++) {
         XYSeries series = new XYSeries("Series " + i);
         double[] fdata = freqMagRefs.get(i);
-        double koef=Math.sqrt(sumSq(fdata));
+        double koef=1;//Math.sqrt(sumSq(fdata));
         for (int j = 0; j <fdata.length; j++) {
           series.add(j, fdata[j]/koef);
         }
@@ -146,6 +153,7 @@ public class ShShCorrelate {
       while(demo.isVisible()){
         Thread.sleep(0);
       }
+      Utils.breakPoint();
   }
 
   class Seg{
@@ -207,7 +215,7 @@ sssss discriminator: seg2=25 48 14 45
 
     System.out.println("seg2="+seg2.toString());
     try{
-      for( int i=0; ; i++ ){
+      for( int i=0; /*i<300*/; i++ ){
         readAll(di, buf);
         double might = might(buf);
         mights.add(might);
@@ -223,7 +231,7 @@ sssss discriminator: seg2=25 48 14 45
     }catch(Exception e){
       e.printStackTrace();
     }
-    display(Arrays.asList(toArr(mights), toArr(seg1.points), toArr(seg2.points)));
+    display(Arrays.asList(/*toArr(mights),*/ toArr(seg1.points)/*, toArr(seg2.points)*/));
   }
 
 

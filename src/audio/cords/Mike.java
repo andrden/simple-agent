@@ -6,12 +6,7 @@ import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
-import java.io.DataInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import javax.sound.sampled.SourceDataLine;
 
 /**
@@ -51,10 +46,12 @@ public class Mike implements SoundIn {
 
   public static void main(String[] args) throws Exception {
     int sampleRate = 11025;
-    Mike m = new Mike(sampleRate);
+    //Mike m = new Mike(sampleRate);
     //printEnergy(m);
     //save(m);
-    play();
+
+    //play();
+    playPart(1200*128);
   }
 
   private static void printEnergy(Mike m) {
@@ -94,12 +91,29 @@ public class Mike implements SoundIn {
 
 
   private static void play() throws Exception {
-    DataInputStream di = new DataInputStream(new FileInputStream("c:/tmp/f1.voice"));
+    //final String fname = "c:/tmp/f1.voice";
+    final String fname = "C:\\proj\\cr6\\sounds/onetwothree.voice";
+    DataInputStream di = new DataInputStream(new FileInputStream(fname));
     byte[] b = new byte[di.available()];
     di.read(b);
     SourceDataLine line = AudioSystem.getSourceDataLine(new AudioFormat(11025, 16, 1, true, true));
     line.open();
     line.start();
     line.write(b, 0, b.length);
+  }
+
+  private static void playPart(int count) throws Exception {
+    //final String fname = "c:/tmp/f1.voice";
+    final String fname = "C:\\proj\\cr6\\sounds/onetwothree.voice";
+    DataInputStream di = new DataInputStream(new FileInputStream(fname));
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    DataOutputStream dos = new DataOutputStream(baos);
+    for( int i=0; i<count; i++ ){
+      dos.writeShort(di.readShort());
+    }
+    SourceDataLine line = AudioSystem.getSourceDataLine(new AudioFormat(11025, 16, 1, true, true));
+    line.open();
+    line.start();
+    line.write(baos.toByteArray(), 0, baos.size());
   }
 }
