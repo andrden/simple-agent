@@ -16,6 +16,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.ui.RefineryUtilities;
 import utils.Utils;
+import com.pmstation.common.utils.MinMaxFinder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -178,6 +179,23 @@ public class ShShCorrelate {
       }
     }
 
+    double[] histo(int size){
+      MinMaxFinder mmf = new MinMaxFinder();
+      for( double d : points ){
+        mmf.add(d,"");
+      }
+      double[] h = new double[size];
+      for( double d : points ){
+        double perc=(d-mmf.getMinVal())/(mmf.getMaxVal()-mmf.getMinVal());
+        int n = (int)(size*perc);
+        if( n>=size-1 ){
+          n=size-1;
+        }
+        h[n]++;
+      }
+      return h;
+    }
+
     @Override
     public String toString() {
       return a1+" "+a2+" "+b1+" "+b2;
@@ -200,7 +218,10 @@ public class ShShCorrelate {
   void graphSegments() throws Exception{
     DataInputStream di = soundFile();
     List<Double> mights = new ArrayList<Double>();
+
     Seg seg1 = new Seg(25,35,45,55);
+    //Seg seg1 = new Seg(45,55, 25,35);
+
     Random r = new Random();
     //Seg seg2 = new Seg(50,55,60,64);
     Seg seg2 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
@@ -232,6 +253,7 @@ sssss discriminator: seg2=25 48 14 45
       e.printStackTrace();
     }
     display(Arrays.asList(/*toArr(mights),*/ toArr(seg1.points)/*, toArr(seg2.points)*/));
+    display(Arrays.asList(seg1.histo(50)));
   }
 
 
