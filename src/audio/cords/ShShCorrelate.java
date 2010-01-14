@@ -52,6 +52,23 @@ public class ShShCorrelate {
         //"C:\\Projects\\simple-agent\\sounds/shshss.voice"
     ));
 
+/*
+Mapping of sounds/shshss.voice:
+200-300 shsh
+380-480 ssss
+565-655 shsh
+745-840 ssss
+930-1030 shsh
+1140-1260 ssss
+1400-1415 ch!
+...chch
+...chch
+...shsh
+...ssss
+...chch
+~=2500 ss
+*/
+
     return di;
   }
 
@@ -218,10 +235,13 @@ public class ShShCorrelate {
   void graphSegments() throws Exception{
     DataInputStream di = soundFile();
     List<Double> mights = new ArrayList<Double>();
+    List<Double> korrs = new ArrayList<Double>();
 
-    Seg seg1 = new Seg(25,35,45,55);
+    Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
     //Seg seg1 = new Seg(45,55, 25,35);
 
+    //double[] refKorrPoint = freqMagnitudes(soundBufAt(250));
+    double[] refKorrPoint = freqMagnitudes(soundBufAt(2501));
     Random r = new Random();
     //Seg seg2 = new Seg(50,55,60,64);
     Seg seg2 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
@@ -236,11 +256,12 @@ sssss discriminator: seg2=25 48 14 45
 
     System.out.println("seg2="+seg2.toString());
     try{
-      for( int i=0; /*i<300*/; i++ ){
+      for( int i=0; /*i<1500*/; i++ ){
         readAll(di, buf);
         double might = might(buf);
-        mights.add(might);
+        mights.add(might/100);
         final double[] freqMagI = freqMagnitudes(buf);
+        korrs.add(korr0(refKorrPoint, freqMagI));
 
         double c1 = seg1.comp(freqMagI);
         seg1.points.add(c1);
@@ -252,7 +273,9 @@ sssss discriminator: seg2=25 48 14 45
     }catch(Exception e){
       e.printStackTrace();
     }
-    display(Arrays.asList(/*toArr(mights),*/ toArr(seg1.points)/*, toArr(seg2.points)*/));
+    display(Arrays.asList(//toArr(mights), /*toArr(seg1.points),*/
+        toArr(korrs)
+        /*, toArr(seg2.points)*/));
     display(Arrays.asList(seg1.histo(50)));
   }
 

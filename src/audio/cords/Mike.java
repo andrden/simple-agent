@@ -50,8 +50,8 @@ public class Mike implements SoundIn {
     //printEnergy(m);
     //save(m);
 
-    //play();
-    playPart(1200*128);
+    play();
+    //playPart(1200*128);
   }
 
   private static void printEnergy(Mike m) {
@@ -92,7 +92,8 @@ public class Mike implements SoundIn {
 
   private static void play() throws Exception {
     //final String fname = "c:/tmp/f1.voice";
-    final String fname = "C:\\proj\\cr6\\sounds/onetwothree.voice";
+    //final String fname = "C:\\proj\\cr6\\sounds/onetwothree.voice";
+    final String fname = "C:\\proj\\cr6\\sounds/shshss.voice";
     DataInputStream di = new DataInputStream(new FileInputStream(fname));
     byte[] b = new byte[di.available()];
     di.read(b);
