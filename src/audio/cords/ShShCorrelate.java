@@ -7,10 +7,7 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.AudioFormat;
 import java.io.*;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.ArrayList;
+import java.util.*;
 
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.xy.XYSeries;
@@ -36,10 +33,71 @@ public class ShShCorrelate {
   }
 
   public static void main(String[] args) throws Exception{
-    new ShShCorrelate(128).graphSegments();
+    new ShShCorrelate(128).extractClusters();
+    //new ShShCorrelate(128).graphSegments();
     //new ShShCorrelate(128).play();
     //new ShShCorrelate(128).playNoiseModulated();
   }
+
+  private void extractClusters() throws Exception{
+    DataInputStream di = soundFile();
+    Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
+/*  shsh discriminators:
+seg2=57 61 7 12
+seg2=17 36 0 63
+
+whispering sounds discriminator: seg2=10 12 47 57
+
+sssss discriminator: seg2=25 48 14 45
+*/
+
+      LastVals lv = new LastVals();
+      for( int i=0; /*i<1500*/; i++ ){
+        readAll(di, buf);
+        double might = might(buf);
+        final double[] freqMagI = freqMagnitudes(buf);
+        double c1 = seg1.comp(freqMagI);
+        lv.add(c1);
+        if( (i+1)%lv.LEN==0 ){
+          System.out.println("histo up to "+i+":");
+          double[] h = lv.histo(30);
+          for( double d : h ){
+            System.out.println(d);
+          }
+        }
+      }
+  }
+
+  static class LastVals{
+    int LEN=200;
+    LinkedList<Double> vals = new LinkedList<Double>();
+    void add(double v){
+      vals.addLast(v);
+      if( vals.size()>LEN ){
+        vals.removeFirst();
+      }
+    }
+
+    double[] histo(int size){
+      MinMaxFinder mmf = new MinMaxFinder();
+      for( double d : vals ){
+        mmf.add(d,"");
+      }
+      System.out.println(mmf.getMinVal()+ " "+mmf.getMaxVal());
+      double[] h = new double[size];
+      for( double d : vals ){
+        double perc=(d-mmf.getMinVal())/(mmf.getMaxVal()-mmf.getMinVal());
+        int n = (int)(size*perc);
+        if( n>=size-1 ){
+          n=size-1;
+        }
+        h[n]++;
+      }
+      return h;
+    }
+
+  }
+
   private DataInputStream soundFile() throws FileNotFoundException {
     // "C:\\proj\\cr6\\sounds/onetwothree.voice" says the following:
     // "рас, рас, рас, два, три, четыре, пять ... в веб-камере мирофон ещё есть..
@@ -273,8 +331,9 @@ sssss discriminator: seg2=25 48 14 45
     }catch(Exception e){
       e.printStackTrace();
     }
-    display(Arrays.asList(//toArr(mights), /*toArr(seg1.points),*/
-        toArr(korrs)
+    display(Arrays.asList(//toArr(mights),
+         toArr(seg1.points)
+        //toArr(korrs)
         /*, toArr(seg2.points)*/));
     display(Arrays.asList(seg1.histo(50)));
   }
