@@ -58,24 +58,127 @@ sssss discriminator: seg2=25 48 14 45
         final double[] freqMagI = freqMagnitudes(buf);
         double c1 = seg1.comp(freqMagI);
         lv.add(c1);
-        if( (i+1)%lv.LEN==0 ){
+        if( (i+1)%5==0 ){
+          for( int ii=0; ii<50; ii++ ){
+            lv.cluster();
+          }
+          /*
           System.out.println("histo up to "+i+":");
+
           double[] h = lv.histo(30);
           for( double d : h ){
             System.out.println(d);
           }
+          */
         }
       }
+  }
+
+  static class Cluster{
+    double a;
+    double b;
+
+    Cluster(double a, double b) {
+      this.a = a;
+      this.b = b;
+    }
+    boolean covers(double v){
+      return v>=a && v<=b;
+    }
   }
 
   static class LastVals{
     int LEN=200;
     LinkedList<Double> vals = new LinkedList<Double>();
+    List<Cluster> clusters = new ArrayList<Cluster>();
+
     void add(double v){
       vals.addLast(v);
       if( vals.size()>LEN ){
         vals.removeFirst();
       }
+    }
+
+    boolean clustersCover(double d){
+      boolean covers=false;
+      for( Cluster c : clusters ){
+        if( c.covers(d) ){
+          covers=true;
+          break;
+        }
+      }
+      return covers;
+    }
+
+    boolean clustersIntersect(double a, double b){
+      for( Cluster c : clusters ){
+        if( a<c.a && b<c.a || a>c.b && b>c.b ){
+        }else{
+          return true;
+        }
+      }
+      return false;
+    }
+
+    void cluster(){
+      List<Double> scatteredVals = new ArrayList<Double>();
+      for( double d : vals ){
+        if( !clustersCover(d) ){
+          scatteredVals.add(d);
+        }
+      }
+
+      MinMaxFinder mmf = new MinMaxFinder();
+      for( double d : scatteredVals ){
+        mmf.add(d,"");
+      }
+      //System.out.println(mmf.getMinVal()+ " "+mmf.getMaxVal());
+      if( mmf.getMinVal()==mmf.getMaxVal() ){
+        return;
+      }
+      double a = 0;
+      double b = 0;
+      while( b<=a || clustersIntersect(a,b) ){
+        a = mmf.getMinVal() + Math.random()*(mmf.getMaxVal()-mmf.getMinVal());
+        b = mmf.getMinVal() + Math.random()*(mmf.getMaxVal()-mmf.getMinVal());
+      }
+      double[] h = new double[10];
+      for( double d : scatteredVals ){
+        if( d>a && d<b ){
+          double perc=(d-a)/(b-a);
+          int n = (int)(h.length*perc);
+          if( n>=h.length-1 ){
+            n=h.length-1;
+          }
+          h[n]++;
+        }
+      }
+      if( isCluster(h) ){
+        clusters.add( new Cluster(a,b) );
+        System.err.println("cluster add "+a+" "+b);
+      }
+    }
+
+    boolean isCluster(double[] h){
+      int i=0;
+      while(i+1<h.length && h[i+1]>=h[i]){
+        i++;
+      }
+      int j=h.length-1;
+      while(j-1>=0 && h[j-1]>=h[j]){
+        j--;
+      }
+      double diff=5;//10;
+      if( h[i]<diff ){
+        return false;
+      }
+      if( h[0]*diff>h[i] ){
+        return false;
+      }
+      if( h[h.length-1]*diff>h[i] ){
+        return false;
+      }
+      return i>=j;
     }
 
     double[] histo(int size){
@@ -105,8 +208,8 @@ sssss discriminator: seg2=25 48 14 45
 
 
     DataInputStream di = new DataInputStream(new FileInputStream(
-        //"C:\\proj\\cr6\\sounds/onetwothree.voice"
-        "C:\\proj\\cr6\\sounds/shshss.voice"
+        "C:\\proj\\cr6\\sounds/onetwothree.voice"
+        //"C:\\proj\\cr6\\sounds/shshss.voice"
         //"C:\\Projects\\simple-agent\\sounds/shshss.voice"
     ));
 
