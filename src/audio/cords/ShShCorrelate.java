@@ -33,8 +33,8 @@ public class ShShCorrelate {
   }
 
   public static void main(String[] args) throws Exception{
-    new ShShCorrelate(128).extractClusters();
-    //new ShShCorrelate(128).graphSegments();
+    //new ShShCorrelate(128).extractClusters();
+    new ShShCorrelate(128).graphSegments();
     //new ShShCorrelate(128).play();
     //new ShShCorrelate(128).playNoiseModulated();
   }
@@ -52,26 +52,39 @@ sssss discriminator: seg2=25 48 14 45
 */
 
       LastVals lv = new LastVals();
+      lv.histoMaxMin=0;
+      lv.historMaxMax=5;
+      lv.histoMaxCount=20;
+
+      try{
       for( int i=0; /*i<1500*/; i++ ){
         readAll(di, buf);
         double might = might(buf);
         final double[] freqMagI = freqMagnitudes(buf);
         double c1 = seg1.comp(freqMagI);
         lv.add(c1);
-        if( (i+1)%5==0 ){
-          for( int ii=0; ii<50; ii++ ){
-            lv.cluster();
-          }
-          /*
-          System.out.println("histo up to "+i+":");
-
-          double[] h = lv.histo(30);
-          for( double d : h ){
-            System.out.println(d);
-          }
-          */
+        if( lv.vals.size()==lv.LEN ){
+          lv.updateHistoMax();
         }
+//        if( (i+1)%5==0 ){
+//          for( int ii=0; ii<50; ii++ ){
+//            lv.cluster();
+//          }
+//          /*
+//          System.out.println("histo up to "+i+":");
+//
+//          double[] h = lv.histo(30);
+//          for( double d : h ){
+//            System.out.println(d);
+//          }
+//          */
+//        }
       }
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    display(Arrays.asList(lv.histoMax,lv.histoMax));
+    Utils.breakPoint();
   }
 
   static class Cluster{
@@ -88,14 +101,37 @@ sssss discriminator: seg2=25 48 14 45
   }
 
   static class LastVals{
-    int LEN=200;
+    int LEN=50;
     LinkedList<Double> vals = new LinkedList<Double>();
     List<Cluster> clusters = new ArrayList<Cluster>();
+
+    double[] histoMax;
+    double histoMaxMin, historMaxMax;
+    int histoMaxCount;
+
 
     void add(double v){
       vals.addLast(v);
       if( vals.size()>LEN ){
         vals.removeFirst();
+      }
+    }
+
+    void updateHistoMax(){
+      if( histoMax==null ){
+        histoMax = new double[histoMaxCount];
+      }
+      double[] h = new double[histoMaxCount];
+      for( double d : vals ){
+        double perc=(d-histoMaxMin)/(historMaxMax - histoMaxMin);
+        int n = (int)(h.length*perc);
+        if( n>=h.length-1 ){
+          n=h.length-1;
+        }
+        h[n]++;
+      }
+      for( int i=0; i<h.length; i++ ){
+        histoMax[i] = Math.max(histoMax[i],h[i]);
       }
     }
 
@@ -417,7 +453,7 @@ sssss discriminator: seg2=25 48 14 45
 
     System.out.println("seg2="+seg2.toString());
     try{
-      for( int i=0; /*i<1500*/; i++ ){
+      for( int i=0; i<400; i++ ){
         readAll(di, buf);
         double might = might(buf);
         mights.add(might/100);
@@ -438,7 +474,7 @@ sssss discriminator: seg2=25 48 14 45
          toArr(seg1.points)
         //toArr(korrs)
         /*, toArr(seg2.points)*/));
-    display(Arrays.asList(seg1.histo(50)));
+    display(Arrays.asList(seg1.histo(100)));
   }
 
 
