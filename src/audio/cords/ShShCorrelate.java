@@ -11,6 +11,7 @@ import java.util.*;
 
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.xy.XYSeries;
+import org.jfree.data.Range;
 import org.jfree.ui.RefineryUtilities;
 import utils.Utils;
 import com.pmstation.common.utils.MinMaxFinder;
@@ -33,8 +34,8 @@ public class ShShCorrelate {
   }
 
   public static void main(String[] args) throws Exception{
-    //new ShShCorrelate(128).extractClusters();
-    new ShShCorrelate(128).graphSegments();
+    new ShShCorrelate(128).extractClusters();
+    //new ShShCorrelate(128).graphSegments();
     //new ShShCorrelate(128).play();
     //new ShShCorrelate(128).playNoiseModulated();
   }
@@ -55,6 +56,7 @@ sssss discriminator: seg2=25 48 14 45
       lv.histoMaxMin=0;
       lv.historMaxMax=5;
       lv.histoMaxCount=20;
+      LastValsCmp lvc = new LastValsCmp();
 
       try{
       for( int i=0; /*i<1500*/; i++ ){
@@ -62,6 +64,12 @@ sssss discriminator: seg2=25 48 14 45
         double might = might(buf);
         final double[] freqMagI = freqMagnitudes(buf);
         double c1 = seg1.comp(freqMagI);
+
+        lvc.add(c1);
+        if( i%10==0 ){
+          lvc.desc();
+        }
+
         lv.add(c1);
         if( lv.vals.size()==lv.LEN ){
           lv.updateHistoMax();
@@ -97,6 +105,45 @@ sssss discriminator: seg2=25 48 14 45
     }
     boolean covers(double v){
       return v>=a && v<=b;
+    }
+  }
+
+  static class ValDesc{
+    double avg;
+    double disp;
+
+    ValDesc(List<Double> vs) {
+      double sum=0;
+      for( double d : vs ){
+        sum += d;
+      }
+      avg = sum/vs.size();
+
+      double sum2=0;
+      for( double d : vs ){
+        sum2 += (d-avg)*(d-avg);
+      }
+      disp = Math.sqrt(sum2/vs.size());
+    }
+
+    @Override
+    public String toString() {
+      return avg+" ~ "+disp+" ["+(avg-disp)+" "+(avg+disp)+"]";
+    }
+  }
+  static class LastValsCmp{
+    int LEN=20;
+    LinkedList<Double> vals = new LinkedList<Double>();
+    void add(double v){
+      vals.addLast(v);
+      if( vals.size()>LEN ){
+        vals.removeFirst();
+      }
+    }
+    void desc(){
+      if( vals.size()==LEN ){
+        System.out.println( new ValDesc(vals.subList(0,10)) );
+      }
     }
   }
 
@@ -244,8 +291,8 @@ sssss discriminator: seg2=25 48 14 45
 
 
     DataInputStream di = new DataInputStream(new FileInputStream(
-        "C:\\proj\\cr6\\sounds/onetwothree.voice"
-        //"C:\\proj\\cr6\\sounds/shshss.voice"
+        //"C:\\proj\\cr6\\sounds/onetwothree.voice"
+        "C:\\proj\\cr6\\sounds/shshss.voice"
         //"C:\\Projects\\simple-agent\\sounds/shshss.voice"
     ));
 
@@ -453,7 +500,7 @@ sssss discriminator: seg2=25 48 14 45
 
     System.out.println("seg2="+seg2.toString());
     try{
-      for( int i=0; i<400; i++ ){
+      for( int i=0; /*i<250*/; i++ ){
         readAll(di, buf);
         double might = might(buf);
         mights.add(might/100);
@@ -474,7 +521,7 @@ sssss discriminator: seg2=25 48 14 45
          toArr(seg1.points)
         //toArr(korrs)
         /*, toArr(seg2.points)*/));
-    display(Arrays.asList(seg1.histo(100)));
+    //display(Arrays.asList(seg1.histo(100)));
   }
 
 
