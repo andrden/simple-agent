@@ -1,4 +1,4 @@
-package audio.cords;
+package audio.sssh;
 
 import cern.jet.random.engine.MersenneTwister64;
 
@@ -8,7 +8,9 @@ import javax.sound.sampled.AudioFormat;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 
-import audio.ChunkOps;
+import audio.sssh.ShShCorrelate;
+import audio.cords.SoundIn;
+import audio.cords.Filter;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,7 +19,7 @@ import audio.ChunkOps;
 * Time: 4:21:37 PM
 * To change this template use File | Settings | File Templates.
 */
-class NoiseRnd implements SoundIn{
+public class NoiseRnd implements SoundIn {
   MersenneTwister64 rnd64 = new MersenneTwister64(new java.util.Date());
 
   public short next(){

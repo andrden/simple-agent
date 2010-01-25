@@ -1,7 +1,10 @@
-package audio.cords;
+package audio.sssh;
 
 import audio.DFT;
 import audio.cords.old.LinearRegression;
+import audio.sssh.NoiseRnd;
+import audio.cords.Filter;
+import audio.cords.SimplestChart;
 
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.AudioSystem;
@@ -11,7 +14,6 @@ import java.util.*;
 
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.xy.XYSeries;
-import org.jfree.data.Range;
 import org.jfree.ui.RefineryUtilities;
 import utils.Utils;
 import com.pmstation.common.utils.MinMaxFinder;
@@ -34,8 +36,10 @@ public class ShShCorrelate {
   }
 
   public static void main(String[] args) throws Exception{
-    new ShShCorrelate(128).extractClusters();
+    new ShShCorrelate(128).clusterSegments();
     //new ShShCorrelate(128).graphSegments();
+
+    //new ShShCorrelate(128).extractClusters();
     //new ShShCorrelate(128).play();
     //new ShShCorrelate(128).playNoiseModulated();
   }
@@ -383,7 +387,7 @@ Mapping of sounds/shshss.voice:
           //freqMagI[i]=0;
         }
 
-        short[] convolve=Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.1);
+        short[] convolve= Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.1);
         buf = Filter.convolveOverlap(remain, convolve);
 
         double[] mnew = freqMagnitudes(buf);
@@ -418,75 +422,75 @@ Mapping of sounds/shshss.voice:
       Utils.breakPoint();
   }
 
-  class Seg{
-    int a1, a2,  b1, b2;
-    List<Double> points = new ArrayList<Double>();
+  void clusterSegments()  throws Exception{
+    DataInputStream di = soundFile();
+    Random r = new Random();
 
-    Seg(int a1, int a2, int b1, int b2) {
-      if( a2>a1 ){
-        this.a1 = a1;
-        this.a2 = a2;
-      }else{
-        this.a1 = a2;
-        this.a2 = a1;
-      }
+    List<Seg> segs = new ArrayList<Seg>();
+    Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
+    segs.add(seg1);
+    segs.add(new Seg(32, 42, 0, 38));
+    segs.add(new Seg(5, 22, 1, 7));
+    segs.add(new Seg(20, 49, 3, 35));
 
-      if(b2>b1){
-        this.b1 = b1;
-        this.b2 = b2;
-      }else{
-        this.b1 = b2;
-        this.b2 = b1;
-      }
+    for( int i=0; i<10; i++ ){
+      Seg seg2 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
+      segs.add(seg2);
     }
+/*
+29 64 12 54 cluster idx 11 ... 19
+29 64 12 54 cluster idx 37 ... 42
+29 64 12 54 cluster idx 47 ... 66
+     */
 
-    double[] histo(int size){
-      MinMaxFinder mmf = new MinMaxFinder();
-      for( double d : points ){
-        mmf.add(d,"");
-      }
-      double[] h = new double[size];
-      for( double d : points ){
-        double perc=(d-mmf.getMinVal())/(mmf.getMaxVal()-mmf.getMinVal());
-        int n = (int)(size*perc);
-        if( n>=size-1 ){
-          n=size-1;
+    //List<Seg> segs = Arrays.asList(seg1, seg2);
+    System.out.println("segs="+segs);
+    try{
+      for( int i=0; /*i<250*/; i++ ){
+        readAll(di, buf);
+        final double[] freqMagI = freqMagnitudes(buf);
+        for( Seg s : segs ){
+          double c = s.comp(freqMagI);
+          s.points.add(c);
         }
-        h[n]++;
       }
-      return h;
+    }catch(Exception e){
+      e.printStackTrace();
     }
 
-    @Override
-    public String toString() {
-      return a1+" "+a2+" "+b1+" "+b2;
+    for( Seg s : segs ){
+      s.clusterSearch(100);
     }
-
-    double comp(double[] freqMagI){
-      double sa=0;
-      for( int i=a1; i<=a2; i++ ){
-        sa+=freqMagI[i];
+    DataInputStream di2 = soundFile();
+    try{
+      for( int i=0; /*i<250*/; i++ ){
+        readAll(di2, buf);
+        final double[] freqMagI = freqMagnitudes(buf);
+        double might = might(buf);
+        System.out.printf("%4d  %5.1f   " , i,  might);
+        for( Seg s : segs ){
+          double c = s.comp(freqMagI);
+          System.out.print(s.clusterIdx(c)+" ");
+        }
+        System.out.println();
       }
-      double sb=0;
-      for( int i=b1; i<=b2; i++ ){
-        sb+=freqMagI[i];
-      }
-      return sa/sb;
+    }catch(Exception e){
+      e.printStackTrace();
     }
-
   }
 
   void graphSegments() throws Exception{
     DataInputStream di = soundFile();
     List<Double> mights = new ArrayList<Double>();
     List<Double> korrs = new ArrayList<Double>();
+    Random r = new Random();
 
-    Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
+    //Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
     //Seg seg1 = new Seg(45,55, 25,35);
+    Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
 
     //double[] refKorrPoint = freqMagnitudes(soundBufAt(250));
     double[] refKorrPoint = freqMagnitudes(soundBufAt(2501));
-    Random r = new Random();
     //Seg seg2 = new Seg(50,55,60,64);
     Seg seg2 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
 /*  shsh discriminators:
@@ -517,11 +521,17 @@ sssss discriminator: seg2=25 48 14 45
     }catch(Exception e){
       e.printStackTrace();
     }
+
+    seg1.clusterSearch(100);
+
     display(Arrays.asList(//toArr(mights),
          toArr(seg1.points)
         //toArr(korrs)
         /*, toArr(seg2.points)*/));
-    //display(Arrays.asList(seg1.histo(100)));
+    List<Double> lrnd = new ArrayList<Double>(seg1.points);
+    Collections.shuffle(lrnd);
+    display(Arrays.asList(toArr(lrnd)));
+    display(Arrays.asList(seg1.histo(100)));
   }
 
 
