@@ -108,12 +108,21 @@ class Seg {
     while(b<end && h[b+1]>clusterCut){
       b++;
     }
-    if( beg!=0 && a==beg ){
-      return; // pressing to cut edge
+
+    while(a>beg && h[a-1]<h[a]){
+      a--;
     }
-    if( end!=h.length-1 && b==end ){
-      return; // pressing to cut edge
+    while(b<end && h[b+1]<h[b]){
+      b++;
     }
+
+//    if( beg!=0 && a==beg ){
+//      return; // pressing to cut edge
+//    }
+//    if( end!=h.length-1 && b==end ){
+//      return; // pressing to cut edge
+//    }
+
     System.out.println(toString()+ " cluster idx "+a+" ... "+b);
     clusters.add(new Clast(
         ranges.getMinVal()+a*(ranges.getMaxVal()-ranges.getMinVal())/h.length,

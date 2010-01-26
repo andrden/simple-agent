@@ -36,8 +36,8 @@ public class ShShCorrelate {
   }
 
   public static void main(String[] args) throws Exception{
-    new ShShCorrelate(128).clusterSegments();
-    //new ShShCorrelate(128).graphSegments();
+    //new ShShCorrelate(128).clusterSegments();
+    new ShShCorrelate(128).graphSegments();
 
     //new ShShCorrelate(128).extractClusters();
     //new ShShCorrelate(128).play();
@@ -429,6 +429,7 @@ Mapping of sounds/shshss.voice:
     List<Seg> segs = new ArrayList<Seg>();
     Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
     segs.add(seg1);
+    segs.add( new Seg(3, 15, 45, 63) );
     segs.add(new Seg(32, 42, 0, 38));
     segs.add(new Seg(5, 22, 1, 7));
     segs.add(new Seg(20, 49, 3, 35));
@@ -461,21 +462,37 @@ Mapping of sounds/shshss.voice:
     for( Seg s : segs ){
       s.clusterSearch(100);
     }
-    DataInputStream di2 = soundFile();
+
+    int[] changes = new int[segs.size()];
     try{
+      DataInputStream di2 = soundFile();
+      int[] oldClusterIdx = new int[segs.size()];
+      boolean firstRow=true;
       for( int i=0; /*i<250*/; i++ ){
         readAll(di2, buf);
         final double[] freqMagI = freqMagnitudes(buf);
         double might = might(buf);
         System.out.printf("%4d  %5.1f   " , i,  might);
-        for( Seg s : segs ){
+        for( int j=0; j<segs.size(); j++ ){
+          Seg s = segs.get(j);
           double c = s.comp(freqMagI);
-          System.out.print(s.clusterIdx(c)+" ");
+          final int clustIdx = s.clusterIdx(c);
+          if( !firstRow && clustIdx!=oldClusterIdx[j] ){
+            changes[j]++;
+          }
+          oldClusterIdx[j] = clustIdx;
+          System.out.print(clustIdx +" ");
         }
         System.out.println();
+        firstRow=false;
       }
     }catch(Exception e){
       e.printStackTrace();
+    }
+
+    for( int j=0; j<segs.size(); j++ ){
+      Seg s = segs.get(j);
+      System.out.println(s+" changes="+changes[j]);
     }
   }
 
@@ -485,9 +502,10 @@ Mapping of sounds/shshss.voice:
     List<Double> korrs = new ArrayList<Double>();
     Random r = new Random();
 
-    //Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
+    Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
     //Seg seg1 = new Seg(45,55, 25,35);
-    Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
+    //Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
+    //Seg seg1 = new Seg(3, 15, 45, 63); // - wispering sounds discriminator
 
     //double[] refKorrPoint = freqMagnitudes(soundBufAt(250));
     double[] refKorrPoint = freqMagnitudes(soundBufAt(2501));
@@ -507,7 +525,7 @@ sssss discriminator: seg2=25 48 14 45
       for( int i=0; /*i<250*/; i++ ){
         readAll(di, buf);
         double might = might(buf);
-        mights.add(might/100);
+        mights.add(might/300);
         final double[] freqMagI = freqMagnitudes(buf);
         korrs.add(korr0(refKorrPoint, freqMagI));
 
@@ -524,7 +542,7 @@ sssss discriminator: seg2=25 48 14 45
 
     seg1.clusterSearch(100);
 
-    display(Arrays.asList(//toArr(mights),
+    display(Arrays.asList(toArr(mights),
          toArr(seg1.points)
         //toArr(korrs)
         /*, toArr(seg2.points)*/));
