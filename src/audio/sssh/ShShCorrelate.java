@@ -1,6 +1,7 @@
 package audio.sssh;
 
 import audio.DFT;
+import audio.ChunkOps;
 import audio.cords.old.LinearRegression;
 import audio.sssh.NoiseRnd;
 import audio.cords.Filter;
@@ -417,7 +418,7 @@ Mapping of sounds/shshss.voice:
       RefineryUtilities.centerFrameOnScreen(demo);
       demo.setVisible(true);
       while(demo.isVisible()){
-        Thread.sleep(0);
+        Thread.sleep(100);
       }
       Utils.breakPoint();
   }
@@ -430,6 +431,9 @@ Mapping of sounds/shshss.voice:
     Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
     segs.add(seg1);
     segs.add( new Seg(3, 15, 45, 63) );
+    segs.add( new Seg(20, 29, 14, 40) ); // pure! chch discriminator
+    segs.add( new Seg(9, 41, 43, 58) ); // pure! ss discriminator
+
     segs.add(new Seg(32, 42, 0, 38));
     segs.add(new Seg(5, 22, 1, 7));
     segs.add(new Seg(20, 49, 3, 35));
@@ -460,7 +464,7 @@ Mapping of sounds/shshss.voice:
     }
 
     for( Seg s : segs ){
-      s.clusterSearch(100);
+      s.clusterSearch(100, 11);
     }
 
     int[] changes = new int[segs.size()];
@@ -502,7 +506,9 @@ Mapping of sounds/shshss.voice:
     List<Double> korrs = new ArrayList<Double>();
     Random r = new Random();
 
-    Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
+    //Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
+    Seg seg1 = new Seg(13, 18, 7, 49);
+
     //Seg seg1 = new Seg(45,55, 25,35);
     //Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
     //Seg seg1 = new Seg(3, 15, 45, 63); // - wispering sounds discriminator
@@ -540,7 +546,7 @@ sssss discriminator: seg2=25 48 14 45
       e.printStackTrace();
     }
 
-    seg1.clusterSearch(100);
+    seg1.clusterSearch(100, 11);
 
     display(Arrays.asList(toArr(mights),
          toArr(seg1.points)
@@ -549,7 +555,7 @@ sssss discriminator: seg2=25 48 14 45
     List<Double> lrnd = new ArrayList<Double>(seg1.points);
     Collections.shuffle(lrnd);
     display(Arrays.asList(toArr(lrnd)));
-    display(Arrays.asList(seg1.histo(100)));
+    display(Arrays.asList(seg1.histo(100), ChunkOps.movingAvg(seg1.histo(100), 11)));
   }
 
 

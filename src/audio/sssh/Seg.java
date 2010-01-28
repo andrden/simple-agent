@@ -5,6 +5,8 @@ import com.pmstation.common.utils.MinMaxFinder;
 import java.util.List;
 import java.util.ArrayList;
 
+import audio.ChunkOps;
+
 /**
  * Created by IntelliJ IDEA.
 * User: adenysenko
@@ -75,7 +77,7 @@ class Seg {
     return h;
   }
 
-  void clusterSearch(int histoSize){
+  void clusterSearch(int histoSize, int movingAvgSize){
     clusters = new ArrayList<Clast>();
     MinMaxFinder mmf = new MinMaxFinder();
     for( double d : points ){
@@ -91,7 +93,8 @@ class Seg {
       h[n]++;
     }
 
-    localClusterSearch(h,0,h.length-1, mmf);
+    double[] havg = ChunkOps.movingAvg(h, movingAvgSize);
+    localClusterSearch(havg,0,havg.length-1, mmf);
   }
 
   private void localClusterSearch(double[] h, int beg, int end, MinMaxFinder ranges) {
@@ -122,6 +125,10 @@ class Seg {
 //    if( end!=h.length-1 && b==end ){
 //      return; // pressing to cut edge
 //    }
+
+    if( b-a<5 ){
+      return;
+    }
 
     System.out.println(toString()+ " cluster idx "+a+" ... "+b);
     clusters.add(new Clast(
