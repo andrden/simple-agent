@@ -37,8 +37,8 @@ public class ShShCorrelate {
   }
 
   public static void main(String[] args) throws Exception{
-    //new ShShCorrelate(128).clusterSegments();
-    new ShShCorrelate(128).graphSegments();
+    new ShShCorrelate(128).clusterSegments();
+    //new ShShCorrelate(128).graphSegments();
 
     //new ShShCorrelate(128).extractClusters();
     //new ShShCorrelate(128).play();
@@ -477,17 +477,19 @@ Mapping of sounds/shshss.voice:
         final double[] freqMagI = freqMagnitudes(buf);
         double might = might(buf);
         System.out.printf("%4d  %5.1f   " , i,  might);
+        int rowChanges=0;
         for( int j=0; j<segs.size(); j++ ){
           Seg s = segs.get(j);
           double c = s.comp(freqMagI);
           final int clustIdx = s.clusterIdx(c);
           if( !firstRow && clustIdx!=oldClusterIdx[j] ){
             changes[j]++;
+            rowChanges++;
           }
           oldClusterIdx[j] = clustIdx;
           System.out.print(clustIdx +" ");
         }
-        System.out.println();
+        System.out.println("  "+rowChanges+(rowChanges>4?"*":""));
         firstRow=false;
       }
     }catch(Exception e){
@@ -546,7 +548,8 @@ sssss discriminator: seg2=25 48 14 45
       e.printStackTrace();
     }
 
-    seg1.clusterSearch(100, 11);
+    final int movingAvgSize=21;
+    seg1.clusterSearch(100, movingAvgSize);
 
     display(Arrays.asList(toArr(mights),
          toArr(seg1.points)
@@ -555,7 +558,8 @@ sssss discriminator: seg2=25 48 14 45
     List<Double> lrnd = new ArrayList<Double>(seg1.points);
     Collections.shuffle(lrnd);
     display(Arrays.asList(toArr(lrnd)));
-    display(Arrays.asList(seg1.histo(100), ChunkOps.movingAvg(seg1.histo(100), 11)));
+    display(Arrays.asList(seg1.histo(100),
+        ChunkOps.movingAvg(seg1.histo(100), movingAvgSize)));
   }
 
 

@@ -97,34 +97,56 @@ class Seg {
     localClusterSearch(havg,0,havg.length-1, mmf);
   }
 
-  private void localClusterSearch(double[] h, int beg, int end, MinMaxFinder ranges) {
+  interface Slope{
+    double val(int offset);
+    double maxOffset();
+  }
+
+  int moveDown(Slope s){
+    double max=s.val(0);
+    int i=0;
+//    double clusterCut = max * 0.8;
+//    while( i<s.maxOffset() && s.val(i+1)>clusterCut ){
+//      i++;
+//    }
+    while( i<s.maxOffset() && s.val(i+1)<s.val(i) ){
+      i++;
+    }
+    return i;
+  }
+//  boolean shouldStep(Slope s, int curr){
+//    int j=0;
+//    while( curr+j<s.maxOffset() ){
+//
+//    }
+//  }
+
+  private void localClusterSearch(final double[] h,
+                                  final int beg, final int end, MinMaxFinder ranges) {
     MinMaxFinder hmax = new MinMaxFinder();
     for( int i=beg; i<=end; i++ ){
       hmax.add(h[i],i);
     }
-    double clusterCut = hmax.getMaxVal()/3;
-    int a=(Integer)hmax.getMaxNames().get(0);
-    int b=a;
-    while(a>beg && h[a-1]>clusterCut){
-      a--;
-    }
-    while(b<end && h[b+1]>clusterCut){
-      b++;
-    }
+    final int top=(Integer)hmax.getMaxNames().get(0);
+    Slope right = new Slope(){
+      public double val(int offset) {
+        return h[top+offset];
+      }
+      public double maxOffset() {
+        return end-top;
+      }
+    };
+    Slope left = new Slope(){
+      public double val(int offset) {
+        return h[top-offset];
+      }
+      public double maxOffset() {
+        return top-beg;
+      }
+    };
 
-    while(a>beg && h[a-1]<h[a]){
-      a--;
-    }
-    while(b<end && h[b+1]<h[b]){
-      b++;
-    }
-
-//    if( beg!=0 && a==beg ){
-//      return; // pressing to cut edge
-//    }
-//    if( end!=h.length-1 && b==end ){
-//      return; // pressing to cut edge
-//    }
+    int a = top - moveDown(left);
+    int b = top + moveDown(right);
 
     if( b-a<5 ){
       return;
