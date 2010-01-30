@@ -5,8 +5,10 @@ import audio.ChunkOps;
 import audio.cords.old.LinearRegression;
 import audio.sssh.NoiseRnd;
 import audio.cords.Filter;
+import audio.cords.Mike;
 import audio.cords.SimplestChart;
 
+import audio.cords.SoundIn;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.AudioFormat;
@@ -297,8 +299,9 @@ sssss discriminator: seg2=25 48 14 45
 
     DataInputStream di = new DataInputStream(new FileInputStream(
         //"C:\\proj\\cr6\\sounds/onetwothree.voice"
-        "C:\\proj\\cr6\\sounds/shshss.voice"
-        //"C:\\Projects\\simple-agent\\sounds/shshss.voice"
+        //"C:\\proj\\cr6\\sounds/shshss.voice"
+
+        "C:\\Projects\\simple-agent\\sounds/shshss.voice"
     ));
 
 /*
@@ -469,7 +472,8 @@ Mapping of sounds/shshss.voice:
 
     int[] changes = new int[segs.size()];
     try{
-      DataInputStream di2 = soundFile();
+      //DataInputStream di2 = soundFile();
+      SoundIn di2 = new Mike(11025);
       int[] oldClusterIdx = new int[segs.size()];
       boolean firstRow=true;
       for( int i=0; /*i<250*/; i++ ){
@@ -703,6 +707,11 @@ sssss discriminator: seg2=25 48 14 45
   void readAll(DataInput in, short[] sh) throws IOException {
     for( int i=0; i<sh.length; i++ ){
       sh[i]=in.readShort();
+    }
+  }
+  void readAll(SoundIn in, short[] sh) throws IOException {
+    for( int i=0; i<sh.length; i++ ){
+      sh[i]=in.next();
     }
   }
 
