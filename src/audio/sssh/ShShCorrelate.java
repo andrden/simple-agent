@@ -299,9 +299,9 @@ sssss discriminator: seg2=25 48 14 45
 
     DataInputStream di = new DataInputStream(new FileInputStream(
         //"C:\\proj\\cr6\\sounds/onetwothree.voice"
-        //"C:\\proj\\cr6\\sounds/shshss.voice"
+        "C:\\proj\\cr6\\sounds/shshss.voice"
 
-        "C:\\Projects\\simple-agent\\sounds/shshss.voice"
+        //"C:\\Projects\\simple-agent\\sounds/shshss.voice"
     ));
 
 /*
@@ -469,11 +469,12 @@ Mapping of sounds/shshss.voice:
     for( Seg s : segs ){
       s.clusterSearch(100, 11);
     }
+    SegmentsDb segDb = new SegmentsDb();
 
     int[] changes = new int[segs.size()];
     try{
-      //DataInputStream di2 = soundFile();
-      SoundIn di2 = new Mike(11025);
+      DataInputStream di2 = soundFile();
+      //SoundIn di2 = new Mike(11025);
       int[] oldClusterIdx = new int[segs.size()];
       boolean firstRow=true;
       for( int i=0; /*i<250*/; i++ ){
@@ -486,6 +487,7 @@ Mapping of sounds/shshss.voice:
           Seg s = segs.get(j);
           double c = s.comp(freqMagI);
           final int clustIdx = s.clusterIdx(c);
+          segDb.add(i, j, clustIdx);
           if( !firstRow && clustIdx!=oldClusterIdx[j] ){
             changes[j]++;
             rowChanges++;
@@ -499,6 +501,7 @@ Mapping of sounds/shshss.voice:
     }catch(Exception e){
       e.printStackTrace();
     }
+    segDb.findMatches();
 
     for( int j=0; j<segs.size(); j++ ){
       Seg s = segs.get(j);
