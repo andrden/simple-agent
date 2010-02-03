@@ -359,10 +359,10 @@ Mapping of sounds/shshss.voice:
     // #1402 - just white noise
     // #1401 - like waterfall
     // #1400 - remote street with traffic
-    playNoiseModulated(freqMagRefs);
+    playNoiseModulated(freqMagRefs, -1);
   }
 
-  void playNoiseModulated(List<double[]> freqMagRefs) throws Exception{
+  void playNoiseModulated(List<double[]> freqMagRefs, int segCount) throws Exception{
     for( double[] dd : freqMagRefs ){
       blockAvg(dd, 8);
     }
@@ -375,7 +375,7 @@ Mapping of sounds/shshss.voice:
     short[] remain=new short[kernelLen-1];
     NoiseRnd noiseRnd = new NoiseRnd();
 
-    for(;;){
+    for(int segN=0; segN<segCount || segCount<0 ;segN++){
       for(double[] freqMagI : freqMagRefs ){
 /*
         for( int i=0; i<50; i++ ){
@@ -402,6 +402,8 @@ Mapping of sounds/shshss.voice:
         line.write(b, 0, b.length);
       }
     }
+    line.flush();
+    line.close();
 
   }
 
@@ -428,7 +430,7 @@ Mapping of sounds/shshss.voice:
 
   void clusterSegments()  throws Exception{
     DataInputStream di = soundFile();
-    Random r = new Random();
+    Random rSeg = new Random(1);
 
     List<Seg> segs = new ArrayList<Seg>();
     Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
@@ -442,7 +444,7 @@ Mapping of sounds/shshss.voice:
     segs.add(new Seg(20, 49, 3, 35));
 
     for( int i=0; i<10; i++ ){
-      Seg seg2 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
+      Seg seg2 = new Seg(rSeg.nextInt(65),rSeg.nextInt(65),rSeg.nextInt(65),rSeg.nextInt(65));
       segs.add(seg2);
     }
 /*
@@ -503,10 +505,54 @@ Mapping of sounds/shshss.voice:
     }
     segDb.findMatches();
 
-    for( int j=0; j<segs.size(); j++ ){
-      Seg s = segs.get(j);
-      System.out.println(s+" changes="+changes[j]);
+    int i=0;
+    for( SegmentsDb.Entity e : segDb.entities.values() ){
+      if( e.blist().size()>1 ){
+        i++;
+        System.out.println("playing entity "+i);
+        //if( i==12 ){
+          final int pos = e.sample();
+          System.out.println(pos+" "+e+" "+e.blist());
+          List<double[]> freqMagRefs = Arrays.asList(
+              freqMagnitudes(soundBufAt(pos))
+           );
+          playNoiseModulated(freqMagRefs, 500);
+/*
+          1 - sh street
+          2 - street sound far
+          3 - whispering sound
+          4 - street sound - far
+          5 - rain sound whipering
+          6 - far street
+          7 - rain sound
+          8 - rain sound
+          9 - far street
+          10 - chchchch
+          11 - chchchch
+          12 - chchchch
+          13 far street
+          14 whispering sssss
+          15 whispering sssss
+          16 - chchchch
+          17 street
+          18 shshshsh
+          19 far street
+          20 far street
+          21 - chchchch
+          22 - sssss whispering
+          23 - shshsh
+          24 - far street
+          25 - sssss whispering
+           */
+       // }
+      }
     }
+
+
+//    for( int j=0; j<segs.size(); j++ ){
+//      Seg s = segs.get(j);
+//      System.out.println(s+" changes="+changes[j]);
+//    }
   }
 
   void graphSegments() throws Exception{

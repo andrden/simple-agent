@@ -65,6 +65,16 @@ public class SegmentsDb {
           +(int)b.getMinVal()+".."+(int)b.getMaxVal()
           +  " size="+list.size();
     }
+
+    int avg(){
+      MinMaxFinder a = new MinMaxFinder();
+      MinMaxFinder b = new MinMaxFinder();
+      for( Sg s : list ){
+        a.add(s.start,"");
+        b.add(s.end,"");
+      }
+      return (int)(a.getMaxVal()+b.getMinVal())/2;
+    }
   }
   class Entity{
     Map<Integer,Integer> colVals = new HashMap<Integer,Integer>();
@@ -77,6 +87,23 @@ public class SegmentsDb {
     boolean contains(Entity e){
       return colVals.entrySet().containsAll(e.colVals.entrySet());
     }
+
+    public List<Bucket> blist(){
+      List<Bucket> blist = new ArrayList<Bucket>();
+      for(Bucket b : buckets ){
+        if( b.asEntity().contains(this) ){
+          blist.add(b);
+        }
+      }
+      return blist;
+    }
+
+    public int sample(){
+      List<Bucket> blist = blist();
+      Collections.shuffle(blist);
+      return blist.get(0).avg();
+    }
+
   }
 
   Map<Integer,Sg> curr = new HashMap<Integer, Sg>();
@@ -146,12 +173,7 @@ public class SegmentsDb {
     }
 
     for( Entity e : entities.values() ){
-      List<Bucket> blist = new ArrayList<Bucket>();
-      for(Bucket b : buckets ){
-        if( b.asEntity().contains(e) ){
-          blist.add(b);
-        }
-      }
+      List<Bucket> blist = e.blist();
       if( blist.size()>1 ){
         System.out.println(e+" count="+blist.size());
         for( Bucket b : blist ){
