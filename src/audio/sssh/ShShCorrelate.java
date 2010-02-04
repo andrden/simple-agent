@@ -39,8 +39,9 @@ public class ShShCorrelate {
   }
 
   public static void main(String[] args) throws Exception{
-    new ShShCorrelate(128).clusterSegments();
-    //new ShShCorrelate(128).graphSegments();
+    //new ShShCorrelate(128).clusterSegments();
+    new ShShCorrelate(128).graphSegments();
+    //new ShShCorrelate(128).findBestClusterQuality();
 
     //new ShShCorrelate(128).extractClusters();
     //new ShShCorrelate(128).play();
@@ -555,6 +556,40 @@ Mapping of sounds/shshss.voice:
 //    }
   }
 
+  void findBestClusterQuality() throws Exception{
+    for(;;){
+      Random r = new Random();
+      Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
+      System.out.println("seg1="+seg1.toString());
+      try{
+        DataInputStream di = soundFile();
+        for( int i=0; /*i<250*/; i++ ){
+          readAll(di, buf);
+          final double[] freqMagI = freqMagnitudes(buf);
+          double c1 = seg1.comp(freqMagI);
+          seg1.points.add(c1);
+        }
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+
+      final int movingAvgSize=21;
+      seg1.clusterSearch(100, movingAvgSize);
+      int over1=0;
+      for( Seg.Clast c : seg1.clusters ){
+        if( c.quality>14 ){
+          return;
+        }
+        if( c.quality>1.5 ){
+          over1++;
+        }
+      }
+      if( over1>=2 ){
+        return;
+      }
+    }
+  }
+
   void graphSegments() throws Exception{
     DataInputStream di = soundFile();
     List<Double> mights = new ArrayList<Double>();
@@ -562,7 +597,12 @@ Mapping of sounds/shshss.voice:
     Random r = new Random();
 
     //Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
-    Seg seg1 = new Seg(13, 18, 7, 49);
+    //Seg seg1 = new Seg(16, 24, 16, 40); // ch discriminator quality 10
+    Seg seg1 = new Seg(21, 48, 41, 61); // ss discriminator quality 13
+    //Seg seg1 = new Seg(28, 42, 25, 41);
+
+
+    //Seg seg1 = new Seg(13, 18, 7, 49);
 
     //Seg seg1 = new Seg(45,55, 25,35);
     //Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));

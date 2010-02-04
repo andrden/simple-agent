@@ -40,10 +40,12 @@ class Seg {
   class Clast{
     double a;
     double b;
+    double quality;
 
-    Clast(double a, double b) {
+    Clast(double a, double b, double quality) {
       this.a = a;
       this.b = b;
+      this.quality=quality;
     }
 
     boolean contains(double v){
@@ -78,6 +80,9 @@ class Seg {
   }
 
   void clusterSearch(int histoSize, int movingAvgSize){
+    кластер не может быть повёрнут своей максимальной частью к соседнему
+    кластеру!!!
+
     clusters = new ArrayList<Clast>();
     MinMaxFinder mmf = new MinMaxFinder();
     for( double d : points ){
@@ -151,11 +156,14 @@ class Seg {
     if( b-a<5 ){
       return;
     }
+    double worstSideVal = Math.max(h[a],h[b]);
+    double quality = hmax.getMaxVal() / worstSideVal;
 
-    System.out.println(toString()+ " cluster idx "+a+" ... "+b);
+    System.out.println(toString()+ " cluster idx "+a+" ... "+b+ " q="+quality);
     clusters.add(new Clast(
         ranges.getMinVal()+a*(ranges.getMaxVal()-ranges.getMinVal())/h.length,
-        ranges.getMinVal()+(b+1)*(ranges.getMaxVal()-ranges.getMinVal())/h.length
+        ranges.getMinVal()+(b+1)*(ranges.getMaxVal()-ranges.getMinVal())/h.length,
+        quality
         ));
 
     if( a>beg ){
