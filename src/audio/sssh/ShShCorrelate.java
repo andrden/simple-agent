@@ -300,9 +300,9 @@ sssss discriminator: seg2=25 48 14 45
 
     DataInputStream di = new DataInputStream(new FileInputStream(
         //"C:\\proj\\cr6\\sounds/onetwothree.voice"
-        "C:\\proj\\cr6\\sounds/shshss.voice"
+       // "C:\\proj\\cr6\\sounds/shshss.voice"
 
-        //"C:\\Projects\\simple-agent\\sounds/shshss.voice"
+        "C:\\Projects\\simple-agent\\sounds/shshss.voice"
     ));
 
 /*
@@ -580,7 +580,7 @@ Mapping of sounds/shshss.voice:
         if( c.quality>14 ){
           return;
         }
-        if( c.quality>1.5 ){
+        if( c.quality>3.5 ){
           over1++;
         }
       }
@@ -598,13 +598,13 @@ Mapping of sounds/shshss.voice:
 
     //Seg seg1 = new Seg(25,35,45,55); // size=11, size=11
     //Seg seg1 = new Seg(16, 24, 16, 40); // ch discriminator quality 10
-    Seg seg1 = new Seg(21, 48, 41, 61); // ss discriminator quality 13
-    //Seg seg1 = new Seg(28, 42, 25, 41);
+    //Seg seg1 = new Seg(21, 48, 41, 61); // ss discriminator quality 13
+    //Seg seg1 = new Seg(39, 64, 15, 62); // ss,ch+sh discriminator quality 17
+    //Seg seg1 = new Seg(7, 55, 12, 56); // all whispering sounds discr quality 2+2
+    //Seg seg1 = new Seg(23, 64, 14, 61); // ss+ch (+anomaly sh)  discr quality 7+4
 
-
-    //Seg seg1 = new Seg(13, 18, 7, 49);
-
-    //Seg seg1 = new Seg(45,55, 25,35);
+    Seg seg1 = new Seg(26, 39, 30, 59);//26 39 30 59
+    
     //Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
     //Seg seg1 = new Seg(3, 15, 45, 63); // - wispering sounds discriminator
 

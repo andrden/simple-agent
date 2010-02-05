@@ -80,9 +80,6 @@ class Seg {
   }
 
   void clusterSearch(int histoSize, int movingAvgSize){
-    кластер не может быть повёрнут своей максимальной частью к соседнему
-    кластеру!!!
-
     clusters = new ArrayList<Clast>();
     MinMaxFinder mmf = new MinMaxFinder();
     for( double d : points ){
@@ -110,10 +107,10 @@ class Seg {
   int moveDown(Slope s){
     double max=s.val(0);
     int i=0;
-//    double clusterCut = max * 0.8;
-//    while( i<s.maxOffset() && s.val(i+1)>clusterCut ){
-//      i++;
-//    }
+    double clusterCut = max * 0.6;
+    while( i<s.maxOffset() && s.val(i+1)>clusterCut ){
+      i++;
+    }
     while( i<s.maxOffset() && s.val(i+1)<s.val(i) ){
       i++;
     }
@@ -156,6 +153,18 @@ class Seg {
     if( b-a<5 ){
       return;
     }
+
+
+//    кластер не может быть повёрнут своей максимальной частью к соседнему
+//    кластеру!!!
+   if( h[a]==h[top] && beg!=0 ){
+        return;
+   }
+   if( h[b]==h[top] && end!=h.length-1 ){
+        return;
+   }
+
+
     double worstSideVal = Math.max(h[a],h[b]);
     double quality = hmax.getMaxVal() / worstSideVal;
 
