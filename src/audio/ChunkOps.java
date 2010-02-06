@@ -1,5 +1,8 @@
 package audio;
 
+import java.io.DataInput;
+import java.io.IOException;
+
 /**
  * Created by IntelliJ IDEA.
  * User: adenysenko
@@ -97,6 +100,20 @@ public class ChunkOps {
       ret[i] = sum/count;
     }
     return ret;
+  }
+  public static double[] freqMagnitudes(short[] sh){
+    double[] d = new double[sh.length];
+    for( int i=0; i<sh.length; i++ ){
+      d[i]=sh[i];
+    }
+    DFT dft = new DFT();
+    dft.forward(d);
+    return dft.getMagnitudes();
+  }
+  public static void readAll(DataInput in, short[] sh) throws IOException {
+    for( int i=0; i<sh.length; i++ ){
+      sh[i]=in.readShort();
+    }
   }
 
 }

@@ -28,7 +28,7 @@ import com.pmstation.common.utils.MinMaxFinder;
  * Time: 5:42:47 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ShShCorrelate {
+public class ShShCorrelate extends ChunkOps{
   int chunkSize;
   short[] buf;
   int freq = 11025;
@@ -70,7 +70,7 @@ sssss discriminator: seg2=25 48 14 45
       for( int i=0; /*i<1500*/; i++ ){
         readAll(di, buf);
         double might = might(buf);
-        final double[] freqMagI = freqMagnitudes(buf);
+        final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
         double c1 = seg1.comp(freqMagI);
 
         lvc.add(c1);
@@ -352,7 +352,7 @@ Mapping of sounds/shshss.voice:
 */
 
     List<double[]> freqMagRefs = Arrays.asList(
-        freqMagnitudes(soundBufAt(1405))
+        ChunkOps.freqMagnitudes(soundBufAt(1405))
      );
 
 
@@ -395,7 +395,7 @@ Mapping of sounds/shshss.voice:
         short[] convolve= Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.1);
         buf = Filter.convolveOverlap(remain, convolve);
 
-        double[] mnew = freqMagnitudes(buf);
+        double[] mnew = ChunkOps.freqMagnitudes(buf);
 
         //display(Arrays.asList(freqMagI,  mnew));
 
@@ -459,7 +459,7 @@ Mapping of sounds/shshss.voice:
     try{
       for( int i=0; /*i<250*/; i++ ){
         readAll(di, buf);
-        final double[] freqMagI = freqMagnitudes(buf);
+        final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
         for( Seg s : segs ){
           double c = s.comp(freqMagI);
           s.points.add(c);
@@ -482,7 +482,7 @@ Mapping of sounds/shshss.voice:
       boolean firstRow=true;
       for( int i=0; /*i<250*/; i++ ){
         readAll(di2, buf);
-        final double[] freqMagI = freqMagnitudes(buf);
+        final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
         double might = might(buf);
         System.out.printf("%4d  %5.1f   " , i,  might);
         int rowChanges=0;
@@ -515,7 +515,7 @@ Mapping of sounds/shshss.voice:
           final int pos = e.sample();
           System.out.println(pos+" "+e+" "+e.blist());
           List<double[]> freqMagRefs = Arrays.asList(
-              freqMagnitudes(soundBufAt(pos))
+              ChunkOps.freqMagnitudes(soundBufAt(pos))
            );
           playNoiseModulated(freqMagRefs, 500);
 /*
@@ -557,15 +557,15 @@ Mapping of sounds/shshss.voice:
   }
 
   void findBestClusterQuality() throws Exception{
+      ParsedSound parsedSound = new ParsedSound(chunkSize, soundFile());
+
     for(;;){
       Random r = new Random();
       Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
       System.out.println("seg1="+seg1.toString());
       try{
-        DataInputStream di = soundFile();
-        for( int i=0; /*i<250*/; i++ ){
-          readAll(di, buf);
-          final double[] freqMagI = freqMagnitudes(buf);
+        
+        for( double[] freqMagI : parsedSound.freqMagnitudes ){
           double c1 = seg1.comp(freqMagI);
           seg1.points.add(c1);
         }
@@ -602,14 +602,15 @@ Mapping of sounds/shshss.voice:
     //Seg seg1 = new Seg(39, 64, 15, 62); // ss,ch+sh discriminator quality 17
     //Seg seg1 = new Seg(7, 55, 12, 56); // all whispering sounds discr quality 2+2
     //Seg seg1 = new Seg(23, 64, 14, 61); // ss+ch (+anomaly sh)  discr quality 7+4
-
-    Seg seg1 = new Seg(26, 39, 30, 59);//26 39 30 59
+    //Seg seg1 = new Seg(26, 39, 30, 59); //ss discr quality 19
+    //Seg seg1 = new Seg(38, 60, 19, 58); // ss discr quality 17+4
+    Seg seg1 = new Seg(18, 61, 15, 59); - useless and wrong clusters marked, must fix
     
     //Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
     //Seg seg1 = new Seg(3, 15, 45, 63); // - wispering sounds discriminator
 
     //double[] refKorrPoint = freqMagnitudes(soundBufAt(250));
-    double[] refKorrPoint = freqMagnitudes(soundBufAt(2501));
+    double[] refKorrPoint = ChunkOps.freqMagnitudes(soundBufAt(2501));
     //Seg seg2 = new Seg(50,55,60,64);
     Seg seg2 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
 /*  shsh discriminators:
@@ -627,7 +628,7 @@ sssss discriminator: seg2=25 48 14 45
         readAll(di, buf);
         double might = might(buf);
         mights.add(might/300);
-        final double[] freqMagI = freqMagnitudes(buf);
+        final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
         korrs.add(korr0(refKorrPoint, freqMagI));
 
         double c1 = seg1.comp(freqMagI);
@@ -674,8 +675,8 @@ sssss discriminator: seg2=25 48 14 45
     // [sh - sh' - ss  ш-щ-с] is lower-higher series of the same freq curve
 
     List<double[]> freqMagRefs = Arrays.asList(
-        freqMagnitudes(soundBufAt(250)),
-        freqMagnitudes(soundBufAt(339))
+        ChunkOps.freqMagnitudes(soundBufAt(250)),
+        ChunkOps.freqMagnitudes(soundBufAt(339))
         //freqMagnitudes(soundBufAt(240)),
         //freqMagnitudes(soundBufAt(253))
     );
@@ -698,7 +699,7 @@ sssss discriminator: seg2=25 48 14 45
       readAll(di, buf);
       double might = might(buf);
       //buf=mightCorrect(buf,oldMight,might,200);
-      final double[] freqMagI = freqMagnitudes(buf);
+      final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
       LinearRegression linRegr = new LinearRegression();
       //linRegr.addByIdx(freqMagI);
       double koef=Math.sqrt(sumSq(freqMagI));
@@ -711,7 +712,7 @@ sssss discriminator: seg2=25 48 14 45
       blockAvg(freqMagI, 8);
       short[] convolve=Filter.apply(noiseRnd.next(buf.length),freqMagI,kernelLen,0.02);
       buf = Filter.convolveOverlap(remain, convolve);
-      double[] freqMagIModif = freqMagnitudes(buf);
+      double[] freqMagIModif = ChunkOps.freqMagnitudes(buf);
 
       //Thread.sleep( 1000*buf.length/freq );
 
@@ -793,26 +794,12 @@ sssss discriminator: seg2=25 48 14 45
     return baos.toByteArray();
   }
 
-  void readAll(DataInput in, short[] sh) throws IOException {
-    for( int i=0; i<sh.length; i++ ){
-      sh[i]=in.readShort();
-    }
-  }
   void readAll(SoundIn in, short[] sh) throws IOException {
     for( int i=0; i<sh.length; i++ ){
       sh[i]=in.next();
     }
   }
 
-  double[] freqMagnitudes(short[] sh){
-    double[] d = new double[sh.length];
-    for( int i=0; i<sh.length; i++ ){
-      d[i]=sh[i];
-    }
-    DFT dft = new DFT();
-    dft.forward(d);
-    return dft.getMagnitudes();
-  }
 
   void blockAvg(double[] d, int blocks){
     int blockSize = d.length/blocks;
