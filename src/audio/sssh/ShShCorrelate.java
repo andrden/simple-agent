@@ -556,42 +556,70 @@ Mapping of sounds/shshss.voice:
 //    }
   }
 
-  void findBestClusterQuality() throws Exception{
-      ParsedSound parsedSound = new ParsedSound(chunkSize, soundFile());
+    void findBestClusterQuality() throws Exception{
+        ParsedSound parsedSound = new ParsedSound(chunkSize, soundFile());
+        Seg seg1 = new Seg(12, 45, 18, 60);
+        testSegQuality(seg1, parsedSound.freqMagnitudes);
+        //Seg seg1 = findBestClusterQuality( parsedSound.freqMagnitudes );
+        int i=0;
+        List<double[]> subset = new ArrayList();
+        for( double[] freqMagI : parsedSound.freqMagnitudes ){
+            double c1 = seg1.comp(freqMagI);
+            int idx = seg1.clusterIdx(c1);
+            System.out.println(i+" "+idx);
+            if( idx==1 ){
+                subset.add(freqMagI);
+            }
+            i++;
+        }
 
+        //Seg seg2 = findBestClusterQuality( subset );
+        graphSegments(subset);
+    }
+
+  Seg findBestClusterQuality(List<double[]> freqMagnitudes) throws Exception{
     for(;;){
       Random r = new Random();
       Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
-      System.out.println("seg1="+seg1.toString());
-      try{
-        
-        for( double[] freqMagI : parsedSound.freqMagnitudes ){
+
+      if( testSegQuality(seg1, freqMagnitudes) ){
+          return seg1;
+      }
+    }
+  }
+
+  boolean testSegQuality(Seg seg1, List<double[]> freqMagnitudes){
+            System.out.println("seg1="+seg1.toString());
+
+        for( double[] freqMagI : freqMagnitudes ){
           double c1 = seg1.comp(freqMagI);
           seg1.points.add(c1);
         }
-      }catch(Exception e){
-        e.printStackTrace();
-      }
+
 
       final int movingAvgSize=21;
       seg1.clusterSearch(100, movingAvgSize);
       int over1=0;
       for( Seg.Clast c : seg1.clusters ){
         if( c.quality>14 ){
-          return;
+          return true;
         }
         if( c.quality>3.5 ){
           over1++;
         }
       }
       if( over1>=2 ){
-        return;
+        return true;
       }
-    }
+      return false;
   }
 
   void graphSegments() throws Exception{
-    DataInputStream di = soundFile();
+    ParsedSound parsedSound = new ParsedSound(chunkSize, soundFile());
+    graphSegments(parsedSound.freqMagnitudes);
+  }
+  void graphSegments(List<double[]> freqMagnitudes) throws Exception{
+    //DataInputStream di = soundFile();
     List<Double> mights = new ArrayList<Double>();
     List<Double> korrs = new ArrayList<Double>();
     Random r = new Random();
@@ -604,7 +632,8 @@ Mapping of sounds/shshss.voice:
     //Seg seg1 = new Seg(23, 64, 14, 61); // ss+ch (+anomaly sh)  discr quality 7+4
     //Seg seg1 = new Seg(26, 39, 30, 59); //ss discr quality 19
     //Seg seg1 = new Seg(38, 60, 19, 58); // ss discr quality 17+4
-    Seg seg1 = new Seg(18, 61, 15, 59); - useless and wrong clusters marked, must fix
+    //Seg seg1 = new Seg(18, 61, 15, 59); //- useless and wrong clusters marked, must fix
+    Seg seg1 = new Seg(8, 25, 7, 63); // great ch discriminator found after ss excluded (splitted)
     
     //Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
     //Seg seg1 = new Seg(3, 15, 45, 63); // - wispering sounds discriminator
@@ -624,11 +653,12 @@ sssss discriminator: seg2=25 48 14 45
 
     System.out.println("seg2="+seg2.toString());
     try{
-      for( int i=0; /*i<250*/; i++ ){
-        readAll(di, buf);
+      for( int i=0; /*i<250*/i<freqMagnitudes.size(); i++ ){
+        //readAll(di, buf);
         double might = might(buf);
         mights.add(might/300);
-        final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
+        //final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
+        final double[] freqMagI = freqMagnitudes.get(i);
         korrs.add(korr0(refKorrPoint, freqMagI));
 
         double c1 = seg1.comp(freqMagI);

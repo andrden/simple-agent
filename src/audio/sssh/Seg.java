@@ -41,11 +41,13 @@ class Seg {
     double a;
     double b;
     double quality;
+    double scopeRatio;
 
-    Clast(double a, double b, double quality) {
+    Clast(double a, double b, double quality, double scopeRatio) {
       this.a = a;
       this.b = b;
       this.quality=quality;
+      this.scopeRatio=scopeRatio;
     }
 
     boolean contains(double v){
@@ -153,6 +155,8 @@ class Seg {
     if( b-a<5 ){
       return;
     }
+    double scopeRatio = ChunkOps.sum(h,a,b+1)/ChunkOps.sum(h);
+
 
 
 //    кластер не может быть повёрнут своей максимальной частью к соседнему
@@ -163,16 +167,21 @@ class Seg {
    if( h[b]==h[top] && end!=h.length-1 ){
         return;
    }
+    if( scopeRatio<0.05 ){
+        return; // we can't pay attention to such small things
+    }
 
 
     double worstSideVal = Math.max(h[a],h[b]);
     double quality = hmax.getMaxVal() / worstSideVal;
 
-    System.out.println(toString()+ " cluster idx "+a+" ... "+b+ " q="+quality);
+    System.out.println(toString()+ " cluster idx "+a+" ... "+b
+            + " q="+quality+" scope="+scopeRatio);
     clusters.add(new Clast(
         ranges.getMinVal()+a*(ranges.getMaxVal()-ranges.getMinVal())/h.length,
         ranges.getMinVal()+(b+1)*(ranges.getMaxVal()-ranges.getMinVal())/h.length,
-        quality
+        quality,
+        scopeRatio
         ));
 
     if( a>beg ){

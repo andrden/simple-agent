@@ -93,7 +93,7 @@ public class Mike implements SoundIn {
   private static void play() throws Exception {
     //final String fname = "c:/tmp/f1.voice";
     //final String fname = "C:\\proj\\cr6\\sounds/onetwothree.voice";
-    final String fname = "C:\\proj\\cr6\\sounds/shshss.voice";
+    final String fname = "C:\\Projects\\simple-agent\\sounds/shshss.voice";
     DataInputStream di = new DataInputStream(new FileInputStream(fname));
     byte[] b = new byte[di.available()];
     di.read(b);

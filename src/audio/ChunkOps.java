@@ -115,5 +115,15 @@ public class ChunkOps {
       sh[i]=in.readShort();
     }
   }
+  public static double sum(double[] h){
+      return sum(h,0,h.length);
+  }
+  public static double sum(double[] h, int start, int endExclusive){
+      double s = 0;
+      for( int i=start; i<endExclusive; i++ ){
+          s += h[i];
+      }
+      return s;
+  }
 
 }
