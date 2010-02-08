@@ -20,6 +20,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.ui.RefineryUtilities;
 import utils.Utils;
 import com.pmstation.common.utils.MinMaxFinder;
+import java.awt.Point;
+import java.awt.geom.Point2D;
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,12 +42,19 @@ public class ShShCorrelate extends ChunkOps{
 
   public static void main(String[] args) throws Exception{
     //new ShShCorrelate(128).clusterSegments();
-    new ShShCorrelate(128).graphSegments();
+    //new ShShCorrelate(128).graphSegments();
     //new ShShCorrelate(128).findBestClusterQuality();
+    new ShShCorrelate(128).graphSegments2();
 
     //new ShShCorrelate(128).extractClusters();
     //new ShShCorrelate(128).play();
     //new ShShCorrelate(128).playNoiseModulated();
+  }
+
+   void graphSegments2() throws Exception{
+    ParsedSound parsedSound = new ParsedSound(chunkSize, soundFile());
+    graphSegments2(parsedSound.freqMagnitudes,
+            new Seg(12, 45, 18, 60), new Seg(8, 25, 7, 63));
   }
 
   private void extractClusters() throws Exception{
@@ -408,6 +417,27 @@ Mapping of sounds/shshss.voice:
 
   }
 
+    void displayMap(List<Point2D> points) throws Exception{
+      XYSeriesCollection data = new XYSeriesCollection();
+      //for (int i = 0; i <po.size(); i++) {
+        XYSeries series = new XYSeries("Series " + 0);
+        //double[] fdata = freqMagRefs.get(i);
+        //double koef=1;//Math.sqrt(sumSq(fdata));
+        for (int j = 0; j <points.size(); j++) {
+          series.add(points.get(j).getX(), points.get(j).getY());
+        }
+        data.addSeries(series);
+      //}
+
+      SimplestChart demo = new SimplestChart(data);
+      RefineryUtilities.centerFrameOnScreen(demo);
+      demo.setVisible(true);
+      while(demo.isVisible()){
+        Thread.sleep(100);
+      }
+      Utils.breakPoint();
+  }
+
   void display(List<double[]> freqMagRefs) throws Exception{
       XYSeriesCollection data = new XYSeriesCollection();
       for (int i = 0; i <freqMagRefs.size(); i++) {
@@ -686,6 +716,31 @@ sssss discriminator: seg2=25 48 14 45
         ChunkOps.movingAvg(seg1.histo(100), movingAvgSize)));
   }
 
+  void graphSegments2(List<double[]> freqMagnitudes, Seg sega, Seg segb) throws Exception{
+      List<Double> mights = new ArrayList();
+      List<Point2D> map = new ArrayList();
+      for( int i=0; /*i<250*/i<freqMagnitudes.size(); i++ ){
+        //readAll(di, buf);
+        double might = might(buf);
+        mights.add(might/300);
+        //final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
+        final double[] freqMagI = freqMagnitudes.get(i);
+
+
+        double c1 = sega.comp(freqMagI);
+        sega.points.add(c1);
+        double c2 = segb.comp(freqMagI);
+        segb.points.add(c2);
+        map.add(new Point2D.Double(c1,c2));
+
+        System.out.println(""+i+" "+might+" "+c1+" "+c2);
+      }
+
+      display(Arrays.asList(toArr(mights),
+         toArr(sega.points), toArr(segb.points)));
+      displayMap(map);
+
+  }
 
   double[] toArr(List<Double> l){
     double[] r = new double[l.size()];
