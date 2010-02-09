@@ -43,8 +43,8 @@ public class ShShCorrelate extends ChunkOps{
   public static void main(String[] args) throws Exception{
     //new ShShCorrelate(128).clusterSegments();
     //new ShShCorrelate(128).graphSegments();
-    //new ShShCorrelate(128).findBestClusterQuality();
-    new ShShCorrelate(128).graphSegments2();
+    new ShShCorrelate(128).findBestClusterQuality();
+    //new ShShCorrelate(128).graphSegments2();
 
     //new ShShCorrelate(128).extractClusters();
     //new ShShCorrelate(128).play();
@@ -311,7 +311,8 @@ sssss discriminator: seg2=25 48 14 45
         //"C:\\proj\\cr6\\sounds/onetwothree.voice"
        // "C:\\proj\\cr6\\sounds/shshss.voice"
 
-        "C:\\Projects\\simple-agent\\sounds/shshss.voice"
+       // "C:\\Projects\\simple-agent\\sounds/shshss.voice"
+         "/opt/project/simple-agent/sounds/shshss.voice"
     ));
 
 /*
@@ -588,6 +589,12 @@ Mapping of sounds/shshss.voice:
 
     void findBestClusterQuality() throws Exception{
         ParsedSound parsedSound = new ParsedSound(chunkSize, soundFile());
+        TreeClust treeClust = new TreeClust(parsedSound.freqMagnitudes);
+        treeClust.process();
+
+        Utils.breakPoint();
+
+        /*
         Seg seg1 = new Seg(12, 45, 18, 60);
         testSegQuality(seg1, parsedSound.freqMagnitudes);
         //Seg seg1 = findBestClusterQuality( parsedSound.freqMagnitudes );
@@ -605,6 +612,7 @@ Mapping of sounds/shshss.voice:
 
         //Seg seg2 = findBestClusterQuality( subset );
         graphSegments(subset);
+        */
     }
 
   Seg findBestClusterQuality(List<double[]> freqMagnitudes) throws Exception{
@@ -618,7 +626,7 @@ Mapping of sounds/shshss.voice:
     }
   }
 
-  boolean testSegQuality(Seg seg1, List<double[]> freqMagnitudes){
+  static boolean testSegQuality(Seg seg1, List<double[]> freqMagnitudes){
             System.out.println("seg1="+seg1.toString());
 
         for( double[] freqMagI : freqMagnitudes ){
