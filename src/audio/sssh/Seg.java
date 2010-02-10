@@ -175,8 +175,8 @@ class Seg {
     double worstSideVal = Math.max(h[a],h[b]);
     double quality = hmax.getMaxVal() / worstSideVal;
 
-    System.out.println(toString()+ " cluster idx "+a+" ... "+b
-            + " q="+quality+" scope="+scopeRatio);
+//    System.out.println(toString()+ " cluster idx "+a+" ... "+b
+//            + " q="+quality+" scope="+scopeRatio);
     clusters.add(new Clast(
         ranges.getMinVal()+a*(ranges.getMaxVal()-ranges.getMinVal())/h.length,
         ranges.getMinVal()+(b+1)*(ranges.getMaxVal()-ranges.getMinVal())/h.length,

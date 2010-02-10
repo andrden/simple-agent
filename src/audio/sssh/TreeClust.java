@@ -19,6 +19,7 @@ public class TreeClust {
     }
 
     void process(){
+        System.out.println("data size="+freqMagnitudes.size());
         seg = divide();
         if( seg==null ){
             return;
@@ -32,21 +33,56 @@ public class TreeClust {
             nodes.get(idx).freqMagnitudes.add(freqMagI);
         }
         for( int i=0; i<seg.clusters.size(); i++ ){
-            nodes.get(i).process();
+            TreeClust node = nodes.get(i);
+            if( node.freqMagnitudes.size()>20 ){
+              node.process();
+            }
         }
     }
 
     Seg divide(){
+        List<Seg> trySegs = new ArrayList();
+        final Map<Seg,Double> q = new HashMap();
+
         for(int i=0; i<100; i++){
           Random r = new Random();
           Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
-
-          if( ShShCorrelate.testSegQuality(seg1, freqMagnitudes) ){
-              return seg1;
-          }
+          trySegs.add(seg1);
+          q.put(seg1, testSegQuality(seg1, freqMagnitudes));
         }
-        return null;
+
+        Collections.sort( trySegs, new Comparator<Seg>() {
+            public int compare(Seg o1, Seg o2) {
+                return q.get(o2).compareTo(q.get(o1));
+            }
+        });
+
+        Seg best = trySegs.get(0);
+        //ShShCorrelate.displaySeg(best);
+        return best;
     }
+
+    double testSegQuality(Seg seg1, List<double[]> freqMagnitudes){
+          //    System.out.println("seg1="+seg1.toString());
+
+          for( double[] freqMagI : freqMagnitudes ){
+            double c1 = seg1.comp(freqMagI);
+            seg1.points.add(c1);
+          }
+
+
+        final int movingAvgSize=21;
+        seg1.clusterSearch(100, movingAvgSize);
+        if( seg1.clusters.size()==1 && seg1.clusters.get(0).scopeRatio>0.95 ){
+            return 0; // all data just grouped together
+        }
+        double sum=0;
+        for( Seg.Clast c : seg1.clusters ){
+          sum += c.quality * (1-c.scopeRatio) * c.scopeRatio;
+        }
+        return sum;
+    }
+
 
     @Override
     public String toString() {

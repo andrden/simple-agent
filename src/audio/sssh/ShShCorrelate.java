@@ -439,7 +439,7 @@ Mapping of sounds/shshss.voice:
       Utils.breakPoint();
   }
 
-  void display(List<double[]> freqMagRefs) throws Exception{
+  static void display(List<double[]> freqMagRefs) throws Exception{
       XYSeriesCollection data = new XYSeriesCollection();
       for (int i = 0; i <freqMagRefs.size(); i++) {
         XYSeries series = new XYSeries("Series " + i);
@@ -671,7 +671,13 @@ Mapping of sounds/shshss.voice:
     //Seg seg1 = new Seg(26, 39, 30, 59); //ss discr quality 19
     //Seg seg1 = new Seg(38, 60, 19, 58); // ss discr quality 17+4
     //Seg seg1 = new Seg(18, 61, 15, 59); //- useless and wrong clusters marked, must fix
-    Seg seg1 = new Seg(8, 25, 7, 63); // great ch discriminator found after ss excluded (splitted)
+    //Seg seg1 = new Seg(8, 25, 7, 63); // great ch discriminator found after ss excluded (splitted)
+
+      //Seg seg1 = new Seg(44, 59, 21, 54);
+      //Seg seg1 = new Seg(43, 60, 33, 62);
+      Seg seg1 = new Seg(40, 43, 19, 32);
+
+
     
     //Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
     //Seg seg1 = new Seg(3, 15, 45, 63); // - wispering sounds discriminator
@@ -724,6 +730,24 @@ sssss discriminator: seg2=25 48 14 45
         ChunkOps.movingAvg(seg1.histo(100), movingAvgSize)));
   }
 
+  static void displaySeg(Seg seg1) {
+      final int movingAvgSize=21;
+      try{
+          display(Arrays.asList(
+               toArr(seg1.points)
+              //toArr(korrs)
+              /*, toArr(seg2.points)*/));
+          List<Double> lrnd = new ArrayList<Double>(seg1.points);
+          Collections.shuffle(lrnd);
+          display(Arrays.asList(toArr(lrnd)));
+          display(Arrays.asList(seg1.histo(100),
+              ChunkOps.movingAvg(seg1.histo(100), movingAvgSize)));
+      }catch(Exception e){
+
+      }
+
+  }
+
   void graphSegments2(List<double[]> freqMagnitudes, Seg sega, Seg segb) throws Exception{
       List<Double> mights = new ArrayList();
       List<Point2D> map = new ArrayList();
@@ -750,7 +774,7 @@ sssss discriminator: seg2=25 48 14 45
 
   }
 
-  double[] toArr(List<Double> l){
+  static double[] toArr(List<Double> l){
     double[] r = new double[l.size()];
     for( int i=0; i<l.size(); i++ ){
       r[i] = l.get(i);
