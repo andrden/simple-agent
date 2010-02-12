@@ -6,6 +6,9 @@
 package audio.sssh;
 
 import audio.ChunkOps;
+import audio.cords.SoundIn;
+
+import java.io.DataInput;
 import java.io.DataInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,16 +23,18 @@ public class ParsedSound {
   List<double[]> freqMagnitudes = new ArrayList();
   List<Cut> cuts = new ArrayList();
 
-  ParsedSound(int chunkSize, DataInputStream di){
+    ParsedSound(int chunkSize, DataInput di){
+        this(chunkSize, new DISoundIn(di));
+    }
+
+  ParsedSound(int chunkSize, SoundIn di){
     this.chunkSize = chunkSize;
     buf = new short[chunkSize];
 
     int i=0;
     try{
       for(; /*i<250*/; i++ ){
-        ChunkOps.readAll(di, buf);
-        
-        final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
+        final double[] freqMagI = nextFreqMags(di);
         freqMagnitudes.add(freqMagI);
         cuts.add(new Cut(i, freqMagI));
       }
@@ -38,6 +43,12 @@ public class ParsedSound {
       System.out.println("ParsedSound stopped at block "+i);
     }
 
+  }
+
+  double[] nextFreqMags(SoundIn di){
+      ChunkOps.readAll(di, buf);
+      final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
+      return freqMagI;
   }
 
   List<double[]> rangeFreqMag(int start, int end){

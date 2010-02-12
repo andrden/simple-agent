@@ -55,6 +55,11 @@ class Seg {
     }
   }
 
+  int clusterIdx(double[] freqMags){
+      double c1 = comp(freqMags);
+      return clusterIdx(c1);
+  }
+
   int clusterIdx(double v){
     for( int i=0; i<clusters.size(); i++ ){
       if( clusters.get(i).contains(v) ){

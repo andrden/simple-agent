@@ -656,6 +656,21 @@ sssss discriminator: seg2=25 48 14 45
 
       TreeClust treeClust = new TreeClust(parsedSound.cuts);
       treeClust.processOneStep(seg1);
+      int sampleRate = 11025;
+      Mike m = new Mike(sampleRate);
+      int frame=0;
+      int prevIdx=-1;
+      int prevFrame=-1;
+      while(m!=null){
+          int idx=seg1.clusterIdx(parsedSound.nextFreqMags(m));
+          if( prevIdx!=idx ){
+              int len = frame-prevFrame;
+              System.out.println(prevIdx+" "+prevFrame+".."+(frame-1)+" len="+len);
+              prevIdx=idx;
+              prevFrame=frame;
+          }
+          frame++;
+      }
 
       //playNoiseModulated(parsedSound.rangeFreqMag(400,480), 100);
       /*
@@ -900,11 +915,6 @@ sssss discriminator: seg2=25 48 14 45
     return baos.toByteArray();
   }
 
-  void readAll(SoundIn in, short[] sh) throws IOException {
-    for( int i=0; i<sh.length; i++ ){
-      sh[i]=in.next();
-    }
-  }
 
 
   void blockAvg(double[] d, int blocks){

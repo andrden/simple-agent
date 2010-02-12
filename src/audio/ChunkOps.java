@@ -1,5 +1,7 @@
 package audio;
 
+import audio.cords.SoundIn;
+
 import java.io.DataInput;
 import java.io.IOException;
 
@@ -115,6 +117,13 @@ public class ChunkOps {
       sh[i]=in.readShort();
     }
   }
+
+    public static void readAll(SoundIn in, short[] sh){
+      for( int i=0; i<sh.length; i++ ){
+        sh[i]=in.next();
+      }
+    }
+
   public static double sum(double[] h){
       return sum(h,0,h.length);
   }

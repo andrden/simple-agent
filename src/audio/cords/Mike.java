@@ -45,12 +45,13 @@ public class Mike implements SoundIn {
   }
 
   public static void main(String[] args) throws Exception {
+      //play();
+
     int sampleRate = 11025;
-    //Mike m = new Mike(sampleRate);
-    //printEnergy(m);
+    Mike m = new Mike(sampleRate);
+    printEnergy(m);
     //save(m);
 
-    play();
     //playPart(1200*128);
   }
 
