@@ -42,8 +42,8 @@ public class ShShCorrelate extends ChunkOps{
 
   public static void main(String[] args) throws Exception{
     //new ShShCorrelate(128).clusterSegments();
-    //new ShShCorrelate(128).graphSegments();
-    new ShShCorrelate(128).findBestClusterQuality();
+    new ShShCorrelate(128).graphSegments();
+    //new ShShCorrelate(128).findBestClusterQuality();
     //new ShShCorrelate(128).graphSegments2();
 
     //new ShShCorrelate(128).extractClusters();
@@ -302,37 +302,7 @@ sssss discriminator: seg2=25 48 14 45
   }
 
   private DataInputStream soundFile() throws FileNotFoundException {
-    // "C:\\proj\\cr6\\sounds/onetwothree.voice" says the following:
-    // "рас, рас, рас, два, три, четыре, пять ... в веб-камере мирофон ещё есть..
-    // . правда не понял где он там ..."
-
-
-    DataInputStream di = new DataInputStream(new FileInputStream(
-        //"C:\\proj\\cr6\\sounds/onetwothree.voice"
-       // "C:\\proj\\cr6\\sounds/shshss.voice"
-
-       // "C:\\Projects\\simple-agent\\sounds/shshss.voice"
-         "/opt/project/simple-agent/sounds/shshss.voice"
-    ));
-
-/*
-Mapping of sounds/shshss.voice:
-200-300 shsh
-380-480 ssss
-565-655 shsh
-745-840 ssss
-930-1030 shsh
-1140-1260 ssss
-1400-1415 ch!
-...chch
-...chch
-...shsh
-...ssss
-...chch
-~=2500 ss
-*/
-
-    return di;
+      return Cut.soundFile();
   }
 
   short[] soundBufAt(int pos) throws Exception{
@@ -589,9 +559,10 @@ Mapping of sounds/shshss.voice:
 
     void findBestClusterQuality() throws Exception{
         ParsedSound parsedSound = new ParsedSound(chunkSize, soundFile());
-        TreeClust treeClust = new TreeClust(parsedSound.freqMagnitudes);
+        TreeClust treeClust = new TreeClust(parsedSound.cuts);
         treeClust.process();
 
+        treeClust.printFoundGroups("");
         Utils.breakPoint();
 
         /*
@@ -669,13 +640,13 @@ Mapping of sounds/shshss.voice:
     //Seg seg1 = new Seg(7, 55, 12, 56); // all whispering sounds discr quality 2+2
     //Seg seg1 = new Seg(23, 64, 14, 61); // ss+ch (+anomaly sh)  discr quality 7+4
     //Seg seg1 = new Seg(26, 39, 30, 59); //ss discr quality 19
-    //Seg seg1 = new Seg(38, 60, 19, 58); // ss discr quality 17+4
+    Seg seg1 = new Seg(38, 60, 19, 58); // ss discr quality 17+4
     //Seg seg1 = new Seg(18, 61, 15, 59); //- useless and wrong clusters marked, must fix
     //Seg seg1 = new Seg(8, 25, 7, 63); // great ch discriminator found after ss excluded (splitted)
 
       //Seg seg1 = new Seg(44, 59, 21, 54);
       //Seg seg1 = new Seg(43, 60, 33, 62);
-      Seg seg1 = new Seg(40, 43, 19, 32);
+    //  Seg seg1 = new Seg(24, 42, 29, 54);
 
 
     

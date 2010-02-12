@@ -11,24 +11,51 @@ import java.util.*;
  */
 public class TreeClust {
     Seg seg;
-    List<double[]> freqMagnitudes;
+    List<Cut> freqMagnitudes;
     Map<Integer,TreeClust> nodes = new HashMap();
 
-    public TreeClust(List<double[]> freqMagnitudes) {
+    public TreeClust(List<Cut> freqMagnitudes) {
         this.freqMagnitudes = freqMagnitudes;
+    }
+
+    void printFoundGroups(String nesting){
+        for( TreeClust n : nodes.values() ){
+            if( n.nodes.size()==0 && n.freqMagnitudes.size()>20 ){
+                System.out.println(nesting+seg+" grp-sz="+n.freqMagnitudes.size()+" "+n.cutIntervals());
+            }
+            n.printFoundGroups(nesting+" ");
+        }
+    }
+
+    String cutIntervals(){
+        StringBuilder res = new StringBuilder();
+        NavigableSet<Integer> s = new TreeSet();
+        for( Cut c : freqMagnitudes ){
+            s.add(c.id);
+        }
+        while(!s.isEmpty()){
+            int a = s.first();
+            int b=a;
+            while(s.contains(b+1)){
+                b++;
+            }
+            res.append(" "+a+"-"+b);
+            s = s.tailSet(b+1, true);
+        }
+        return res.toString();
     }
 
     void process(){
         System.out.println("data size="+freqMagnitudes.size());
         seg = divide();
-        if( seg==null ){
+        if( seg.clusters.size()<2 ){
             return;
         }
         for( int i=0; i<=seg.clusters.size(); i++ ){
             nodes.put(i, new TreeClust(new ArrayList()));
         }
-        for( double[] freqMagI : freqMagnitudes ){
-            double c1 = seg.comp(freqMagI);
+        for( Cut freqMagI : freqMagnitudes ){
+            double c1 = seg.comp(freqMagI.freq);
             int idx = seg.clusterIdx(c1);
             nodes.get(idx).freqMagnitudes.add(freqMagI);
         }
@@ -58,15 +85,16 @@ public class TreeClust {
         });
 
         Seg best = trySegs.get(0);
+        System.out.println("best="+best+" q="+q.get(best));
         //ShShCorrelate.displaySeg(best);
         return best;
     }
 
-    double testSegQuality(Seg seg1, List<double[]> freqMagnitudes){
+    double testSegQuality(Seg seg1, List<Cut> freqMagnitudes){
           //    System.out.println("seg1="+seg1.toString());
 
-          for( double[] freqMagI : freqMagnitudes ){
-            double c1 = seg1.comp(freqMagI);
+          for( Cut freqMagI : freqMagnitudes ){
+            double c1 = seg1.comp(freqMagI.freq);
             seg1.points.add(c1);
           }
 
