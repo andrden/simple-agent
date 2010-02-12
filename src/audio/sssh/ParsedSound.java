@@ -39,4 +39,12 @@ public class ParsedSound {
     }
 
   }
+
+  List<double[]> rangeFreqMag(int start, int end){
+      List<double[]> ret = new ArrayList();
+      for( int i=start; i<end; i++ ){
+          ret.add(cuts.get(i).freq);
+      }
+      return ret;
+  }
 }

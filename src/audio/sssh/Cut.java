@@ -37,18 +37,18 @@ public class Cut {
 /*
 Mapping of sounds/shshss.voice:
 200-300 shsh
-380-480 ssss
+ 380-480 ssss
 565-655 shsh
-745-840 ssss
+ 745-840 ssss
 930-1030 shsh
-1140-1260 ssss
+ 1140-1260 ssss
 1400-1415 ch!
 ...chch
 ...chch
 ...shsh
 ...ssss
 ...chch
-~=2500 ss
+ ~=2500 ss
 */
 
       return di;

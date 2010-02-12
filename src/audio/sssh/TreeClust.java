@@ -45,12 +45,29 @@ public class TreeClust {
         return res.toString();
     }
 
+    void processOneStep(Seg s){
+        seg = s;
+        clusterIt(seg, freqMagnitudes);
+        separate();
+        printFoundGroups("");
+    }
+
     void process(){
         System.out.println("data size="+freqMagnitudes.size());
         seg = divide();
         if( seg.clusters.size()<2 ){
             return;
         }
+        separate();
+        for( int i=0; i<seg.clusters.size(); i++ ){
+            TreeClust node = nodes.get(i);
+            if( node.freqMagnitudes.size()>20 ){
+              node.process();
+            }
+        }
+    }
+
+    private void separate() {
         for( int i=0; i<=seg.clusters.size(); i++ ){
             nodes.put(i, new TreeClust(new ArrayList()));
         }
@@ -58,12 +75,6 @@ public class TreeClust {
             double c1 = seg.comp(freqMagI.freq);
             int idx = seg.clusterIdx(c1);
             nodes.get(idx).freqMagnitudes.add(freqMagI);
-        }
-        for( int i=0; i<seg.clusters.size(); i++ ){
-            TreeClust node = nodes.get(i);
-            if( node.freqMagnitudes.size()>20 ){
-              node.process();
-            }
         }
     }
 
@@ -93,14 +104,7 @@ public class TreeClust {
     double testSegQuality(Seg seg1, List<Cut> freqMagnitudes){
           //    System.out.println("seg1="+seg1.toString());
 
-          for( Cut freqMagI : freqMagnitudes ){
-            double c1 = seg1.comp(freqMagI.freq);
-            seg1.points.add(c1);
-          }
-
-
-        final int movingAvgSize=21;
-        seg1.clusterSearch(100, movingAvgSize);
+        clusterIt(seg1, freqMagnitudes);
         if( seg1.clusters.size()==1 && seg1.clusters.get(0).scopeRatio>0.95 ){
             return 0; // all data just grouped together
         }
@@ -109,6 +113,17 @@ public class TreeClust {
           sum += c.quality * (1-c.scopeRatio) * c.scopeRatio;
         }
         return sum;
+    }
+
+    private void clusterIt(Seg seg1, List<Cut> freqMagnitudes) {
+        for( Cut freqMagI : freqMagnitudes ){
+          double c1 = seg1.comp(freqMagI.freq);
+          seg1.points.add(c1);
+        }
+
+
+        final int movingAvgSize=21;
+        seg1.clusterSearch(100, movingAvgSize);
     }
 
 
