@@ -45,11 +45,11 @@ public class Mike implements SoundIn {
   }
 
   public static void main(String[] args) throws Exception {
-      //play();
+      play();
 
     int sampleRate = 11025;
     Mike m = new Mike(sampleRate);
-    printEnergy(m);
+    //printEnergy(m);
     //save(m);
 
     //playPart(1200*128);
@@ -92,10 +92,10 @@ public class Mike implements SoundIn {
 
 
   private static void play() throws Exception {
-    //final String fname = "c:/tmp/f1.voice";
+    final String fname = "c:/tmp/f1.voice";
     //final String fname = "C:\\proj\\cr6\\sounds/onetwothree.voice";
     //final String fname = "C:\\Projects\\simple-agent\\sounds/shshss.voice";
-    final String fname = "/opt/project/simple-agent/sounds/shshss.voice";
+    //final String fname = "/opt/project/simple-agent/sounds/shshss.voice";
     DataInputStream di = new DataInputStream(new FileInputStream(fname));
     byte[] b = new byte[di.available()];
     di.read(b);
