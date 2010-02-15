@@ -1,5 +1,7 @@
 package audio.sssh;
 
+import com.pmstation.common.utils.MinMaxFinder;
+
 import java.util.*;
 
 /**
@@ -105,14 +107,19 @@ public class TreeClust {
           //    System.out.println("seg1="+seg1.toString());
 
         clusterIt(seg1, freqMagnitudes);
-        if( seg1.clusters.size()==1 && seg1.clusters.get(0).scopeRatio>0.95 ){
+        if( seg1.clusters.size()==1 /*&& seg1.clusters.get(0).scopeRatio>0.95*/ ){
             return 0; // all data just grouped together
         }
         double sum=0;
         for( Seg.Clast c : seg1.clusters ){
           sum += c.quality * (1-c.scopeRatio) * c.scopeRatio;
         }
-        return sum;
+
+        MinMaxFinder clastTops = seg1.clustTops();
+        double maxSpace=seg1.maxPointSpace(clastTops.getMinVal(), clastTops.getMaxVal());
+
+        return maxSpace;
+       // return sum;
     }
 
     private void clusterIt(Seg seg1, List<Cut> freqMagnitudes) {

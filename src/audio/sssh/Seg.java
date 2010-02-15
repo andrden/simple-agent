@@ -2,6 +2,7 @@ package audio.sssh;
 
 import com.pmstation.common.utils.MinMaxFinder;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -40,6 +41,7 @@ class Seg {
   class Clast{
     double a;
     double b;
+    double top;
     double quality;
     double scopeRatio;
 
@@ -53,6 +55,29 @@ class Seg {
     boolean contains(double v){
       return v>a && v<b;
     }
+  }
+
+  double maxPointSpace(double a, double b){
+      List<Double> psort = new ArrayList(points);
+      Collections.sort(psort);
+      double vprev=psort.get(0);
+      double max=-1;
+      for( double v : psort ){
+          if( vprev>=a && v<=b ){
+              max = Math.max(max, v-vprev);
+              System.out.printf("%7.4f   %7.4f\n", v, v-vprev);
+          }
+          vprev=v;
+      }
+      return max;
+  }
+
+  MinMaxFinder clustTops(){
+      MinMaxFinder m = new MinMaxFinder();
+      for( Clast c : clusters ){
+          m.add(c.top, "");
+      }
+      return m;
   }
 
   int clusterIdx(double[] freqMags){
@@ -182,12 +207,14 @@ class Seg {
 
 //    System.out.println(toString()+ " cluster idx "+a+" ... "+b
 //            + " q="+quality+" scope="+scopeRatio);
-    clusters.add(new Clast(
-        ranges.getMinVal()+a*(ranges.getMaxVal()-ranges.getMinVal())/h.length,
-        ranges.getMinVal()+(b+1)*(ranges.getMaxVal()-ranges.getMinVal())/h.length,
-        quality,
-        scopeRatio
-        ));
+      Clast clast = new Clast(
+              ranges.getMinVal() + a * (ranges.getMaxVal() - ranges.getMinVal()) / h.length,
+              ranges.getMinVal() + (b + 1) * (ranges.getMaxVal() - ranges.getMinVal()) / h.length,
+              quality,
+              scopeRatio
+      );
+      clast.top = ranges.getMinVal() + top * (ranges.getMaxVal() - ranges.getMinVal()) / h.length;
+      clusters.add(clast);
 
     if( a>beg ){
       localClusterSearch(h,beg,a-1, ranges);
