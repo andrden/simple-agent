@@ -3,6 +3,7 @@ package audio.sssh;
 import com.pmstation.common.utils.MinMaxFinder;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -58,18 +59,25 @@ class Seg {
   }
 
   double maxPointSpace(double a, double b){
+      final double spanSizePerc = 0.02; // 2%
+      final double spanSize = spanSizePerc * points.size();
+      LinkedList<Double> span = new LinkedList();
       List<Double> psort = new ArrayList(points);
       Collections.sort(psort);
-      double vprev=psort.get(0);
       double max=-1;
       for( double v : psort ){
-          if( vprev>=a && v<=b ){
-              max = Math.max(max, v-vprev);
-              System.out.printf("%7.4f   %7.4f\n", v, v-vprev);
+          span.addLast(v);
+          if( span.size()>spanSize ){
+              span.removeFirst();
           }
-          vprev=v;
+          double spanLen = v - span.getFirst();
+          //System.out.printf("%7.4f   %7.4f\n", v, spanLen);
+          if( span.getFirst() >=a && v<=b ){
+              max = Math.max(max, spanLen);
+          }
       }
-      return max;
+      //return max / (psort.get(psort.size()-1) - psort.get(0));
+      return max / (b - a);
   }
 
   MinMaxFinder clustTops(){

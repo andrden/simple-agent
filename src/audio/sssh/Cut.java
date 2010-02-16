@@ -20,6 +20,22 @@ public class Cut {
         this.freq = freq;
     }
 
+    static DataInputStream soundFile2() throws FileNotFoundException {
+      // "C:\\proj\\cr6\\sounds/onetwothree.voice" says the following:
+      // "рас, рас, рас, два, три, четыре, пять ... в веб-камере мирофон ещё есть..
+      // . правда не понял где он там ..."
+
+
+      DataInputStream di = new DataInputStream(new FileInputStream(
+          //"C:\\proj\\cr6\\sounds/onetwothree.voice"
+         // "C:\\proj\\cr6\\sounds/shshss.voice"
+
+         // "C:\\Projects\\simple-agent\\sounds/shshss.voice"
+           "/opt/project/simple-agent/sounds/shshss2.voice"
+      ));
+      return di;
+    }
+
     static DataInputStream soundFile() throws FileNotFoundException {
       // "C:\\proj\\cr6\\sounds/onetwothree.voice" says the following:
       // "рас, рас, рас, два, три, четыре, пять ... в веб-камере мирофон ещё есть..

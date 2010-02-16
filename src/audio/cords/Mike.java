@@ -92,7 +92,7 @@ public class Mike implements SoundIn {
 
 
   private static void play() throws Exception {
-    final String fname = "c:/tmp/f1.voice";
+    final String fname = "/opt/project/simple-agent/sounds/shshss2.voice";
     //final String fname = "C:\\proj\\cr6\\sounds/onetwothree.voice";
     //final String fname = "C:\\Projects\\simple-agent\\sounds/shshss.voice";
     //final String fname = "/opt/project/simple-agent/sounds/shshss.voice";

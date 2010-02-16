@@ -624,7 +624,7 @@ sssss discriminator: seg2=25 48 14 45
   }
 
   void graphSegments() throws Exception{
-    ParsedSound parsedSound = new ParsedSound(chunkSize, soundFile());
+    ParsedSound parsedSound = new ParsedSound(chunkSize, Cut.soundFile2());
     graphSegments(parsedSound);
   }
   void graphSegments(ParsedSound parsedSound) throws Exception{
@@ -648,17 +648,20 @@ sssss discriminator: seg2=25 48 14 45
       //Seg seg1 = new Seg(44, 59, 21, 54);
       //Seg seg1 = new Seg(43, 60, 33, 62);
     //  Seg seg1 = new Seg(24, 42, 29, 54);
-     Seg seg1 = new Seg(18, 61, 33, 36);
+     Seg seg1 = new Seg(39, 61, 22, 55);
 
 
     
     //Seg seg1 = new Seg(r.nextInt(65),r.nextInt(65),r.nextInt(65),r.nextInt(65));
     //Seg seg1 = new Seg(3, 15, 45, 63); // - wispering sounds discriminator
-/*
+
       TreeClust treeClust = new TreeClust(parsedSound.cuts);
       treeClust.processOneStep(seg1);
+/*
       int sampleRate = 11025;
-      Mike m = new Mike(sampleRate);
+      SoundIn m;
+      //m = new Mike(sampleRate);
+      m = new DISoundIn(Cut.soundFile2());
       int frame=0;
       int prevIdx=-1;
       int prevFrame=-1;
@@ -672,7 +675,8 @@ sssss discriminator: seg2=25 48 14 45
           }
           frame++;
       }
-  */
+      */
+
       //playNoiseModulated(parsedSound.rangeFreqMag(400,480), 100);
       /*
       // 379-483 744-756 758-762
@@ -701,28 +705,28 @@ sssss discriminator: seg2=25 48 14 45
 */
 
     final int movingAvgSize=21;
-    System.out.println("seg2="+seg2.toString());
-    try{
-      for( int i=0; /*i<250*/i<freqMagnitudes.size(); i++ ){
-        //readAll(di, buf);
-        double might = might(buf);
-        mights.add(might/300);
-        //final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
-        final double[] freqMagI = freqMagnitudes.get(i);
-        korrs.add(korr0(refKorrPoint, freqMagI));
-
-        double c1 = seg1.comp(freqMagI);
-        seg1.points.add(c1);
-        double c2 = seg2.comp(freqMagI);
-        seg2.points.add(c2);
-
-        System.out.println(""+i+" "+might+" "+c1+" "+c2);
-      }
-    }catch(Exception e){
-      e.printStackTrace();
-    }
-
-    seg1.clusterSearch(100, movingAvgSize);
+//    System.out.println("seg2="+seg2.toString());
+//    try{
+//      for( int i=0; /*i<250*/i<freqMagnitudes.size(); i++ ){
+//        //readAll(di, buf);
+//        double might = might(buf);
+//        mights.add(might/300);
+//        //final double[] freqMagI = ChunkOps.freqMagnitudes(buf);
+//        final double[] freqMagI = freqMagnitudes.get(i);
+//        korrs.add(korr0(refKorrPoint, freqMagI));
+//
+//        double c1 = seg1.comp(freqMagI);
+//        seg1.points.add(c1);
+//        double c2 = seg2.comp(freqMagI);
+//        seg2.points.add(c2);
+//
+//        System.out.println(""+i+" "+might+" "+c1+" "+c2);
+//      }
+//    }catch(Exception e){
+//      e.printStackTrace();
+//    }
+//
+//    seg1.clusterSearch(100, movingAvgSize);
       MinMaxFinder clastTops = seg1.clustTops();
       double maxSpace=seg1.maxPointSpace(clastTops.getMinVal(), clastTops.getMaxVal());
 
