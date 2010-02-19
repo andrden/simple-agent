@@ -50,6 +50,11 @@ public class SimplestChart extends JFrame {
 				PlotOrientation.VERTICAL, true, false, false);
 		XYPlot plot = (XYPlot) chart.getPlot();
 		XYItemRenderer scatterRenderer = plot.getRenderer();
+
+//        plot.getDomainAxis().resizeRange(2);
+//        plot.getRangeAxis().resizeRange(2);
+        plot.zoom(2);
+
 		//StandardXYItemRenderer regressionRenderer = new StandardXYItemRenderer();
 		//regressionRenderer.setBaseSeriesVisibleInLegend(false);
 		//plot.setDataset(1, regress(data));

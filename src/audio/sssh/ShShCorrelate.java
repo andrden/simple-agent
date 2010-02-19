@@ -42,9 +42,9 @@ public class ShShCorrelate extends ChunkOps{
 
   public static void main(String[] args) throws Exception{
     //new ShShCorrelate(128).clusterSegments();
-    new ShShCorrelate(128).graphSegments();
+    //new ShShCorrelate(128).graphSegments();
     //new ShShCorrelate(128).findBestClusterQuality();
-    //new ShShCorrelate(128).graphSegments2();
+    new ShShCorrelate(128).graphSegments2();
 
     //new ShShCorrelate(128).extractClusters();
     //new ShShCorrelate(128).play();
@@ -52,9 +52,14 @@ public class ShShCorrelate extends ChunkOps{
   }
 
    void graphSegments2() throws Exception{
-    ParsedSound parsedSound = new ParsedSound(chunkSize, soundFile());
-    graphSegments2(parsedSound.freqMagnitudes,
-            new Seg(12, 45, 18, 60), new Seg(8, 25, 7, 63));
+    ParsedSound parsedSound1 = new ParsedSound(chunkSize, Cut.soundFile());
+    ParsedSound parsedSound2 = new ParsedSound(chunkSize, Cut.soundFile2());
+    List<List<Point2D>> fullMap = new ArrayList();
+    fullMap.add( graphSegments2(parsedSound1.freqMagnitudes,
+               new Seg(12, 45, 18, 60), new Seg(8, 25, 7, 63)) );
+    fullMap.add( graphSegments2(parsedSound2.freqMagnitudes,
+                  new Seg(12, 45, 18, 60), new Seg(8, 25, 7, 63)) );
+    displayMaps(fullMap);
   }
 
   private void extractClusters() throws Exception{
@@ -399,6 +404,27 @@ sssss discriminator: seg2=25 48 14 45
         }
         data.addSeries(series);
       //}
+
+      SimplestChart demo = new SimplestChart(data);
+      RefineryUtilities.centerFrameOnScreen(demo);
+      demo.setVisible(true);
+      while(demo.isVisible()){
+        Thread.sleep(100);
+      }
+      Utils.breakPoint();
+  }
+
+    void displayMaps(List<List<Point2D>> points) throws Exception{
+      XYSeriesCollection data = new XYSeriesCollection();
+      //data.setAutoWidth(true);
+      for (int i = 0; i <points.size(); i++) {
+        XYSeries series = new XYSeries("Series " + i);
+        List<Point2D> m = points.get(i);
+          for (int j = 0; j <m.size(); j++) {
+            series.add(m.get(j).getX(), m.get(j).getY());
+          }
+          data.addSeries(series);
+      }
 
       SimplestChart demo = new SimplestChart(data);
       RefineryUtilities.centerFrameOnScreen(demo);
@@ -759,7 +785,7 @@ sssss discriminator: seg2=25 48 14 45
 
   }
 
-  void graphSegments2(List<double[]> freqMagnitudes, Seg sega, Seg segb) throws Exception{
+  List<Point2D> graphSegments2(List<double[]> freqMagnitudes, Seg sega, Seg segb) throws Exception{
       List<Double> mights = new ArrayList();
       List<Point2D> map = new ArrayList();
       for( int i=0; /*i<250*/i<freqMagnitudes.size(); i++ ){
@@ -782,7 +808,7 @@ sssss discriminator: seg2=25 48 14 45
       display(Arrays.asList(toArr(mights),
          toArr(sega.points), toArr(segb.points)));
       displayMap(map);
-
+      return map;
   }
 
   static double[] toArr(List<Double> l){

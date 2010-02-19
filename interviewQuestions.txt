@@ -1,3 +1,8 @@
+*) Jvm (Tomcat server) starts and throws an NPE or two with full stack trace
+Then it begins loggins tons of MPEs - without stack trace -
+despite exception is logged with log4j method .error("message",exception)
+how can this be explained?
+
 *)
 server with 8 CPUs
 List<User> users - 1 million users
