@@ -1,6 +1,7 @@
 package audio;
 
 import audio.cords.SoundIn;
+import com.pmstation.common.utils.MinMaxFinder;
 
 import java.io.DataInput;
 import java.io.IOException;
@@ -134,5 +135,17 @@ public class ChunkOps {
       }
       return s;
   }
+
+    public static double avg(double[] h, int start, int endExclusive){
+        return sum(h,start,endExclusive)/(endExclusive-start);
+    }
+
+    public static double min(double[] h, int start, int endExclusive){
+        MinMaxFinder mmf = new MinMaxFinder();
+        for( int i=start; i<endExclusive; i++ ){
+            mmf.add( h[i], "");
+        }
+        return mmf.getMinVal();
+    }
 
 }

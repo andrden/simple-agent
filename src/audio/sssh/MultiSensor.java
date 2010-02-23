@@ -17,8 +17,12 @@ public class MultiSensor {
 
     public MultiSensor() {
         Random rSeg = new Random(1);
-        for( int i=0; i<10; i++ ){
-          Seg seg2 = new Seg(rSeg.nextInt(65),rSeg.nextInt(65),rSeg.nextInt(65),rSeg.nextInt(65));
+        for( int i=0; i<140; i++ ){
+          int a1 = rSeg.nextInt(65);
+          int b1 = Math.max(0, Math.min(64, a1 -15 + rSeg.nextInt(30)));
+            int a2 = Math.min(64, a1 + rSeg.nextInt(10));
+            int b2 = Math.min(64, b1 + rSeg.nextInt(10));
+            Seg seg2 = new Seg(a1, a2,b1, b2);
           segs.add(seg2);
         }
     }

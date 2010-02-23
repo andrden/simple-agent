@@ -43,19 +43,19 @@ public class ExampleSnd {
         shsh1.elems.add(new Elem(2258,2364,"chch"));
         shsh1.elems.add(new Elem(2464,2558,"ss"));
 
-        shsh2.elems.add(new Elem(xxx203,303,"sh"));
-        shsh2.elems.add(new Elem(380,483,"ss"));
-        shsh2.elems.add(new Elem(565,659,"sh"));
-        shsh2.elems.add(new Elem(745,837,"ss"));
-        shsh2.elems.add(new Elem(929,1032,"sh"));
-        shsh2.elems.add(new Elem(1143,1260,"ss"));
-        shsh2.elems.add(new Elem(1401,1417,"chch"));
-        shsh2.elems.add(new Elem(1519,1589,"chch"));
-        shsh2.elems.add(new Elem(1693,1788,"chch"));
-        shsh2.elems.add(new Elem(1840,1969,"sh"));
-        shsh2.elems.add(new Elem(2042,2160,"ss"));
-        shsh2.elems.add(new Elem(2258,2364,"chch"));
-        shsh2.elems.add(new Elem(2464,2558,"ss"));
+        shsh2.elems.add(new Elem(200,286,"sh"));
+        //shsh2.elems.add(new Elem(380,483,"ss"));??
+        shsh2.elems.add(new Elem(517,595,"sh"));
+        //shsh2.elems.add(new Elem(745,837,"ss"));??
+        shsh2.elems.add(new Elem(803,875,"sh"));
+        //shsh2.elems.add(new Elem(1143,1260,"ss"));??
+        shsh2.elems.add(new Elem(1089,1099,"chch"));
+        shsh2.elems.add(new Elem(1177,1223,"chch"));
+        shsh2.elems.add(new Elem(1318,1379,"chch"));
+        shsh2.elems.add(new Elem(1453,1528,"sh"));
+        //shsh2.elems.add(new Elem(2042,2160,"ss"));??
+        shsh2.elems.add(new Elem(1727,1787,"chch"));
+        //shsh2.elems.add(new Elem(2464,2558,"ss"));??
     }
 
 

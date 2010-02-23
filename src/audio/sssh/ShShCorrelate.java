@@ -461,7 +461,7 @@ sssss discriminator: seg2=25 48 14 45
     void multiSensor()  throws Exception{
         MultiSensor ms = new MultiSensor();
         ParsedSound parsedSound1 = new ParsedSound(chunkSize, Cut.soundFile());
-        double[] mtest = ms.values(parsedSound1.freqMagnitudes.get(400)); // ssss
+        double[] mtest = ms.values(parsedSound1.freqMagnitudes.get(403)); // ssss
 
 //        380-480 ssss
 //       565-655 shsh
@@ -477,12 +477,23 @@ sssss discriminator: seg2=25 48 14 45
         }
 
         ParsedSound parsedSound2 = new ParsedSound(chunkSize, Cut.soundFile2());
+        double[] diffArr = new double[parsedSound2.cuts.size()];
         for( int i=0; i<parsedSound2.freqMagnitudes.size(); i++ ){
             double[] mi = ms.values(parsedSound2.freqMagnitudes.get(i));
             double diff = ms.diff(mtest, mi);
+            diffArr[i]=diff;
             double mig = might(parsedSound2.cuts.get(i).wav);
             System.out.println(i+"* "+ diff+ (diff<0.15?" #":"")+" "+(int)mig+(mig>50?" %%%%%":""));
         }
+        double[] diffAvg = ChunkOps.movingAvg(diffArr, 20);
+
+//        shsh2.elems.add(new Elem(200,286,"sh"));
+//        //shsh2.elems.add(new Elem(,"ss"));??
+//        shsh2.elems.add(new Elem(517,595,"sh"));
+        double minOnS = ChunkOps.min(diffAvg, 300,500);
+        double avgShsh = ChunkOps.min(diffAvg, 200,286);
+        System.out.printf("minOnS=%f  avgShsh=%f  /=%f \n", minOnS, avgShsh, avgShsh/minOnS);
+
     }
 
   void clusterSegments()  throws Exception{
