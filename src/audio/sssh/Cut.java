@@ -13,10 +13,12 @@ import java.io.FileNotFoundException;
  */
 public class Cut {
     int id;
+    short[] wav;
     double[] freq;
 
-    public Cut(int id, double[] freq) {
+    public Cut(int id, short[] wav, double[] freq) {
         this.id = id;
+        this.wav = wav;
         this.freq = freq;
     }
 

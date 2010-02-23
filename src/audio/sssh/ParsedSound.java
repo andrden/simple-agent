@@ -36,7 +36,7 @@ public class ParsedSound {
       for(; /*i<250*/; i++ ){
         final double[] freqMagI = nextFreqMags(di);
         freqMagnitudes.add(freqMagI);
-        cuts.add(new Cut(i, freqMagI));
+        cuts.add(new Cut(i, buf.clone(), freqMagI));
       }
     }catch(Exception e){
       //e.printStackTrace();

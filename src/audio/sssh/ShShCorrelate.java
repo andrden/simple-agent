@@ -41,10 +41,12 @@ public class ShShCorrelate extends ChunkOps{
   }
 
   public static void main(String[] args) throws Exception{
+    new ShShCorrelate(128).multiSensor();
+
     //new ShShCorrelate(128).clusterSegments();
     //new ShShCorrelate(128).graphSegments();
     //new ShShCorrelate(128).findBestClusterQuality();
-    new ShShCorrelate(128).graphSegments2();
+//    new ShShCorrelate(128).graphSegments2();
 
     //new ShShCorrelate(128).extractClusters();
     //new ShShCorrelate(128).play();
@@ -455,6 +457,33 @@ sssss discriminator: seg2=25 48 14 45
       }
       Utils.breakPoint();
   }
+
+    void multiSensor()  throws Exception{
+        MultiSensor ms = new MultiSensor();
+        ParsedSound parsedSound1 = new ParsedSound(chunkSize, Cut.soundFile());
+        double[] mtest = ms.values(parsedSound1.freqMagnitudes.get(400)); // ssss
+
+//        380-480 ssss
+//       565-655 shsh
+
+        for( int i=0; i<parsedSound1.freqMagnitudes.size(); i++ ){
+            double[] mi = ms.values(parsedSound1.freqMagnitudes.get(i));
+            if( i==403 ){
+                Utils.breakPoint();
+            }
+            double diff = ms.diff(mtest, mi);
+            double mig = might(parsedSound1.cuts.get(i).wav);
+            System.out.println(i+" "+ diff+ (diff<0.15?" #":"")+" "+ (int)mig+(mig>50?" %%%%%":""));
+        }
+
+        ParsedSound parsedSound2 = new ParsedSound(chunkSize, Cut.soundFile2());
+        for( int i=0; i<parsedSound2.freqMagnitudes.size(); i++ ){
+            double[] mi = ms.values(parsedSound2.freqMagnitudes.get(i));
+            double diff = ms.diff(mtest, mi);
+            double mig = might(parsedSound2.cuts.get(i).wav);
+            System.out.println(i+"* "+ diff+ (diff<0.15?" #":"")+" "+(int)mig+(mig>50?" %%%%%":""));
+        }
+    }
 
   void clusterSegments()  throws Exception{
     DataInputStream di = soundFile();
