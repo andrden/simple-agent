@@ -463,8 +463,17 @@ sssss discriminator: seg2=25 48 14 45
         ParsedSound parsedSound1 = new ParsedSound(chunkSize, Cut.soundFile());
         double[] mtest = ms.values(parsedSound1.freqMagnitudes.get(403)); // ssss
 
+//        display(Arrays.asList(parsedSound1.freqMagnitudes.get(403),
+//                parsedSound1.freqMagnitudes.get(404),
+//                parsedSound1.freqMagnitudes.get(405)
+//        ));
+
 //        380-480 ssss
 //       565-655 shsh
+        for( int i=0; i<parsedSound1.freqMagnitudes.size(); i++ ){
+            ms.addValueStats(parsedSound1.freqMagnitudes.get(i));
+        }
+        ms.preapareStats();
 
         for( int i=0; i<parsedSound1.freqMagnitudes.size(); i++ ){
             double[] mi = ms.values(parsedSound1.freqMagnitudes.get(i));
@@ -478,14 +487,26 @@ sssss discriminator: seg2=25 48 14 45
 
         ParsedSound parsedSound2 = new ParsedSound(chunkSize, Cut.soundFile2());
         double[] diffArr = new double[parsedSound2.cuts.size()];
+        double[] migArr = new double[parsedSound2.cuts.size()];
         for( int i=0; i<parsedSound2.freqMagnitudes.size(); i++ ){
             double[] mi = ms.values(parsedSound2.freqMagnitudes.get(i));
             double diff = ms.diff(mtest, mi);
             diffArr[i]=diff;
             double mig = might(parsedSound2.cuts.get(i).wav);
+            migArr[i]=mig/2000;
             System.out.println(i+"* "+ diff+ (diff<0.15?" #":"")+" "+(int)mig+(mig>50?" %%%%%":""));
         }
+
+        display(Arrays.asList(parsedSound1.freqMagnitudes.get(403),
+                parsedSound1.freqMagnitudes.get(404),
+                parsedSound1.freqMagnitudes.get(405),
+
+                parsedSound2.freqMagnitudes.get(400)
+        ));
+
+
         double[] diffAvg = ChunkOps.movingAvg(diffArr, 20);
+        display(Arrays.asList(migArr,diffArr));
 
 //        shsh2.elems.add(new Elem(200,286,"sh"));
 //        //shsh2.elems.add(new Elem(,"ss"));??

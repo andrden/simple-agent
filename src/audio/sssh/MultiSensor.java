@@ -14,6 +14,7 @@ import java.util.Random;
  */
 public class MultiSensor {
     List<Seg> segs = new ArrayList<Seg>();
+    List<DiffStatist> diffs = new ArrayList();
 
     public MultiSensor() {
         Random rSeg = new Random(1);
@@ -24,6 +25,18 @@ public class MultiSensor {
             int b2 = Math.min(64, b1 + rSeg.nextInt(10));
             Seg seg2 = new Seg(a1, a2,b1, b2);
           segs.add(seg2);
+          diffs.add(new DiffStatist());
+        }
+    }
+
+    void addValueStats(double[] freqMagnitudes){
+        for( int i=0; i<segs.size(); i++ ){
+            diffs.get(i).add( segs.get(i).comp(freqMagnitudes) );
+        }
+    }
+    void preapareStats(){
+        for( DiffStatist ds : diffs ){
+            ds.prepare();
         }
     }
 
@@ -38,9 +51,10 @@ public class MultiSensor {
     double diff(double[] a, double[] b){
         double[] e = new double[a.length];
         for( int i=0; i<a.length; i++ ){
-            e[i] = Math.abs(a[i]-b[i]);
+            //e[i] = Math.abs(a[i]-b[i]);
+            e[i] = diffs.get(i).diff(a[i],b[i]);
         }
         Arrays.sort(e);
-        return e[e.length/5];
+        return e[e.length/10];
     }
 }
