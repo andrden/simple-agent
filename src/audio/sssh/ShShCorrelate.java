@@ -41,10 +41,10 @@ public class ShShCorrelate extends ChunkOps{
   }
 
   public static void main(String[] args) throws Exception{
-    new ShShCorrelate(128).multiSensor();
+    //new ShShCorrelate(128).multiSensor();
 
     //new ShShCorrelate(128).clusterSegments();
-    //new ShShCorrelate(128).graphSegments();
+    new ShShCorrelate(128).graphSegments();
     //new ShShCorrelate(128).findBestClusterQuality();
 //    new ShShCorrelate(128).graphSegments2();
 
@@ -711,11 +711,22 @@ sssss discriminator: seg2=25 48 14 45
   }
 
   void graphSegments() throws Exception{
-    ParsedSound parsedSound = new ParsedSound(chunkSize, Cut.soundFile2());
+    ParsedSound parsedSound = new ParsedSound(chunkSize, Cut.soundFile());
     graphSegments(parsedSound);
   }
   void graphSegments(ParsedSound parsedSound) throws Exception{
     List<double[]> freqMagnitudes = parsedSound.freqMagnitudes;
+
+    double[] f55 = new double[freqMagnitudes.size()];
+    double[] f50 = new double[freqMagnitudes.size()];
+    double[] f45 = new double[freqMagnitudes.size()];
+    for( int i=0; i<f55.length; i++ ){
+        f55[i] = freqMagnitudes.get(i)[55];
+        f50[i] = freqMagnitudes.get(i)[50];
+        f45[i] = freqMagnitudes.get(i)[45];
+    }
+    display(Arrays.asList(f55,f50,f45));
+
     //DataInputStream di = soundFile();
     List<Double> mights = new ArrayList<Double>();
     List<Double> korrs = new ArrayList<Double>();

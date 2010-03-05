@@ -48,8 +48,8 @@ public class Cut {
           //"C:\\proj\\cr6\\sounds/onetwothree.voice"
          // "C:\\proj\\cr6\\sounds/shshss.voice"
 
-         // "C:\\Projects\\simple-agent\\sounds/shshss.voice"
-           "/opt/project/simple-agent/sounds/shshss.voice"
+          "C:\\Projects\\simple-agent\\sounds/shshss.voice"
+          // "/opt/project/simple-agent/sounds/shshss.voice"
       ));
 
 /*
