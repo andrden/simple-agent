@@ -711,19 +711,20 @@ sssss discriminator: seg2=25 48 14 45
   }
 
   void graphSegments() throws Exception{
-    ParsedSound parsedSound = new ParsedSound(chunkSize, Cut.soundFile());
+    ParsedSound parsedSound = new ParsedSound(chunkSize, Cut.soundFile123());
     graphSegments(parsedSound);
   }
   void graphSegments(ParsedSound parsedSound) throws Exception{
     List<double[]> freqMagnitudes = parsedSound.freqMagnitudes;
 
-    double[] f55 = new double[freqMagnitudes.size()];
-    double[] f50 = new double[freqMagnitudes.size()];
-    double[] f45 = new double[freqMagnitudes.size()];
-    for( int i=0; i<f55.length; i++ ){
-        f55[i] = freqMagnitudes.get(i)[55];
-        f50[i] = freqMagnitudes.get(i)[50];
-        f45[i] = freqMagnitudes.get(i)[45];
+    int sz = 250; // freqMagnitudes.size()
+    double[] f55 = new double[sz];
+    double[] f50 = new double[sz];
+    double[] f45 = new double[sz];
+    for( int i=0; i<sz; i++ ){
+        f55[i] = ChunkOps.avg(freqMagnitudes.get(i), 55, 65);
+        f50[i] = ChunkOps.avg(freqMagnitudes.get(i), 45, 55);
+        f45[i] = ChunkOps.avg(freqMagnitudes.get(i), 35, 45);
     }
     display(Arrays.asList(f55,f50,f45));
 

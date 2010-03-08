@@ -38,7 +38,7 @@ public class Cut {
       return di;
     }
 
-    static DataInputStream soundFile() throws FileNotFoundException {
+    static DataInputStream soundFile123() throws FileNotFoundException {
       // "C:\\proj\\cr6\\sounds/onetwothree.voice" says the following:
       // "рас, рас, рас, два, три, четыре, пять ... в веб-камере мирофон ещё есть..
       // . правда не понял где он там ..."
@@ -48,9 +48,23 @@ public class Cut {
           //"C:\\proj\\cr6\\sounds/onetwothree.voice"
          // "C:\\proj\\cr6\\sounds/shshss.voice"
 
+          "C:\\Projects\\simple-agent\\sounds/onetwothree.voice"
+          // "/opt/project/simple-agent/sounds/shshss.voice"
+      ));
+        return di;
+    }
+
+    static DataInputStream soundFile() throws FileNotFoundException {
+     
+      DataInputStream di = new DataInputStream(new FileInputStream(
+          //"C:\\proj\\cr6\\sounds/onetwothree.voice"
+         // "C:\\proj\\cr6\\sounds/shshss.voice"
+
           "C:\\Projects\\simple-agent\\sounds/shshss.voice"
           // "/opt/project/simple-agent/sounds/shshss.voice"
       ));
+
+
 
 /*
 Mapping of sounds/shshss.voice:
