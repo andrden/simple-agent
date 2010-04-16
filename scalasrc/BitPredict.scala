@@ -18,7 +18,7 @@ s.inc(c);
 object BitPredict {
   val nextEvents = new HashMap[String, NextState]
   def main(args: Array[String]){
-    val data = "011010101010000111001110101110111011101110111011"
+    val data = "011010101010000111001110101110111011101110111011васявасявасявася"
 
     var recent = new ArrayBuffer[String]
     var fullStr = ""
