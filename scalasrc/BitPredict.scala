@@ -1,4 +1,5 @@
 import collection.mutable.{Buffer, HashMap, ArrayBuffer}
+import java.io.File
 import util.Sorting
 
 /**
@@ -18,7 +19,14 @@ s.inc(c);
 object BitPredict {
   val nextEvents = new HashMap[String, NextState]
   def main(args: Array[String]){
-    val data = "011010101010000111001110101110111011101110111011васявасявасявася"
+    //val lines = scala.io.Source.fromFile(new File("/opt/project/simple-agent/src/text-rfc5837.txt")).getLines().mkString
+    val lines = scala.io.Source.fromFile(new File("/opt/project/simple-agent/src/text-A.txt")).getLines().mkString
+    
+    //val data = "011010101010000111001110101110111011101110111011васявасявасявася"
+    val data = lines //.substring(0, 580) // + "sdf_sdf"
+    for( c <- data; if c=='_' ){
+      throw new Exception();
+    }
 
     var recent = new ArrayBuffer[String]
     var fullStr = ""
@@ -27,18 +35,22 @@ object BitPredict {
     for( c <- data ){
       val predictedState = predict(recent)
       val predCh = if (predictedState.isDefined) predictedState.get.prediction else '_'
-      System.out.println(""+c + predCh + " pred " + predictedState )
+      if( c==predCh ){
+        System.out.println(""+c + predCh + " pred " + predictedState )
+      }
       fullPredStr += predCh
-      fullPredStrCorr += (if(c==predCh) ' ' else c)
+      fullPredStrCorr += (if(c==predCh) '_' else c)
       
       recent.foreach((it) =>
+          if( it.length()<30 ){
               nextEvents.getOrElseUpdate(it, new NextState(it)).inc(c)
+          }
       )
 
       fullStr += c
       recent = recent.map(_+c)
       recent += ""+c
-      System.out.println(recent)
+      //System.out.println(recent)
     }
     //System.out.println(nextEvents)
     System.out.println(data)
@@ -51,7 +63,7 @@ object BitPredict {
     //val pred = for(p <- recent; if p. )
     val relevantStates : Buffer[NextState] = recent.flatMap(s => nextEvents.get(s))
     val relevSorted =  Sorting.stableSort(relevantStates).toList.reverse
-    System.out.println( "prediction="+ relevSorted )
+    //System.out.println( "prediction="+ relevSorted )
     val h = relevSorted.headOption
     if( h.isDefined && h.get.probabForce>0 ) h else None
   }
