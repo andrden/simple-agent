@@ -4,9 +4,9 @@
  */
 
 object Test2 extends Application{
-  var x : AnyRef
+  //var x : AnyRef
   val l = List(1,2)
-  l.elements.foreach(
-    System.out.println(20*_)
+  l.foreach( x =>
+    System.out.println(20*x)
   )
 }
