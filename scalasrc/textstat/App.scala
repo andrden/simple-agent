@@ -1,5 +1,8 @@
 package textstat
 
+import io.Source
+import collection.mutable.HashMap
+
 /**
  * Created by IntelliJ IDEA.
  * User: user
@@ -9,5 +12,16 @@ package textstat
  */
 
 object App extends Application{
-  println( "123" )
+  val counts = new HashMap[String,Int]
+
+  val txt = getClass.getResourceAsStream("/textstat/Book1.html")
+  val src = Source.fromInputStream(txt)
+  val chars = src.toList
+  for( c <- chars ){
+    val key = ""+c.toLower
+    counts.update(key, counts.getOrElse(key,0)+1)
+  }
+
+  val countsSorted = counts.toList.sortWith( (a,b) => a._2 > b._2 )
+  countsSorted.foreach( a => println(a) )
 }
