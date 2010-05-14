@@ -31,4 +31,8 @@ object QubicRoot extends Application {
   println( root3(8) )
   println( root3(27) )
 
+
+  def *(x:Int) = x*10
+
+  println( *(23) )
 }
