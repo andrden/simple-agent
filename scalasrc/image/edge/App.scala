@@ -2,9 +2,10 @@ package image.edge
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
-import java.awt.Color
 import Math.{abs,sin,cos}
 import java.io.File
+import javax.swing.JFrame
+import java.awt.{Canvas, Color}
 
 /**
 
@@ -85,7 +86,7 @@ object App extends Application{
   def lookAroundAside(p:XY, size:Int, pusher: XY)(f:(XY)=>Unit){
     val ang = p.angle(pusher)*180/Math.Pi
     for( deg <- (ang+60).until(ang+360-60, 20) ){
-      println("lookAroundAside"+deg)
+      //println("lookAroundAside"+deg)
       val pdeg = p.shiftRadial(size, deg*Math.Pi/180)
       //paintDisk(pdeg, size/2, Color.RED)
       f(pdeg)
@@ -123,7 +124,7 @@ object App extends Application{
       }
       prev = rgb
       prevP=p
-      println("%s %d".format(p, diff))
+      //println("%s %d".format(p, diff))
     }
   }
 
@@ -142,46 +143,50 @@ object App extends Application{
     maxDiff
   }
 
-//  val y1=100
-//  val y2=200
-//  var rgbPrev=0
-//  for( x <- 0 to 399 ){
-//    val y = y1 + x*(y2-y1)/400
-//    val rgb : Int = img.getRGB(x,y)
-//    val diff = difColor(rgb, rgbPrev)
-//    println("%d %d  %d".format(x,y, diff))
-//    rgbPrev=rgb
-//  }
+  def borderWalker(cutPointA:XY, cutPointB:XY)(f: (XY)=>Boolean){
+    val tr = new StepColorTrack
+    stepLine(XY(0,100),XY(399,200),size)(tr.stepFunc)
+    val maxDiff0 = maxDiffPoint(tr.maxDiffPP._1, tr.maxDiffPP._2)
+    if( !f(maxDiff0) ) return
 
+    val trRound = new StepColorTrack
+    lookAround(maxDiff0, size)(trRound.stepFunc)
+    val maxDiff1 = maxDiffPoint(trRound.maxDiffPP._1, trRound.maxDiffPP._2)
 
-//  var avgPrev=0;
-//  def stepFunc(p:XY){
-//    val rgb = colorAvg(p,size)
-//    val diff = difColor(rgb, avgPrev)
-//    avgPrev = rgb
-//    println("%s %d".format(p, diff))
-//  }
-  val tr = new StepColorTrack
-  stepLine(XY(0,100),XY(399,200),size)(tr.stepFunc)
-  val maxDiff0 = maxDiffPoint(tr.maxDiffPP._1, tr.maxDiffPP._2)
-  println(tr.maxDiffPP+ "  "+maxDiff0) // (XY(77,117),XY(84,118))  XY(81,117)
-  println("------------------")
-  val trRound = new StepColorTrack
-  lookAround(maxDiff0, size)(trRound.stepFunc)
-  val maxDiff1 = maxDiffPoint(trRound.maxDiffPP._1, trRound.maxDiffPP._2)
-  println(trRound.maxDiffPP+ "  "+maxDiff1)
-
-  paintDisk(maxDiff0, size/2, Color.BLUE)
-  paintDisk(maxDiff1, size/2, Color.BLUE)
-
-  var p0 = maxDiff0
-  var p1 = maxDiff1
-  for( i <- 1 to 85 ){
-    val pnew = nextBorderPoint(p0,p1)
-    paintDisk(pnew, size/2, Color.BLUE)
-    p0 = p1
-    p1 = pnew
+    var p0 = maxDiff0
+    var p1 = maxDiff1
+    while( f(p1) ){
+      val pnew = nextBorderPoint(p0,p1)
+      p0 = p1
+      p1 = pnew
+    }
   }
+
+
+  val jframe = new JFrame("image.edge")
+  val canvas = new Canvas
+  jframe.add(canvas)
+  jframe.setSize(400,400)
+  jframe setVisible true
+
+  Thread sleep 2000
+  canvas.getGraphics.drawImage(img,0,0,null)
+
+  var pointsFound : Int = 0
+  def nextPoint(p:XY):Boolean = {
+    println(p)
+    paintDisk(p, size/2, Color.BLUE)
+
+    val g = canvas.getGraphics
+    g.setColor(Color.BLUE)
+    g.drawOval(p.x-size/2,p.y-size/2, size,size)
+    Thread sleep 80
+
+    pointsFound += 1
+    pointsFound < 380
+  }
+
+  borderWalker(XY(0,100),XY(399,200))(nextPoint)
 
   //val trRound2 = new StepColorTrack
   //lookAroundAside(maxDiff1, size, maxDiff0)(trRound2.stepFunc)
