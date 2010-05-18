@@ -37,7 +37,8 @@ class ColorAvg{
 }
 
 object App extends Application{
-  val imgStream = getClass.getResourceAsStream("/image/edge/green_apple.jpg")
+  val imgFile = "/image/edge/green_apple_blur.jpg" // "/image/edge/green_apple.jpg"
+  val imgStream = getClass.getResourceAsStream(imgFile)
   val img : BufferedImage = ImageIO.read(imgStream)
   val imgNew = new BufferedImage(img.getWidth, img.getHeight, img.getType)
   imgNew.getGraphics.drawImage(img,0,0,null)
@@ -101,7 +102,7 @@ object App extends Application{
     //g.fillOval(p.x-size/2,p.y-size/2, size,size)
   }
 
-  val size=8
+  val size=8 //40 //8
 
   def difColor(a:XY, b:XY) : Int ={
      val rgba = colorAvg(a,size)
@@ -162,6 +163,16 @@ object App extends Application{
     }
   }
 
+  def paintBlur(){
+    for( x <- 0 until img.getWidth ){
+      println("blur x="+x)
+      for( y <- 0 until img.getHeight ){
+        imgNew.setRGB(x+img.getWidth, y, colorAvg(XY(x,y), size))
+      }
+    }
+  }
+
+  //paintBlur()
 
   val jframe = new JFrame("image.edge")
   val canvas = new Canvas
@@ -177,9 +188,10 @@ object App extends Application{
     println(p)
     paintDisk(p, size/2, Color.BLUE)
 
+    val ovalSz = 8
     val g = canvas.getGraphics
     g.setColor(Color.BLUE)
-    g.drawOval(p.x-size/2,p.y-size/2, size,size)
+    g.drawOval(p.x-ovalSz/2,p.y-ovalSz/2, ovalSz,ovalSz)
     Thread sleep 80
 
     pointsFound += 1
