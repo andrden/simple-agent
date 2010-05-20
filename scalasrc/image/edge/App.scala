@@ -37,7 +37,9 @@ class ColorAvg{
 }
 
 object App extends Application{
-  val imgFile = "/image/edge/green_apple_blur.jpg" // "/image/edge/green_apple.jpg"
+  //val imgFile = "/image/edge/green_apple_blur.jpg" 
+  val imgFile =  "/image/edge/green_apple.jpg"
+
   val imgStream = getClass.getResourceAsStream(imgFile)
   val img : BufferedImage = ImageIO.read(imgStream)
   val imgNew = new BufferedImage(img.getWidth, img.getHeight, img.getType)
@@ -102,7 +104,7 @@ object App extends Application{
     //g.fillOval(p.x-size/2,p.y-size/2, size,size)
   }
 
-  val size=8 //40 //8
+  val size=20 //40 //8
 
   def difColor(a:XY, b:XY) : Int ={
      val rgba = colorAvg(a,size)
@@ -146,7 +148,7 @@ object App extends Application{
 
   def borderWalker(cutPointA:XY, cutPointB:XY)(f: (XY)=>Boolean){
     val tr = new StepColorTrack
-    stepLine(XY(0,100),XY(399,200),size)(tr.stepFunc)
+    stepLine(cutPointA, cutPointB, size)(tr.stepFunc)
     val maxDiff0 = maxDiffPoint(tr.maxDiffPP._1, tr.maxDiffPP._2)
     if( !f(maxDiff0) ) return
 
@@ -172,7 +174,12 @@ object App extends Application{
     }
   }
 
+  def randXY = XY( (Math.random * img.getWidth).intValue, (Math.random * img.getHeight).intValue )
+
   //paintBlur()
+
+  val lineBeg = randXY // XY(0,100)
+  val lineEnd = randXY // XY(399,200)
 
   val jframe = new JFrame("image.edge")
   val canvas = new Canvas
@@ -182,6 +189,7 @@ object App extends Application{
 
   Thread sleep 2000
   canvas.getGraphics.drawImage(img,0,0,null)
+  canvas.getGraphics.drawLine( lineBeg.x, lineBeg.y, lineEnd.x, lineEnd.y )
 
   var pointsFound : Int = 0
   def nextPoint(p:XY):Boolean = {
@@ -198,7 +206,7 @@ object App extends Application{
     pointsFound < 380
   }
 
-  borderWalker(XY(0,100),XY(399,200))(nextPoint)
+  borderWalker(lineBeg, lineEnd)(nextPoint)
 
   //val trRound2 = new StepColorTrack
   //lookAroundAside(maxDiff1, size, maxDiff0)(trRound2.stepFunc)
