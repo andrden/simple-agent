@@ -38,7 +38,9 @@ class ColorAvg{
 
 object App extends Application{
   //val imgFile = "/image/edge/green_apple_blur.jpg" 
-  val imgFile =  "/image/edge/green_apple.jpg"
+  //val imgFile =  "/image/edge/green_apple.jpg"
+  val imgFile =  "/image/edge/apple-leafs.jpg"
+  //val imgFile =  "/image/edge/apple-leafs_blur.jpg"
 
   val imgStream = getClass.getResourceAsStream(imgFile)
   val img : BufferedImage = ImageIO.read(imgStream)
@@ -104,7 +106,7 @@ object App extends Application{
     //g.fillOval(p.x-size/2,p.y-size/2, size,size)
   }
 
-  val size=20 //40 //8
+  val size=30 //40 //8
 
   def difColor(a:XY, b:XY) : Int ={
      val rgba = colorAvg(a,size)
@@ -176,10 +178,29 @@ object App extends Application{
 
   def randXY = XY( (Math.random * img.getWidth).intValue, (Math.random * img.getHeight).intValue )
 
-  //paintBlur()
+  def newFollowSegment(canvas: Canvas) = {
+    val lineBeg = randXY // XY(0,100)
+    val lineEnd = randXY // XY(399,200)
 
-  val lineBeg = randXY // XY(0,100)
-  val lineEnd = randXY // XY(399,200)
+    canvas.getGraphics.drawLine( lineBeg.x, lineBeg.y, lineEnd.x, lineEnd.y )
+
+    var pointsFound : Int = 0
+    def nextPoint(p:XY):Boolean = {
+      println(p)
+      paintDisk(p, size/2, Color.BLUE)
+
+      val ovalSz = 8
+      val g = canvas.getGraphics
+      g.setColor(Color.BLUE)
+      g.drawOval(p.x-ovalSz/2,p.y-ovalSz/2, ovalSz,ovalSz)
+      Thread sleep 80
+
+      pointsFound += 1
+      pointsFound < 380
+    }
+
+    borderWalker(lineBeg, lineEnd)(nextPoint)
+  }
 
   val jframe = new JFrame("image.edge")
   val canvas = new Canvas
@@ -189,27 +210,16 @@ object App extends Application{
 
   Thread sleep 2000
   canvas.getGraphics.drawImage(img,0,0,null)
-  canvas.getGraphics.drawLine( lineBeg.x, lineBeg.y, lineEnd.x, lineEnd.y )
 
-  var pointsFound : Int = 0
-  def nextPoint(p:XY):Boolean = {
-    println(p)
-    paintDisk(p, size/2, Color.BLUE)
-
-    val ovalSz = 8
-    val g = canvas.getGraphics
-    g.setColor(Color.BLUE)
-    g.drawOval(p.x-ovalSz/2,p.y-ovalSz/2, ovalSz,ovalSz)
-    Thread sleep 80
-
-    pointsFound += 1
-    pointsFound < 380
+  var ok=false
+  while(!ok){
+    try{
+      newFollowSegment(canvas)
+      ok=true;
+    }catch {
+      case e: Exception => println(e.toString + " will continue") 
+    }
   }
-
-  borderWalker(lineBeg, lineEnd)(nextPoint)
-
-  //val trRound2 = new StepColorTrack
-  //lookAroundAside(maxDiff1, size, maxDiff0)(trRound2.stepFunc)
 
   ImageIO.write(imgNew, "jpeg",new File("/tmp/apple2.jpeg"))
 }
