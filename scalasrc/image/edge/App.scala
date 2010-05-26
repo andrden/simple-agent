@@ -22,19 +22,6 @@ case class XY(x:Int, y:Int){
   def angle(p:XY) = Math.atan2( p.y-y, p.x-x )
 }
 
-class ColorAvg{
-  var count=0;
-  var r=0;
-  var g=0;
-  var b=0;
-  def update(rgb: Int){
-    count += 1
-    r += ((rgb >> 16) & 0xFF)
-    g += ((rgb >> 8) & 0xFF)
-    b += ((rgb >> 0) & 0xFF)
-  }
-  def toRgb = ((r/count)<<16) + ((g/count)<<8) + (b/count)
-}
 
 object App extends Application{
   //val imgFile = "/image/edge/green_apple_blur.jpg" 
@@ -47,6 +34,10 @@ object App extends Application{
   val imgNew = new BufferedImage(img.getWidth, img.getHeight, img.getType)
   imgNew.getGraphics.drawImage(img,0,0,null)
   println("width %d heigth %d".format(img.getWidth, img.getHeight))
+
+
+  ImageIO.write(GaussianBlur.blur(img, 10, 5), "jpeg", new File("/tmp/apple-leafs_blurG.jpeg"))
+  System exit 0
 
   def stepLine(beg:XY, end:XY, step:Int)(f:(XY)=>Unit) : Unit = {
      val stepX = (step * beg.dx(end) / beg.dist(end)).toInt
