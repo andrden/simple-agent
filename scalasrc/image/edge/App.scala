@@ -35,9 +35,10 @@ object App extends Application{
   imgNew.getGraphics.drawImage(img,0,0,null)
   println("width %d heigth %d".format(img.getWidth, img.getHeight))
 
-
-  ImageIO.write(GaussianBlur.blur(img, 10, 5), "jpeg", new File("/tmp/apple-leafs_blurG.jpeg"))
-  System exit 0
+  val imgBlur = GaussianBlur.blur(img, 20, 5);
+  ImageIO.write(imgBlur, "jpeg", new File("/tmp/apple-leafs_blurG.jpeg"))
+  println( "Blur ready" )
+  //System exit 0
 
   def stepLine(beg:XY, end:XY, step:Int)(f:(XY)=>Unit) : Unit = {
      val stepX = (step * beg.dx(end) / beg.dist(end)).toInt
@@ -55,21 +56,21 @@ object App extends Application{
       abs(color1.getBlue-color2.getBlue)
   }
 
-  def colorAvg(p:XY, size:Int):Int ={
-    val r = size/2
-    val avg = new ColorAvg
-    for(x <- (p.x - r) to (p.x + r) ){
-      // println (x)
-      for(y <- (p.y - r) to (p.y + r) ){
-        if( (p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) < r*r ){
-          if( x>=0 && y>=0 && x<img.getWidth && y<img.getHeight ){
-            avg.update(img.getRGB(x,y))
-          }
-        }
-      }
-    }
-    avg.toRgb
-  }
+//  def colorAvg(p:XY, size:Int):Int ={
+//    val r = size/2
+//    val avg = new ColorAvg
+//    for(x <- (p.x - r) to (p.x + r) ){
+//      // println (x)
+//      for(y <- (p.y - r) to (p.y + r) ){
+//        if( (p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) < r*r ){
+//          if( x>=0 && y>=0 && x<img.getWidth && y<img.getHeight ){
+//            avg.update(img.getRGB(x,y))
+//          }
+//        }
+//      }
+//    }
+//    avg.toRgb
+//  }
 
   def lookAround(p:XY, size:Int)(f:(XY)=>Unit){
     for( deg <- 0.until(360, 20) ){
@@ -97,11 +98,12 @@ object App extends Application{
     //g.fillOval(p.x-size/2,p.y-size/2, size,size)
   }
 
-  val size=30 //40 //8
+
+  def blurColor(a:XY) = imgBlur.getRGB(a.x, a.y)
 
   def difColor(a:XY, b:XY) : Int ={
-     val rgba = colorAvg(a,size)
-     val rgbb = colorAvg(b,size)
+     val rgba = blurColor(a)
+     val rgbb = blurColor(b)
      difColor(rgba, rgbb)
   }
 
@@ -111,7 +113,7 @@ object App extends Application{
     var maxDiff=0
     var maxDiffPP : (XY,XY) = null
     def stepFunc(p:XY){
-      val rgb = colorAvg(p,size)
+      val rgb = blurColor(p)
       //paintDisk(p, size/2, new Color(rgb))
       val diff = difColor(rgb, prev)
       if( prevP!=null && diff>maxDiff ){
@@ -158,16 +160,18 @@ object App extends Application{
     }
   }
 
-  def paintBlur(){
-    for( x <- 0 until img.getWidth ){
-      println("blur x="+x)
-      for( y <- 0 until img.getHeight ){
-        imgNew.setRGB(x+img.getWidth, y, colorAvg(XY(x,y), size))
-      }
-    }
-  }
+//  def paintBlur(){
+//    for( x <- 0 until img.getWidth ){
+//      println("blur x="+x)
+//      for( y <- 0 until img.getHeight ){
+//        imgNew.setRGB(x+img.getWidth, y, colorAvg(XY(x,y), size))
+//      }
+//    }
+//  }
 
   def randXY = XY( (Math.random * img.getWidth).intValue, (Math.random * img.getHeight).intValue )
+
+  val size=10 //40 //8
 
   def newFollowSegment(canvas: Canvas) = {
     val lineBeg = randXY // XY(0,100)
@@ -184,10 +188,10 @@ object App extends Application{
       val g = canvas.getGraphics
       g.setColor(Color.BLUE)
       g.drawOval(p.x-ovalSz/2,p.y-ovalSz/2, ovalSz,ovalSz)
-      Thread sleep 80
+      Thread sleep 30
 
       pointsFound += 1
-      pointsFound < 380
+      pointsFound < 1380
     }
 
     borderWalker(lineBeg, lineEnd)(nextPoint)
