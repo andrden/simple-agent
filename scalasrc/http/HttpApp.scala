@@ -62,31 +62,6 @@ class Srv{
   }.start();
 }
 
-class NioSrv{
-  val ssockCh = ServerSocketChannel.open
-  //ssockCh.setOption(SocketOption.)
-  ssockCh.socket.bind(new InetSocketAddress("localhost",8080), 100)
-  //val ssock = new ServerSocket(8080, 100)
-  //val buf = new Array[Byte](Const.BUF_SIZE)
-  val bufNio = ByteBuffer.allocate(Const.BUF_SIZE)
-  //bufNio.rewind
-  val meter = new Meter("Srv")
-  new Thread(){
-    override def run = {
-      while(true){
-        val sockCh = ssockCh.accept
-        println("accept "+sockCh)
-        //val ch = sock.getChannel
-        //val out = sock.getOutputStream
-        while(true){
-          //out write buf
-          bufNio.rewind()
-          meter add sockCh.write(bufNio)
-        }
-      }
-    }
-  }.start();
-}
 
 class Client{
   val meter = new Meter("Client")
@@ -133,7 +108,7 @@ object HttpApp{
     //val Srv = new Srv
     val Srv = new NioSrv
     //val Client = new Client
-    val Client = new ClientNio
+    //val Client = new ClientNio
 
     //testArraySpeed
     //testArraySpeedNIO
