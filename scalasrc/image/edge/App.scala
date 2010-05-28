@@ -22,7 +22,6 @@ case class XY(x:Int, y:Int){
   def angle(p:XY) = Math.atan2( p.y-y, p.x-x )
 }
 
-
 object App extends Application{
   //val imgFile = "/image/edge/green_apple_blur.jpg" 
   //val imgFile =  "/image/edge/green_apple.jpg"
@@ -38,7 +37,10 @@ object App extends Application{
   val imgBlur = GaussianBlur.blur(img, 20, 5);
   ImageIO.write(imgBlur, "jpeg", new File("/tmp/apple-leafs_blurG.jpeg"))
   println( "Blur ready" )
-  //System exit 0
+
+  paintDiffImg()
+  println( "Diff ready" )
+  System exit 0
 
   def stepLine(beg:XY, end:XY, step:Int)(f:(XY)=>Unit) : Unit = {
      val stepX = (step * beg.dx(end) / beg.dist(end)).toInt
@@ -71,6 +73,21 @@ object App extends Application{
 //    }
 //    avg.toRgb
 //  }
+
+  def colorDiff(imgForDiff:BufferedImage, p:XY, r:Int):Int ={
+    val diff = new ColorDiff
+    for(x <- (p.x - r) to (p.x + r) ){
+      // println (x)
+      for(y <- (p.y - r) to (p.y + r) ){
+        if( (p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) <= r*r ){
+          if( x>=0 && y>=0 && x<imgForDiff.getWidth && y<imgForDiff.getHeight ){
+            diff.update(imgForDiff.getRGB(x,y))
+          }
+        }
+      }
+    }
+    diff.maxDiff
+  }
 
   def lookAround(p:XY, size:Int)(f:(XY)=>Unit){
     for( deg <- 0.until(360, 20) ){
@@ -160,14 +177,37 @@ object App extends Application{
     }
   }
 
-//  def paintBlur(){
-//    for( x <- 0 until img.getWidth ){
-//      println("blur x="+x)
-//      for( y <- 0 until img.getHeight ){
-//        imgNew.setRGB(x+img.getWidth, y, colorAvg(XY(x,y), size))
-//      }
-//    }
-//  }
+  def paintDiffImg(){
+    val imgDiff = new BufferedImage(img.getWidth, img.getHeight, img.getType)
+    //val imgBlur = GaussianBlur.blur(img, 20, 5);
+
+    var max=0
+    for( x <- 0 until img.getWidth ){
+      //println("diff x="+x)
+      for( y <- 0 until img.getHeight ){
+        //val d = colorDiff(imgBlur , XY(x,y), 2)
+        val d = colorDiff(img , XY(x,y), 2)
+        max = max.max(d)
+        imgDiff.setRGB(x, y, d)
+      }
+    }
+
+
+    for( x <- 0 until img.getWidth ){
+      //println("diff x="+x)
+      for( y <- 0 until img.getHeight ){
+        //imgDiff.setRGB(x, y, colorDiff(img , XY(x,y), 2))
+        val oldC = imgDiff.getRGB(x,y) & 0xffffff
+        val c = 255*oldC/max
+        if( c>255 ){
+          println(c)
+        }
+        imgDiff.setRGB(x, y, c)
+      }
+    }
+
+    ImageIO.write(imgDiff, "jpeg", new File("/tmp/apple-leafs_diff.jpeg"))
+  }
 
   def randXY = XY( (Math.random * img.getWidth).intValue, (Math.random * img.getHeight).intValue )
 

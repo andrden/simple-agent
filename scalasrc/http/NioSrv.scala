@@ -17,7 +17,8 @@ class NioSrv{
   val meter = new Meter("Srv")
 
   val taskQueue = new LinkedBlockingQueue[SocketChannel]
-  val procPool = List.fill(1500)( new NioSrvProcessor(taskQueue,ssockCh) )
+  var procCounter = 0
+  val procPool = List.fill(1500){ procCounter += 1; new NioSrvProcessor(procCounter, ssockCh) }
 
   //val proc = new NioSrvProcessor
   new Thread(){
@@ -32,7 +33,7 @@ class NioSrv{
   }.start();
 }
 
-class NioSrvProcessor(taskQueue: LinkedBlockingQueue[SocketChannel], ssockCh: ServerSocketChannel){
+class NioSrvProcessor(procCounter: Int, ssockCh: ServerSocketChannel){
   val bufResp = ByteBuffer.allocate(Const.BUF_SIZE)
   val arrayResp = bufResp.array
 
@@ -54,7 +55,7 @@ class NioSrvProcessor(taskQueue: LinkedBlockingQueue[SocketChannel], ssockCh: Se
   val bufReq = ByteBuffer.allocate(Const.BUF_SIZE)
   val arrayReq = bufReq.array
 
-  new Thread(){
+  new Thread(null,null,"NioSrvProcessor"+procCounter, 128*1000){
     override def run = threadRun()
   }.start()
 

@@ -21,3 +21,5 @@ class ColorAvg{
   }
   def toRgb = ((r/count)<<16) + ((g/count)<<8) + (b/count)
 }
+
+
