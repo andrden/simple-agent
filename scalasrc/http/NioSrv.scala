@@ -3,28 +3,36 @@ package http
 import java.nio.ByteBuffer
 import java.net.InetSocketAddress
 import java.nio.channels.{SocketChannel, ServerSocketChannel}
+import java.util.concurrent.LinkedBlockingQueue
 
 class NioSrv{
-  val ssockCh = ServerSocketChannel.open
+  val SSOCK_BACKLOG = 5000
+  val ssockCh = ServerSocketChannel.open()
   //ssockCh.setOption(SocketOption.)
-  ssockCh.socket.bind(new InetSocketAddress("localhost",8080), 100)
+  ssockCh.socket.bind(new InetSocketAddress("localhost",8080), SSOCK_BACKLOG)
   println("Listen "+ssockCh)
   //val ssock = new ServerSocket(8080, 100)
   //val buf = new Array[Byte](Const.BUF_SIZE)
   //bufNio.rewind
   val meter = new Meter("Srv")
-  val proc = new NioSrvProcessor
+
+  val taskQueue = new LinkedBlockingQueue[SocketChannel]
+  val procPool = List.fill(1500)( new NioSrvProcessor(taskQueue,ssockCh) )
+
+  //val proc = new NioSrvProcessor
   new Thread(){
     override def run = {
       while(true){
-        val sockCh = ssockCh.accept
-        proc.run(sockCh)
+        //val sockCh = ssockCh.accept()
+        //proc.run(sockCh)
+        //taskQueue.put(sockCh)
+        Thread sleep 10000
       }
     }
   }.start();
 }
 
-class NioSrvProcessor{
+class NioSrvProcessor(taskQueue: LinkedBlockingQueue[SocketChannel], ssockCh: ServerSocketChannel){
   val bufResp = ByteBuffer.allocate(Const.BUF_SIZE)
   val arrayResp = bufResp.array
 
@@ -45,6 +53,18 @@ class NioSrvProcessor{
 
   val bufReq = ByteBuffer.allocate(Const.BUF_SIZE)
   val arrayReq = bufReq.array
+
+  new Thread(){
+    override def run = threadRun()
+  }.start()
+
+  def threadRun() {
+    while(true){
+      //run( taskQueue.take )
+      run( ssockCh.accept() )
+    }
+  }
+
   def run(sockCh: SocketChannel){
     bufReq.rewind()
     val len = sockCh.read(bufReq)
