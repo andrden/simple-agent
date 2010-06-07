@@ -19,7 +19,7 @@ class NioSrv{
 
   val taskQueue = new LinkedBlockingQueue[SocketChannel]
   var procCounter = 0
-  val procPool = List.fill(1500){ procCounter += 1; new NioSrvProcessor(procCounter, ssockCh) }
+  val procPool = List.fill(2000){ procCounter += 1; new NioSrvProcessor(procCounter, ssockCh) }
 
   //val proc = new NioSrvProcessor
   new Thread(){

@@ -13,7 +13,7 @@ import java.nio.channels.{SocketChannel, ServerSocketChannel}
  */
 
 object Const{
-  val BUF_SIZE=1024*64
+  val BUF_SIZE=1024*16
 
 // val BUF_SIZE=1024*64, single thread srv-cli, BIO, Notebook Core2Duo Vista JDK7 - 200 Mbytes/sec
 // val BUF_SIZE=1024*64, single thread srv-cli, NIO direct buffer, Notebook Core2Duo Vista JDK7 - 240 Mbytes/sec
