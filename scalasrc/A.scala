@@ -20,9 +20,10 @@ object A {
 //    val now = new Date
 //    val df = getDateInstance(LONG, Locale.FRANCE)
 //    println(df format now)
-    val l = List(1,2,3)
+    val l = List(1,2,3,4,5,6,7,8,9)
     val m = Map() ++ (l map (o => (o,o*o)))
     println(m+ " "+m.getClass)
+    println(new java.util.Date)
     val m1 = (new mutable.HashMap[Int,Int] /: l){ case (h,i) => h.put(i, i*i); h }
     println(m1)
 
