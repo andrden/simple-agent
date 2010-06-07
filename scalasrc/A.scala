@@ -17,14 +17,7 @@ import collection.immutable.HashMap
 
 object A {
   def main(args : Array[String]):Unit={
-//    val now = new Date
-//    val df = getDateInstance(LONG, Locale.FRANCE)
-//    println(df format now)
-    val l = List(1,2,3)
-    val m = Map() ++ (l map (o => (o,o*o)))
-    println(m+ " "+m.getClass)
-    val m1 = (new mutable.HashMap[Int,Int] /: l){ case (h,i) => h.put(i, i*i); h }
-    println(m1)
+    A1.code()
 
    // val CSB = new C{ type T=StringBuilder }
    // println( CSB.getClass+" "+CSB.newInst )
