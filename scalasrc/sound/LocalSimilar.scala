@@ -9,9 +9,12 @@ object LocalSimilar{
   def soundFileStream =
     new DataInputStream(new FileInputStream("/opt/project/simple-agent/sounds/shshss.voice"))
 
-  def soundFileData : Array[Short] = {
+  def soundFileStream2 =
+    new DataInputStream(new FileInputStream("/opt/project/simple-agent/sounds/shshss2.voice"))
+
+  def soundFileData(stream : DataInputStream) : Array[Short] = {
     val b = new ArrayBuffer[Short];
-    val str = soundFileStream
+    val str = stream
     while(str.available>0){
       b += str.readShort
     }
@@ -55,10 +58,15 @@ object LocalSimilar{
 
   def printCorr(){
     val len = 100
-    val all = soundFileData
+    //val all = soundFileData(soundFileStream2)
+    val all = soundFileData(soundFileStream)
+
     //val test = all.slice(28000, 28000+len)
     //val test = all.slice(198000, 198000+len)
-    val test = all.slice(320000, 320000+len)
+    //val test = all.slice(320000, 320000+len) // ssss
+    val test = soundFileData(soundFileStream).slice(320000, 320000+len) // ssss
+    //val test = all.slice(44000, 44000+len) // noise
+
     println("printCorr()====")
     val sumGrp = new Array[Int](350)
     for( i <- 0 to 329000 ){
@@ -80,10 +88,28 @@ object LocalSimilar{
     }
   }
 
+  def printLocalCorr(){
+    val all = soundFileData(soundFileStream)
+
+    //val point = 320200
+    val point = 28000
+    for( i <- 2 to 1000 ){
+      val before = all.slice(point-i, point)
+      val after = all.slice(point, point+i)
+      val c = 100*corr(before, after)
+      if(c>20){
+        printf("%d  %f  %n", i, c)
+      }
+    }
+
+  }
+
   def main(args: Array[String]) = {
-    printf("sound samples %d,  seconds %f %n", soundFileData.size, soundFileData.size.toDouble / rate)
+    val data = soundFileData(soundFileStream)
+    printf("sound samples %d,  seconds %f %n", data.size, data.size.toDouble / rate)
     //printVolumeStats(soundFileData)
-    printCorr()
+    //printCorr()
+    printLocalCorr()
   }
 }
 
