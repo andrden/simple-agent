@@ -17,6 +17,12 @@ import collection.immutable.HashMap
 
 object A {
   def main(args : Array[String]):Unit={
+    val vv = new mutable.HashSet[Int]
+    for(i<-1 to 100 ) vv.add(i)
+
+    val vvj = new java.util.HashSet[Integer]
+    for(i<-1 to 100 ) vvj.add(i)
+
 //    val now = new Date
 //    val df = getDateInstance(LONG, Locale.FRANCE)
 //    println(df format now)
